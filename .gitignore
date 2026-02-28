@@ -1,0 +1,9 @@
+.env
+.DS_Store
+.secret
+db.sqlite3
+*.log
+.DS_Store
+*.pid
+media/
+__pycache__/
