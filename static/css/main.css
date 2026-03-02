@@ -1,0 +1,163 @@
+/* Fonts */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 200;
+  src: url('../fonts/inter-v20-latin-200.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+/* inter-300 - latin */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 300;
+  src: url('../fonts/inter-v20-latin-300.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+/* inter-300italic - latin */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Inter';
+  font-style: italic;
+  font-weight: 300;
+  src: url('../fonts/inter-v20-latin-300italic.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+/* inter-regular - latin */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../fonts/inter-v20-latin-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+/* inter-italic - latin */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Inter';
+  font-style: italic;
+  font-weight: 400;
+  src: url('../fonts/inter-v20-latin-italic.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+/* inter-500 - latin */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  src: url('../fonts/inter-v20-latin-500.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+/* inter-600 - latin */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  src: url('../fonts/inter-v20-latin-600.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+
+/* Colour Variables */
+:root {
+  --sm-page-bg: #F5F8FA;
+  --sm-card-bg: #FEFEFE;
+  --sm-primary-accent: #0096CD;
+
+  /* Form colours */
+  --sm-field-bg: #F9FBFC;
+  --sm-field-bg-focus-hover: #EFF7FD;
+  --sm-field-bg-disabled: #E7E8E9;
+  --sm-field-border-default: #D1E5ED;
+  --sm-field-border-invalid: #E62107;
+  --sm-field-border-disabled: #DAD7D7;
+  --sm-field-value: #145069;
+  --sm-field-value-disabled: #5E6466;
+
+  /* Header Colours */
+  --sm-header-bg: #FAFAFA;
+  --sm-header-border: #E0DEDE;
+
+  /* Text colours */
+  --sm-dark-text-headings: #2A7A9B;
+  --sm-text-3rd-grey: #484848;
+
+  /* Action Colours */
+  --sm-action-clear-bg-blue-txt: #2980A3;
+  --sm-action-clear-bg-blue-txt-hover: #06577a;
+  --sm-action-light-blue: #D4F2FF;
+  --sm-action-blue-hover: #06577a;
+  --sm-action-dark-blue-text: #145069;
+
+  --sm-white: #fff;
+
+}
+/* Universal styles */
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--sm-page-bg);
+    font-family: 'Inter', sans-serif;
+}
+h1 {
+    color: var(--sm-dark-text-headings);
+    font-weight: 500;
+}
+
+/* Temp home page styles */
+.home-cont {
+  height: 100dvh;
+  width: 100%;
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+  .home-cont h1 {
+    margin: 0;
+    padding: 0 0 8px 0;
+  }
+  .home-main {
+    max-width: 1120px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 16px;
+    display: flex;
+    gap: 24px;
+  }
+  .home-cont-left {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 60%;
+    align-items: flex-start;
+  }
+  .home-cont-logo {
+    height: 24px;
+    width: auto;
+    margin-bottom: 8px;
+  }
+  .home-cont-right {
+    width: 40%;
+    display: flex;
+    position: relative;
+  }
+  .home-cont-right img {
+    width: 100%;
+    aspect-ratio: 16 / 12;
+    height: auto;
+    object-fit: cover;
+    border-radius: 32px;
+  }
+  @media screen and (max-width: 600px) {
+    .home-main {
+      flex-wrap: wrap;
+    }
+    .home-cont-left {
+      width: 100%;
+    }
+    .home-cont-right {
+      width: 100%;
+    }
+    .home-cont-right img {
+      aspect-ratio: 16 / 10;
+    }
+  }

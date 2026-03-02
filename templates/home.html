@@ -1,11 +1,29 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Global, community powered snorkelling guide launching soon | SnorkelMap </title>
+    <link rel ="icon" href="{% static 'images/favicon.png' %}" type="image/png">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
 </head>
 <body>
-    Hello world
+   <div class="home-cont">
+    <div class="home-main">
+        <div class="home-cont-left">
+            <img src="{% static 'images/snorkelmap-logo.svg' %}" class="home-cont-logo" alt="SnorkelMap logo">
+            <h1>Global, community powered snorkelling guide</h1>
+            <span style="font-weight: 600;">Charity-owned, community-driven and forever free.</span>
+            <span>
+                Snorkel Map will be a community encyclopaedia for our oceans and seas. A  place where people can discover new places to snorkel and anyone can contribute their snorkelling experiences.
+            </span>
+            <span style="font-weight: 600; color:var(--sm-primary-accent); margin-top:16px;">Launching soon . . .</span>
+        </div>
+        <div class="home-cont-right">
+            <img src="{% static 'images/snorkel-pre-launch.jpeg' %}" alt="Woman snorkelling">
+        </div>
+    </div>
+   </div>
 </body>
 </html>
