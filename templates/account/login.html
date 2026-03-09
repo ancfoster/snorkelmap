@@ -1,0 +1,31 @@
+{% extends 'blank_base.html' %}
+{% load i18n %}
+{% load allauth account %}
+{% block title %}Login to SnorkelMap{% endblock %}
+{% load static %}
+
+{% block content %}
+<div class="login-flex">
+    <div class="login-flex__themic-image-cont">
+    </div>
+    <div class="login-flex__form-cont">
+        <a href="{{ request.scheme }}://{{ request.get_host }}/">
+            <img class="login-flex__logo" src="{% static 'images/snorkelmap-nav-logo.svg' %}" alt="SnorkelMap Logo">
+        </a>
+        <h1>Login</h1>
+
+        <form method="post" action="{% url 'account_login' %}">
+        {% csrf_token %}
+        {{ form.as_div }}
+        <button type="submit">{% trans "Login" %}</button>
+        </form>
+
+        <div class="login-flex__forgot-link">
+            <a href="{% url 'account_reset_password' %}">{% trans "Forgot your password?" %}</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% endblock %}
