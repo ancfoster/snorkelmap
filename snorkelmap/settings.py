@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'django_ses',
     'allauth',
     'allauth.account',
+    'turnstile',
     'snorkelusers'
 ]
 
@@ -165,3 +166,8 @@ ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
 ACCOUNT_PRESERVE_USERNAME_CASING = False
 ACCOUNT_LOGIN_METHODS = ['username']
 ACCOUNT_LOGOUT_ON_GET = True
+
+ACCOUNT_FORMS = {
+    'signup': 'snorkelusers.forms.CustomSignupForm',
+    'login': 'snorkelusers.forms.CustomLoginForm',
+}
