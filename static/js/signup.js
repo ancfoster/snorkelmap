@@ -21,10 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
             );
             if (data.available) {
                 feedback.classList.add('sm-signup__username-feedback--available');
-                feedback.textContent = '✓ Username available';
+                feedback.textContent = 'Username available';
             } else {
                 feedback.classList.add('sm-signup__username-feedback--taken');
-                feedback.textContent = '✗ Username already taken';
+                feedback.textContent = 'Username already taken';
             }
         } catch (err) {
             feedback.textContent = '';
