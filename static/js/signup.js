@@ -1,3 +1,8 @@
+/**
+ * Checks if the desired username is available via the SnorkelMap API
+ * and adds a feedback span with the result.
+ * @param {string} username - Desired username to check, not case sensitive
+ */
 document.addEventListener('DOMContentLoaded', () => {
     const usernameInput = document.getElementById('id_username');
     if (!usernameInput) return;
