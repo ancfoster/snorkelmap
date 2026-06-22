@@ -23,6 +23,9 @@ class CustomSignupForm(SignupForm):
         self.fields['username'].label = 'Create a username (publicly displayed)'
         self.fields.move_to_end('accepted_terms_conditions')
 
+        for field in self.fields.values():
+                field.widget.attrs['autocomplete'] = 'off'
+
     def save(self, request):
         user = super().save(request)
         user.first_name = self.cleaned_data['first_name']
