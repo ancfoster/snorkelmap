@@ -39,6 +39,7 @@ AUTHENTICATION_BACKENDS = [
 # Application definition
 
 INSTALLED_APPS = [
+    "django.forms",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -142,6 +143,8 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+
+FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 
 
 # Static files (CSS, JavaScript, Images)
