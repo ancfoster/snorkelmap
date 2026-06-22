@@ -14,13 +14,16 @@
         </a>
         <h1>Login</h1>
 
-        <form method="post" action="{% url 'account_login' %}">
+        <form method="post" action="{% url 'sm_login' %}">
         {% csrf_token %}
         {{ form.as_div }}
         <button type="submit">{% trans "Login" %}</button>
         </form>
 
-        <div class="login-flex__forgot-link">
+        <div class="login-flex__signup">
+            <span>Don't have an account? </span><a href="{% url 'custom_signup' %}">Sign Up</a>
+        </div>
+        <div class="login-flez__reset">
             <a href="{% url 'account_reset_password' %}">{% trans "Forgot your password?" %}</a>
         </div>
     </div>
