@@ -212,3 +212,32 @@ def publish(request):
         {"slug": location.slug, "url": f"/location/{location.slug}/"},
         status=201,
     )
+
+
+
+def location_detail(request, country, region, locale, slug):
+    """
+    Display one snorkelling listing.
+    """
+    location = get_object_or_404(
+        SnorkelLocation.objects.select_related(
+            "current_revision",
+            "current_revision__created_by",
+            "current_revision__featured_surface_image",
+            "current_revision__featured_underwater_image",
+            "country", "region", "locale",
+        ),
+        slug=slug,
+    )
+ 
+    # Only published listings are publc
+    if location.status != SnorkelLocation.Status.PUBLISHED and not request.user.is_staff:
+        raise Http404("No published location matches this address.")
+ 
+    revision = location.current_revision 
+ 
+    context = {
+        "location": location,
+        "revision": revision,
+    }
+    return render(request, "snorkel_locations/view.html", context)
