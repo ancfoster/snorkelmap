@@ -11,7 +11,7 @@ class CustomAccountAdapter(DefaultAccountAdapter):
         Validates the username. You can hook into this if you want to
         (dynamically) restrict what usernames can be chosen.
         """
-        # Call parent validation (checks for existing usernames, etc.)
+        # Check for existing usernames
         username = super().clean_username(username, shallow)
         
         # Check if username contains @
