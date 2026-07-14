@@ -11,5 +11,6 @@ urlpatterns = [
     path('account/', include('allauth.urls')),
     path("", home, name="home"),
     path("", include('snorkelusers.urls')),
+    path("", include('snorkel_locations.urls')),
     path('api/v1/', api_v1.urls)
 ]
