@@ -8,7 +8,7 @@ import uuid
 #Gegraphy models
 
 class Country(models.Model):
-    # code represents ISO countr code
+    # code represents ISO country code
     # (e.g. "GB"
     code = models.CharField(max_length=2, unique=True, db_index=True)
     name = models.CharField(max_length=100)
@@ -64,7 +64,6 @@ class SnorkelLocation(models.Model):
 
     slug = models.SlugField(max_length=400, unique=True, db_index=True)
 
-
     current_revision = models.OneToOneField(
         "LocationRevision",
         on_delete=models.PROTECT,
@@ -97,6 +96,8 @@ class SnorkelLocation(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    admin_notes = models.JSONField(null=True, blank=True)
+    notices = models.JSONField(null=True, blank=True)
 
     class Meta:
         indexes = [models.Index(fields=["country", "region", "locale"])]
@@ -131,22 +132,16 @@ class LocationRevision(models.Model):
     # e.g ["Backwash", ...]
     alternate_names = models.JSONField(default=list, blank=True)
     description = models.TextField(blank=True, default="")
-    entry_description = models.TextField(blank=True, default="")
-
+    entry_description = models.TextField(blank=True, default="")    
     access_type = models.JSONField(default=list, blank=True)  # ["shore","boat"]
     water_type = models.JSONField(default=list, blank=True)   # ["ocean-sea", …]
     difficulty = models.PositiveSmallIntegerField(
-        choices=Difficulty.choices, default=Difficulty.EASY
-    )
-
+        choices=Difficulty.choices, default=Difficulty.EASY    )
     environment_types = models.JSONField(default=dict, blank=True)
     marine_life = models.JSONField(default=dict, blank=True)
     hazards = models.JSONField(default=dict, blank=True)
-
     facilities = models.JSONField(default=dict, blank=True)
-
     marker_data = models.JSONField(default=dict, blank=True)
-
     featured_surface_image = models.ForeignKey(
         "LocationMedia", on_delete=models.SET_NULL,
         null=True, blank=True, related_name="+",
@@ -155,7 +150,6 @@ class LocationRevision(models.Model):
         "LocationMedia", on_delete=models.SET_NULL,
         null=True, blank=True, related_name="+",
     )
-
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL, null=True,
@@ -166,7 +160,6 @@ class LocationRevision(models.Model):
         max_length=255, blank=True, default="" 
     )
     diff = models.JSONField(default=dict, blank=True)
-
     class Meta:
         ordering = ["-increment"]
         constraints = [
@@ -224,5 +217,6 @@ class LocationMedia(models.Model):
 
     class Meta:
         verbose_name_plural = "location media"
-
+        
     def __str__(self):
+        return f"{self.get_media_type_display()} image for {self.location_id}"
