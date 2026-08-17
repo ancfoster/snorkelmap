@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load allauth account %}
+{% block title %}Welcome to SnorkelMap{% endblock %}
+{% block description %}Snorkel Map is a community powered snorkelling guide, a place where people can discover new places to snorkel and anyone can contribute.{% endblock %}
+{% load static %}
+
+{% block content %}
+<div class="create-step" id="0"></div>
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'js/create.js'%}"></script>
+{% endblock %}
