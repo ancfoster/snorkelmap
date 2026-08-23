@@ -104,11 +104,11 @@ class SnorkelLocation(models.Model):
 
     @property
     def latitude(self):
-        return self.point.y
+        return self.lat_long.y
 
     @property
     def longitude(self):
-        return self.point.x
+        return self.lat_long.x
 
     def __str__(self):
         rev = self.current_revision
