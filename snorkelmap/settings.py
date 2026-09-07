@@ -46,12 +46,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis',
     'storages',
     'django_ses',
     'allauth',
     'allauth.account',
     'turnstile',
-    'snorkelusers'
+    'snorkelusers',
+    'snorkel_locations'
 ]
 
 MIDDLEWARE = [
@@ -105,7 +107,7 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 
 DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql',
+            "ENGINE": "django.contrib.gis.db.backends.postgis",
             'NAME': os.environ.get('DB_NAME'),
             'USER': os.environ.get('DB_USER'),
             'PASSWORD': os.environ.get('DB_PASSWORD'),
@@ -174,3 +176,6 @@ ACCOUNT_FORMS = {
     'signup': 'snorkelusers.forms.CustomSignupForm',
     'login': 'snorkelusers.forms.CustomLoginForm',
 }
+
+GDAL_LIBRARY_PATH = "/opt/homebrew/lib/libgdal.dylib"
+GEOS_LIBRARY_PATH = "/opt/homebrew/lib/libgeos_c.dylib"

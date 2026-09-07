@@ -22,6 +22,11 @@ COPY requirements.txt .
 RUN pip install --upgrade pip && \
     pip install -r requirements.txt
 
+#install gdal
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    binutils libproj-dev gdal-bin \
+    && rm -rf /var/lib/apt/lists/*
+
 # Copy project
 COPY . .
 
