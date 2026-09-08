@@ -3,7 +3,7 @@ const tokenEl = document.getElementById("mapbox-token");
 const MAPBOX_TOKEN = tokenEl ? JSON.parse(tokenEl.textContent) : null;
 
 if (!MAPBOX_TOKEN) {
-  console.error("Mapbox token missing: check mapbox_token is in the view context");
+  console.error("Mapbox token missing: check mapbox_token is in view context");
 }
 
 const ZOOM_THRESHOLD     = 15.6;
