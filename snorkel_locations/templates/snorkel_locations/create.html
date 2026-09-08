@@ -8,5 +8,6 @@
 <div class="create-step" id="0"></div>
 {% endblock %}
 {% block extra_js %}
+{{ mapbox_token|json_script:"mapbox-token" }}
 <script src="{% static 'js/create.js'%}"></script>
 {% endblock %}

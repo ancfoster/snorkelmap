@@ -1,5 +1,10 @@
 // ── CONFIG
-const MAPBOX_TOKEN = 'pk.eyJ1Ijoic25vcmtlbG1hcCIsImEiOiJjbWEzcTdyaXgxNzZ1MmlzZmR4dHRqNHVrIn0.TwWl3IRXS6uol-H36oZDDQ';
+const tokenEl = document.getElementById("mapbox-token");
+const MAPBOX_TOKEN = tokenEl ? JSON.parse(tokenEl.textContent) : null;
+
+if (!MAPBOX_TOKEN) {
+  console.error("Mapbox token missing: check mapbox_token is in the view context");
+}
 
 const ZOOM_THRESHOLD     = 15.6;
 const ZOOM_MAX           = 18.5;
@@ -59,3 +64,9 @@ let searchDebounceTimer = null;
 
 
 // Local drafts
+
+
+// Progress ring
+function renderRings() {
+    
+}
