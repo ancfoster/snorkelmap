@@ -29,3 +29,14 @@ STORAGES = {
 # CDN URL for static files
 STATIC_URL = "https://static.snorkelmap.com/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+
+from django.core.exceptions import ImproperlyConfigured  # noqa: E402
+
+if not R2_MEDIA_BUCKET:
+    raise ImproperlyConfigured("R2_MEDIA_BUCKET is not set.")
+if R2_MEDIA_BUCKET.endswith(('-dev', '-local', '-test')):
+    raise ImproperlyConfigured(
+        f"R2_MEDIA_BUCKET is {R2_MEDIA_BUCKET!r}, which is a development "
+        f"bucket. Production will not write to it."
+    )

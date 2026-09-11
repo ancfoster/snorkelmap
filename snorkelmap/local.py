@@ -29,3 +29,16 @@ STORAGES = {
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+
+# Development uploads go to their own bucket. The check is here because
+# an .env copied from the server is an easy mistake to make and a
+# hard one to notice: the first sign would be test photographs on the
+# live site.
+from django.core.exceptions import ImproperlyConfigured  # noqa: E402
+
+R2_MEDIA_BUCKET = os.environ.get('R2_MEDIA_BUCKET', 'snorkelmap-media-dev')
+if not R2_MEDIA_BUCKET.endswith(('-dev', '-local')):
+    raise ImproperlyConfigured(
+        f"R2_MEDIA_BUCKET is {R2_MEDIA_BUCKET!r}. Development settings will "
+        f"only use a bucket ending in -dev or -local."
+    )

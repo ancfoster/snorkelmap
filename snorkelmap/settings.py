@@ -180,3 +180,51 @@ ACCOUNT_FORMS = {
 
 GDAL_LIBRARY_PATH = "/opt/homebrew/lib/libgdal.dylib"
 GEOS_LIBRARY_PATH = "/opt/homebrew/lib/libgeos_c.dylib"
+
+# ── R2 media bucket ──────────────────────────────────────────────────
+# Photographs submitted with a location. Separate from the static files
+# bucket: different lifecycle, different access pattern, and a
+# different bucket per environment so development uploads never land
+# beside real ones. Every value comes from the environment, so the same
+# code path runs everywhere and only the .env differs.
+R2_ENDPOINT_URL = os.environ.get('R2_ENDPOINT_URL')
+R2_ACCESS_KEY = os.environ.get('R2_ACCESS_KEY')
+R2_SECRET_KEY = os.environ.get('R2_SECRET_KEY')
+R2_MEDIA_BUCKET = os.environ.get('R2_MEDIA_BUCKET', '')
+
+# Required, and deliberately separate from the static files pair above.
+# There is no fallback between them: this token signs uploads, so it is
+# scoped to the media bucket alone. Sharing one token would also make a
+# misconfiguration invisible, because signing succeeds without any
+# permission check and the failure only shows up as uploads that are
+# refused and objects that appear not to exist.
+R2_MEDIA_ACCESS_KEY = os.environ.get('R2_MEDIA_ACCESS_KEY', '')
+R2_MEDIA_SECRET_KEY = os.environ.get('R2_MEDIA_SECRET_KEY', '')
+
+# Custom domain in front of the bucket. Cloudflare Image
+# Transformations are served from the same host, so this is also the
+# base for /cdn-cgi/image/ URLs.
+R2_MEDIA_PUBLIC_BASE = os.environ.get('R2_MEDIA_PUBLIC_BASE', '')
+
+# How long an upload slot stays valid. Long enough for a large photo on
+# a poor connection, short enough that a signature copied out of the
+# network tab is not much use later.
+R2_MEDIA_UPLOAD_EXPIRY = int(os.environ.get('R2_MEDIA_UPLOAD_EXPIRY', '900'))
+
+# "post" signs a form upload carrying a content-length-range condition,
+# which lets the bucket refuse an oversized body outright. Set to "put"
+# if R2 declines POST object uploads on this account; the size is then
+# caught during verification instead.
+R2_MEDIA_UPLOAD_METHOD = os.environ.get('R2_MEDIA_UPLOAD_METHOD', 'post')
+
+# Shared with the Worker that relays bucket events. Requests to the
+# media webhook are signed with it.
+R2_MEDIA_WEBHOOK_SECRET = os.environ.get('R2_MEDIA_WEBHOOK_SECRET', '')
+
+
+# ── what3words ───────────────────────────────────────────────────────
+# Looked up inline when a location is created, with a three second
+# timeout, and skipped without complaint on any failure. A listing does
+# not depend on having a three word address, and no address is worth
+# making somebody wait on a publish screen for.
+W3W_API_KEY = os.environ.get('W3W_API_KEY', '')
