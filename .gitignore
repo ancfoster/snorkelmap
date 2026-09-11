@@ -9,3 +9,15 @@ media/
 __pycache__/
 *.pem
 .vscode/settings.json
+
+# Collected static (uploaded to R2 by collectstatic, never committed)
+staticfiles/
+
+# Node / Wrangler
+node_modules/
+.wrangler/
+.dev.vars
+
+# Editors
+.idea/
+.vscode/

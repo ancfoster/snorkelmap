@@ -764,3 +764,5 @@ input[type="password"] {
   gap: 12px;
   border-radius: 8px;
 }
+
+/* Create-flow styles live in create.css, loaded on that page only. */

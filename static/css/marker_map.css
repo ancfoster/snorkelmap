@@ -1,0 +1,307 @@
+.sm-annotate-map-cont {
+    height: calc(100dvh - 137px);
+    height: calc(100vh - 137px);
+    width: 100%;
+    position: relative;
+}
+    .sm-annotate-map-cont .mapboxgl-ctrl-bottom-left {
+        opacity: 0.02;
+    }
+    .sm-annotate-map-cont .mapboxgl-ctrl-attrib {
+        display: none;
+    }
+    .sm-annotate-map-cont .mapboxgl-ctrl-bottom-right {
+        bottom: 76px;
+    } 
+    .sm-annotate-map__toolbar {
+        display: flex;
+        box-sizing: border-box;
+        position: absolute;
+        bottom: 84px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 15;
+    }
+        .sm-annotate-map-toolbar__btn {
+            height: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--sm-info-2nd-grey);
+            background-color: #e1e1e1;
+            padding: 0 10px;
+            color: var(--sm-primary-accent);
+            width: 120px;
+            transition: all 0.3s ease-in-out;
+        }
+            .sm-annotate-map-toolbar__btn:hover {
+                background-color: #f1f0f0;
+                cursor: pointer;
+            }
+            .sm-annotate-map-toolbar__btn:disabled {
+                cursor: not-allowed;
+                color: #959494;
+                background-color: #bdbcbc;            }
+            .sm-annotate-map-toolbar__btn svg {
+                height: 32px;
+                width: auto;
+                pointer-events: none;
+            }
+            .sm-annotate-map-toolbar__btn span {
+                color: var(--sm-info-2nd-grey);
+                pointer-events: none;
+            }
+            .sm-annotate-map-toolbar__btn--add-marker {
+                border-radius: 16px;
+            }
+            .sm-annotate-map-toolbar__btn--add-marker:hover .sm-annotate-map__marker-drawer {
+                display: block;
+            }
+            .sm-annotate-map-toolbar__btn--edit-markers {
+                border-radius: 0 16px 16px 0;
+            }
+        .sm-annotate-map__marker-drawer {
+            width: 320px;
+            height: 320px;
+            position: absolute;
+            z-index: 20;
+            bottom: 78px;
+            box-sizing: border-box;
+            padding: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #f6f6f6b8;
+            border-radius: 16px;
+            max-width: calc(100svw - 40px);
+            max-width: calc(100vw - 40px);
+            margin-bottom: 18px;
+            backdrop-filter: blur(6px);
+            display: flex;
+        }
+        .sm-annotate-map__marker-drawer::before {
+            z-index: 20;
+            bottom: -16px;
+            content: "";
+            display: inline-block;
+            position: absolute;
+            width: 24px;
+            height: 16px;
+            background-color: #f6f6f6b8;
+            clip-path: polygon(50% 100%, 0 0, 100% 0);
+            backdrop-filter: blur(2px);
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .marker-drawer__list {
+            height: 100%;
+            width: 100%;
+            overflow-y: scroll;
+            scrollbar-gutter: stable;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+            /* Firefox */
+            .marker-drawer__list {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 0, 0, 0.25) transparent;
+            }
+
+            /* Chrome / Safari / Edge */
+            .marker-drawer__list::-webkit-scrollbar {
+            width: 6px;
+            }
+            .marker-drawer__list::-webkit-scrollbar-track {
+            background: transparent;
+            }
+            .marker-drawer__list::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 3px;
+            }
+            .marker-drawer__list::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.4);
+            }
+        .marker-drawer__category {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .marker-drawer__category-title {
+            font-weight: 500;
+            color: #484848;
+            font-size: 16px;
+        }
+        .marker-drawer__grid {
+            display: grid;
+            grid-template-columns:  1fr 1fr 1fr;
+            row-gap: 8px;
+            column-gap: 4px;
+        }
+            .marker-drawer__item {
+                display: flex;
+                min-width: 0;
+                flex-direction: column;
+                background: none;
+                justify-content: flex-start;
+                align-items: center;
+                border-radius: 8px;
+                gap: 8px;
+                box-sizing: border-box;
+                cursor: pointer;
+                padding: 8px 2px;
+            }
+            .marker-drawer__item:hover {
+                background: rgb(239, 247, 253);
+            }
+                .marker-drawer__icon {
+                    height: 48px;
+                    width: 48px;
+                    object-fit: contain;
+                }
+                .marker-drawer__label {
+                    font-weight: 400;
+                    font-size: 400;
+                    font-size: 12px;
+                    text-align: center;
+                }
+        .map-marker {
+            width: 44px;
+            height: 44px;
+            position: relative;
+            border-radius: 0 0 4px 4px;
+        }
+
+            .map-marker--editable {
+            outline-offset: 2px;
+            outline: 1.5px solid #2caae9;
+            }
+
+            .map-marker__icon {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+            pointer-events: none;
+            margin-top: 2px;
+            }
+
+            .map-marker__comment,
+            .map-marker__delete {
+            position: absolute;
+            top: -27px;
+            width: 26px;
+            height: 24px;
+            border: 1px solid #2caae9;
+            background-color: #2caae9cd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 0;
+            box-sizing: border-box;
+            }
+
+            .map-marker__comment {
+            left: -3.5px;
+            border-radius: 4px 0 0 0;
+            }
+
+            .map-marker__delete {
+            right: -3.5px;
+            border-radius: 0 4px 0 0;
+            }
+
+            .map-marker__comment svg,
+            .map-marker__delete svg {
+            width: 20px;
+            height: 20px;
+            pointer-events: none; 
+            }
+#sm-annotate-map-cont__map {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    inset: 0;
+}
+
+.note-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.note-overlay__dialog {
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-sizing: border-box;
+}
+
+.note-overlay__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+  color: #222;
+}
+
+.note-overlay__textarea {
+  resize: vertical;
+  min-height: 120px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font: inherit;
+  box-sizing: border-box;
+  resize: none;
+}
+
+.note-overlay__counter {
+  font-size: 12px;
+  color: #777;
+  text-align: right;
+}
+
+.note-overlay__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.note-overlay__btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  font: inherit;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.note-overlay__btn--cancel {
+  background: #eee;
+  color: #444;
+}
+
+.note-overlay__btn--confirm {
+  background: var(--sm-primary-accent, #2caae9);
+  color: #fff;
+}
+
+.hidden {
+    display: none;
+}
