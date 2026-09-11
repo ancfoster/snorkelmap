@@ -1,0 +1,40 @@
+name = "snorkelmap-media-events"
+main = "src/index.js"
+compatibility_date = "2026-01-01"
+
+# No environment named here is the production one. Development lives
+# under [env.dev] below with its own queue, its own URL and its own
+# secret, so the two can never reach each other.
+
+[[queues.consumers]]
+queue = "snorkelmap-media-events"
+# A batch of twenty covers a submission with the maximum number of
+# photographs in a single signed request.
+max_batch_size = 20
+max_batch_timeout = 5
+max_retries = 5
+dead_letter_queue = "snorkelmap-media-events-dlq"
+
+[vars]
+DJANGO_WEBHOOK_URL = "https://snorkelmap.com/api/v1/media/events"
+
+# WEBHOOK_SECRET is a secret, never a var:
+#   wrangler secret put WEBHOOK_SECRET
+# It has to match R2_MEDIA_WEBHOOK_SECRET in the Django environment
+# this Worker posts to.
+
+[env.dev]
+name = "snorkelmap-media-events-dev"
+
+[[env.dev.queues.consumers]]
+queue = "snorkelmap-media-events-dev"
+max_batch_size = 20
+max_batch_timeout = 5
+max_retries = 3
+dead_letter_queue = "snorkelmap-media-events-dev-dlq"
+
+[env.dev.vars]
+# A development machine is not reachable from Cloudflare, so this
+# points at a tunnel. Without one, use the simulate_media_event
+# management command instead and leave this Worker undeployed.
+DJANGO_WEBHOOK_URL = "https://snorkelmap-dev.example-tunnel.com/api/v1/media/events"

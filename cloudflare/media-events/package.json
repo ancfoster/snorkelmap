@@ -1,0 +1,10 @@
+{
+  "name": "snorkelmap-media-events",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node worker-check.mjs",
+    "deploy": "wrangler deploy",
+    "deploy:dev": "wrangler deploy --env dev"
+  }
+}
