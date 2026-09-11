@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% comment %}
+A plain reading of one listing.
+
+Deliberately unstyled beyond the site's base: definition lists and
+bullet lists, in the order the form asks for them. Its job is to show
+that everything submitted arrived intact and can be read back, which is
+easier to check when nothing is hidden behind a layout.
+{% endcomment %}
+
+{% block title %}{{ revision.name }}{% endblock %}
+
+{% block content %}
+<article class="listing">
+
+  <header>
+    <h1>{{ revision.name }}</h1>
+    {% if revision.alternate_names %}
+      <p>Also known as: {{ revision.alternate_names|join:", " }}</p>
+    {% endif %}
+    {% comment %}
+    Visible to staff only, since only staff can reach a listing whose
+    geography failed to resolve without already knowing it exists. The
+    admin view that lists these properly comes later.
+    {% endcomment %}
+    {% if location.questionable_geocode and user.is_staff %}
+      <p><strong>The location lookup for this listing failed.</strong>
+      Its country, region and town could not be determined when it was
+      created, so its address may be wrong.</p>
+    {% endif %}
+    {% if location.status != 1 %}
+      {% if user.is_staff and user != revision.created_by %}
+        <p><strong>This listing is not published yet.</strong> You can
+        see it because you are staff. It goes live once an above water
+        photograph has been uploaded and checked.</p>
+      {% else %}
+        <p><strong>Your location is saved, but it is not visible to
+        anyone else yet.</strong> It needs one photograph of the above
+        water surroundings, and that upload did not finish. Add a photo
+        here and it goes live straight away. Nothing else needs doing,
+        and there is no need to add the location again.</p>
+      {% endif %}
+    {% endif %}
+  </header>
+
+  <h2>Where it is</h2>
+  <dl>
+    <dt>Coordinates</dt>
+    <dd>{{ location.latitude|floatformat:5 }}, {{ location.longitude|floatformat:5 }}</dd>
+    {% if location.w3w %}<dt>what3words</dt><dd>{{ location.w3w }}</dd>{% endif %}
+    {% if location.locale %}<dt>Town</dt><dd>{{ location.locale.name }}</dd>{% endif %}
+    {% if location.region %}<dt>Region</dt><dd>{{ location.region.name }}</dd>{% endif %}
+    {% if location.country %}<dt>Country</dt><dd>{{ location.country.name }}</dd>
+    {% else %}<dt>Country</dt><dd>Open water</dd>{% endif %}
+    <dt>Permanent link</dt>
+    <dd><a href="{% url 'detail_by_uuid' %}?uuid={{ location.uuid }}">/location/?uuid={{ location.uuid }}</a></dd>
+  </dl>
+
+  <h2>The basics</h2>
+  <dl>
+    <dt>Difficulty</dt><dd>{{ difficulty }}</dd>
+    <dt>Access</dt><dd>{{ access_types|join:", "|default:"Not given" }}</dd>
+    <dt>Water type</dt><dd>{{ water_types|join:", "|default:"Not given" }}</dd>
+  </dl>
+
+  {% if revision.description %}
+    <h2>Description</h2>
+    <p>{{ revision.description|linebreaks }}</p>
+  {% endif %}
+
+  {% if revision.entry_description %}
+    <h2>Getting in and out</h2>
+    <p>{{ revision.entry_description|linebreaks }}</p>
+  {% endif %}
+
+  {% comment %} Photographs. Only verified ones reach the template. {% endcomment %}
+  <h2>Above water</h2>
+  {% if surface_photos %}
+    <ul class="listing__photos">
+      {% for photo in surface_photos %}
+        <li>
+          <a href="{{ photo.full }}">
+            <img src="{{ photo.thumbnail }}" alt="{{ photo.description|default:revision.name }}"
+                 loading="lazy" width="600">
+          </a>
+          {% if photo.description %}<p>{{ photo.description }}</p>{% endif %}
+          <p>
+            {{ photo.width }} x {{ photo.height }}
+            {% if photo.captured_at %}&middot; taken {{ photo.captured_at|date:"j M Y" }}{% endif %}
+          </p>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No photographs have been verified yet.</p>
+  {% endif %}
+
+  {% if underwater_photos %}
+    <h2>Underwater</h2>
+    <ul class="listing__photos">
+      {% for photo in underwater_photos %}
+        <li>
+          <a href="{{ photo.full }}">
+            <img src="{{ photo.thumbnail }}" alt="{{ photo.description|default:revision.name }}"
+                 loading="lazy" width="600">
+          </a>
+          {% if photo.description %}<p>{{ photo.description }}</p>{% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  {% comment %}
+  The chip groups. Each one arrives as a label, the selections, and any
+  comment the person added, so all four sections render the same way.
+  {% endcomment %}
+  {% if environment %}
+    <h2>Underwater environment</h2>
+    {% for group in environment %}
+      <h3>{{ group.label }}</h3>
+      <ul>{% for item in group.selected %}<li>{{ item }}</li>{% endfor %}</ul>
+      {% if group.comments %}<p>{{ group.comments }}</p>{% endif %}
+    {% endfor %}
+  {% endif %}
+
+  {% if marine_life or marine_life_comments %}
+    <h2>Marine life</h2>
+    {% for group in marine_life %}
+      <h3>{{ group.label }}</h3>
+      <ul>{% for item in group.selected %}<li>{{ item }}</li>{% endfor %}</ul>
+      {% if group.comments %}<p>{{ group.comments }}</p>{% endif %}
+    {% endfor %}
+    {% if marine_life_comments %}<p>{{ marine_life_comments }}</p>{% endif %}
+  {% endif %}
+
+  {% if hazards or hazards_comments %}
+    <h2>Hazards</h2>
+    {% for group in hazards %}
+      <h3>{{ group.label }}</h3>
+      <ul>{% for item in group.selected %}<li>{{ item }}</li>{% endfor %}</ul>
+      {% if group.comments %}<p>{{ group.comments }}</p>{% endif %}
+    {% endfor %}
+    {% if hazards_comments %}<p>{{ hazards_comments }}</p>{% endif %}
+  {% endif %}
+
+  <h2>Getting there</h2>
+  <dl>
+    {% if parking_available %}<dt>Parking</dt><dd>{{ parking_available }}</dd>{% endif %}
+    {% if parking_types %}<dt>Parking type</dt><dd>{{ parking_types|join:", " }}</dd>{% endif %}
+    {% if parking_comments %}<dt>Parking notes</dt><dd>{{ parking_comments }}</dd>{% endif %}
+    {% if transport_types %}<dt>Public transport</dt><dd>{{ transport_types|join:", " }}</dd>{% endif %}
+    {% if transport_description %}<dt>Transport notes</dt><dd>{{ transport_description }}</dd>{% endif %}
+    {% if getting_there_comments %}<dt>Notes</dt><dd>{{ getting_there_comments }}</dd>{% endif %}
+  </dl>
+
+  {% if facilities or facilities_other %}
+    <h2>Facilities</h2>
+    {% for group in facilities %}
+      <h3>{{ group.label }}</h3>
+      <ul>{% for item in group.selected %}<li>{{ item }}</li>{% endfor %}</ul>
+      {% if group.comments %}<p>{{ group.comments }}</p>{% endif %}
+    {% endfor %}
+    {% if facilities_other %}<p>{{ facilities_other }}</p>{% endif %}
+  {% endif %}
+
+  {% if markers %}
+    <h2>Map markers</h2>
+    <ul>
+      {% for marker in markers %}
+        <li>
+          {{ marker.properties.name|default:marker.properties.markerId }}
+          {% if marker.properties.note %}: {{ marker.properties.note }}{% endif %}
+          {% if marker.geometry.coordinates %}
+            ({{ marker.geometry.coordinates.1|floatformat:5 }},
+             {{ marker.geometry.coordinates.0|floatformat:5 }})
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <h2>Submission</h2>
+  <dl>
+    <dt>Added by</dt>
+    <dd>{{ revision.created_by.username|default:"Unknown" }}</dd>
+    <dt>Added</dt>
+    <dd>{{ revision.created_at|date:"j M Y, H:i" }}</dd>
+    <dt>Revision</dt>
+    <dd>{{ revision.increment }}</dd>
+  </dl>
+
+</article>
+{% endblock %}
