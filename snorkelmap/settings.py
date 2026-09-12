@@ -32,6 +32,15 @@ AWS_SES_REGION_NAME = 'eu-north-1'
 AWS_SES_REGION_ENDPOINT = f'email.{AWS_SES_REGION_NAME}.amazonaws.com'
 MAPBOX_TOKEN = os.environ.get("MAPBOX_TOKEN")
 
+# Used for requests Django makes itself: the reverse geocode behind a
+# listing's address, and the raster map drawn for each location.
+# Separate from MAPBOX_TOKEN with no fallback, because that one is
+# meant to be restricted to the site's own URLs and a request from the
+# server carries no referring page, so a restricted token fails here
+# and nowhere else. Sharing one token means either the public token is
+# unrestricted, or the server quietly stops working.
+MAPBOX_SERVER_TOKEN = os.environ.get("MAPBOX_SERVER_TOKEN", "")
+
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend'

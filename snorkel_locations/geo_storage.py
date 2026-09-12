@@ -23,9 +23,20 @@ from django.core.exceptions import ImproperlyConfigured
 
 KEY_PREFIX = "map"
 
+# Each listing's Mapbox raster. Its own folder, and a different kind of
+# file from the data file: one per location rather than one for the
+# whole site, and named after the location rather than its contents.
+LISTING_MAP_PREFIX = "listing-maps"
+
 # A year, which is the longest value the spec gives meaning to, plus
-# immutable so a browser does not even revalidate on a reload.
+# immutable so a browser does not even revalidate on a reload. Only
+# safe because the data file's name is derived from its contents.
 CACHE_CONTROL = "public, max-age=31536000, immutable"
+
+# A listing map is named after its location, not its contents, so the
+# same URL can be redrawn. A week is long enough to be worth having and
+# short enough that a forced redraw works itself out without a purge.
+LISTING_MAP_CACHE_CONTROL = "public, max-age=604800"
 
 CONTENT_TYPE = "application/geo+json"
 
@@ -69,17 +80,30 @@ def build_key(digest):
     return f"{KEY_PREFIX}/locations-{digest}.geojson"
 
 
-def put_data_file(key, body):
-    """Upload the data file. Raises rather than reporting failure quietly."""
+def put_object(key, body, content_type, cache_control):
+    """Write bytes into the geo bucket. Raises rather than reporting
+    failure quietly, so a caller that wants to carry on has to say so."""
     client = _client()
     client.put_object(
         Bucket=settings.R2_GEO_BUCKET,
         Key=key,
         Body=body,
-        ContentType=CONTENT_TYPE,
-        CacheControl=CACHE_CONTROL,
+        ContentType=content_type,
+        CacheControl=cache_control,
     )
     return key
+
+
+def put_data_file(key, body):
+    return put_object(key, body, CONTENT_TYPE, CACHE_CONTROL)
+
+
+def build_listing_map_key(location_uuid):
+    return f"{LISTING_MAP_PREFIX}/{location_uuid}.png"
+
+
+def put_listing_map(key, body):
+    return put_object(key, body, "image/png", LISTING_MAP_CACHE_CONTROL)
 
 
 def public_url(key):
@@ -91,7 +115,11 @@ def public_url(key):
 
 
 def list_data_files():
-    """Every data file in the bucket, current and superseded."""
+    """Every data file in the bucket, current and superseded.
+
+    Only the data file folder: the listing maps live alongside it and
+    must never be caught by a prune.
+    """
     client = _client()
     keys = []
     token = None
