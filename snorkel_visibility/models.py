@@ -5,7 +5,7 @@ from django.db import models
 
 class VisibilityLocation(models.Model):
     snorkel_location = models.OneToOneField(
-        "locations.SnorkelLocation",
+        "snorkel_locations.SnorkelLocation",
         on_delete=models.CASCADE,
         related_name="visibility",
     )

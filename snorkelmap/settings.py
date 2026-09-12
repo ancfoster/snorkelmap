@@ -54,7 +54,11 @@ INSTALLED_APPS = [
     'allauth.account',
     'turnstile',
     'snorkelusers',
-    'snorkel_locations'
+    'snorkel_locations',
+    'snorkel_reviews',
+    'snorkel_visibility',
+    'locations_snorkelled',
+    'favourite_locations'
 ]
 
 MIDDLEWARE = [
