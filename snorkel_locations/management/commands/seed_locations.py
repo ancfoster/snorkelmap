@@ -329,7 +329,8 @@ class Command(BaseCommand):
         country = region = locale = None
         if code:
             country, _ = Country.objects.get_or_create(
-                code=code, defaults={"name": country_name})
+                code=code, defaults={"name": country_name,
+                                     "slug": slugify(country_name)})
         if country and region_name:
             region, _ = Region.objects.get_or_create(
                 country=country, name=region_name,

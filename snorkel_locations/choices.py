@@ -110,6 +110,7 @@ ENVIRONMENT_GROUPS = [
             ("shell-bed", "Shell Bed"),
             ("pebble-shingle", "Pebble / Shingle"),
             ("gravel-bed", "Gravel Bed"),
+            ("rocky-bottom", "Rocky Bottom"),
             ("rubble", "Rubble"),
             ("mud", "Mud"),
         ],

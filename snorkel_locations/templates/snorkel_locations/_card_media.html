@@ -1,0 +1,8 @@
+{% comment %}
+The photograph and the two lines under it, shared by the pane and the
+popup so the two can never disagree about which image or which place
+name. Lazy loaded: the pane renders twenty at a time and the ones below
+the fold are usually never looked at.
+{% endcomment %}
+<img class="{{ image_class }}" src="{{ card.thumbnail }}"
+     alt="{{ card.name }}" loading="lazy" decoding="async" width="600">

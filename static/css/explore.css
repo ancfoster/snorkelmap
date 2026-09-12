@@ -1,0 +1,262 @@
+/* The bar above a full bleed map. Dropping the centred column lets
+   space-between do the work: logo against the left edge, navigation
+   against the right, with only the bar's own padding as a gutter. */
+.navbar__container--wide {
+  max-width: none;
+}
+
+/* The map page: a list down the side and the map beside it, becoming a
+   map with a sheet over it on a phone.
+
+   Layout and card styling follow the static prototype. What is new
+   here is the sheet, the hint at the foot of the list, and the round
+   close button on the card. */
+
+.explore-layout {
+  display: flex;
+  height: calc(100dvh - 72px);
+  overflow: hidden;
+}
+
+/* ── The list ──────────────────────────────────────────────────────── */
+
+.explore-sidebar {
+  width: 420px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  background: var(--sm-white);
+  border-right: 1px solid var(--sm-header-border);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.explore-sidebar__scroll {
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: 0;
+}
+
+/* The drag handle belongs to the sheet, so it is not drawn on a wide
+   screen where the list is simply a column. */
+.explore-sheet__handle { display: none; }
+
+.explore-sidebar__empty {
+  font-size: 0.9rem;
+  color: var(--sm-text-3rd-grey);
+  line-height: 1.6;
+  padding: 24px 4px;
+  margin: 0;
+}
+
+.explore-list-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 0.15s;
+}
+.explore-list-item:hover { opacity: 0.85; }
+.explore-list-item:visited { color: inherit; }
+
+.explore-list-item__img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 12px;
+  display: block;
+  /* Shown while the photograph loads, so the list does not jump. */
+  background: var(--sm-field-bg);
+}
+.explore-list-item__name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #222;
+  margin: 0;
+}
+.explore-list-item__region {
+  font-size: 0.85rem;
+  color: var(--sm-primary-accent);
+  margin: 0;
+}
+
+/* Shown only when the pane had to leave locations out. */
+.explore-hint {
+  margin: 4px 0 0;
+  padding: 12px 14px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--sm-action-dark-blue-text);
+  background: transparent;
+  border: 0.5px solid var(--sm-primary-accent);
+  border-radius: 8px;
+}
+
+/* ── The map ───────────────────────────────────────────────────────── */
+
+.explore-map-wrap {
+  flex: 1;
+  position: relative;
+  margin: 12px 12px 12px 0;
+  border-radius: 16px;
+  overflow: hidden;
+  min-width: 0;
+}
+#explore-map { width: 100%; height: 100%; }
+
+/* ── The card over a pin ───────────────────────────────────────────── */
+
+.mapboxgl-popup.explore-popup .mapboxgl-popup-tip { display: none; }
+.mapboxgl-popup.explore-popup .mapboxgl-popup-content {
+  padding: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.22);
+  width: 240px;
+}
+
+/* Round, on brand, and sitting on the photograph rather than beside
+   it. The cross is a stand in: drop close.svg into
+   static/images/icons/ and swap the two commented lines below for it,
+   then remove the font-size and line-height rules. */
+.mapboxgl-popup.explore-popup .mapboxgl-popup-close-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--sm-white);
+  color: var(--sm-action-dark-blue-text);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  line-height: 1;
+  transition: background-color 0.15s;
+
+  /* background-image: url("../images/icons/close.svg"); */
+  /* background-repeat: no-repeat; background-position: center; */
+  /* background-size: 12px 12px; color: transparent; */
+}
+.mapboxgl-popup.explore-popup .mapboxgl-popup-close-button:hover {
+  background: var(--sm-action-light-blue);
+}
+
+.explore-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+.explore-card:visited { color: inherit; }
+.explore-card__img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+  background: var(--sm-field-bg);
+}
+.explore-card__body { padding: 12px 14px 14px; }
+.explore-card__name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #222;
+  margin: 0 0 4px;
+}
+.explore-card__region {
+  font-size: 0.85rem;
+  color: var(--sm-primary-accent);
+  margin: 0;
+}
+.explore-card__loading {
+  margin: 0;
+  padding: 24px 14px;
+  font-size: 0.85rem;
+  color: var(--sm-text-3rd-grey);
+  text-align: center;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── On a phone ────────────────────────────────────────────────────── */
+/*
+   The map fills the screen and the list becomes a sheet over it,
+   peeking at the foot so it is discoverable without hiding the map.
+   Three positions rather than free dragging, so letting go always
+   lands somewhere deliberate.
+*/
+@media screen and (max-width: 900px) {
+  .explore-layout {
+    display: block;
+    position: relative;
+    height: calc(100dvh - 72px);
+  }
+
+  .explore-map-wrap {
+    margin: 0;
+    border-radius: 0;
+    height: 100%;
+  }
+
+  .explore-sidebar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: auto;
+    z-index: 2;
+    border-right: none;
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.18);
+    transition: height 0.25s ease;
+    overflow: hidden;
+  }
+  .explore-sidebar--peek { height: 96px; }
+  .explore-sidebar--half { height: 50%; }
+  .explore-sidebar--full { height: calc(100% - 24px); }
+
+  .explore-sheet__handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 28px;
+    flex-shrink: 0;
+    padding: 0;
+    border: none;
+    border-radius: 16px 16px 0 0;
+    background: var(--sm-white);
+    cursor: grab;
+    touch-action: none;
+  }
+  .explore-sheet__grip {
+    width: 42px;
+    height: 4px;
+    border-radius: 100vw;
+    background: var(--sm-field-border-default);
+  }
+
+  .explore-sidebar__scroll {
+    padding: 4px 16px 24px;
+  }
+
+  /* At its shortest the sheet shows the first card's top edge, which
+     is what says there is a list here to pull up. */
+  .explore-sidebar--peek .explore-sidebar__scroll {
+    overflow: hidden;
+  }
+}

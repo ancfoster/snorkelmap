@@ -1,0 +1,24 @@
+{% comment %}
+The pane's contents, replaced whenever the map settles.
+
+Rendered here rather than assembled in JavaScript so that the thumbnail
+URL, the fallback image and the escaping of a location's name all stay
+in one place and one language.
+{% endcomment %}
+{% for card in cards %}
+  <a class="explore-list-item" href="{{ card.url }}"
+     data-uuid="{{ card.uuid }}">
+    {% include "snorkel_locations/_card_media.html" with image_class="explore-list-item__img" %}
+    <p class="explore-list-item__name">{{ card.name }}</p>
+    <p class="explore-list-item__region">{{ card.place }}</p>
+  </a>
+{% empty %}
+  <p class="explore-sidebar__empty">
+    No snorkel spots in this area yet. Try zooming out or panning the
+    map, or add one you know about.
+  </p>
+{% endfor %}
+
+{% if truncated %}
+  <p class="explore-hint">Zoom and pan to see more locations from the map.</p>
+{% endif %}

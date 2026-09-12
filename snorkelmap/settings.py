@@ -222,6 +222,39 @@ R2_MEDIA_UPLOAD_METHOD = os.environ.get('R2_MEDIA_UPLOAD_METHOD', 'post')
 R2_MEDIA_WEBHOOK_SECRET = os.environ.get('R2_MEDIA_WEBHOOK_SECRET', '')
 
 
+# ── Map data bucket ──────────────────────────────────────────────────
+# A third bucket, separate again from static files and photographs. It
+# holds one small file listing every published location, rewritten when
+# a location goes live and read by every visitor who opens the map.
+#
+# The file is written under a content addressed name and served
+# immutable, because a browser's cache cannot be purged: Cloudflare's
+# can, but anyone who already holds the file keeps it until its max-age
+# expires. A new name for new contents avoids that entirely.
+R2_GEO_BUCKET = os.environ.get('R2_GEO_BUCKET', '')
+
+# Scoped to the geo bucket alone, with no fallback to either other
+# pair, for the same reason the media credentials have none.
+R2_GEO_ACCESS_KEY = os.environ.get('R2_GEO_ACCESS_KEY', '')
+R2_GEO_SECRET_KEY = os.environ.get('R2_GEO_SECRET_KEY', '')
+
+# Custom domain in front of the bucket. The browser fetches the data
+# file from here, which is a different origin from the site, so the
+# bucket needs a CORS policy allowing GET from the site's origins or
+# the request fails in the page while succeeding in the address bar.
+R2_GEO_PUBLIC_BASE = os.environ.get('R2_GEO_PUBLIC_BASE', '')
+
+# Shown in place of a missing thumbnail, anywhere in the project.
+NO_IMAGE_URL = os.environ.get(
+    'NO_IMAGE_URL',
+    'https://mstatic.snorkelmap.com/images/no_image_for_location.png')
+
+# How many cards the pane asks for. Fewer on a phone, where the request
+# is likely to be on mobile data and fewer fit on screen anyway.
+MAP_PANE_LIMIT = 20
+MAP_PANE_LIMIT_MOBILE = 12
+
+
 # ── what3words ───────────────────────────────────────────────────────
 # Looked up inline when a location is created, with a three second
 # timeout, and skipped without complaint on any failure. A listing does

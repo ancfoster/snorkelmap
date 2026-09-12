@@ -1,0 +1,11 @@
+{% comment %}
+The card that opens over a pin. Same photograph and place line as the
+pane, in the popup's own wrapper.
+{% endcomment %}
+<a class="explore-card" href="{{ card.url }}">
+  {% include "snorkel_locations/_card_media.html" with image_class="explore-card__img" %}
+  <div class="explore-card__body">
+    <p class="explore-card__name">{{ card.name }}</p>
+    <p class="explore-card__region">{{ card.place }}</p>
+  </div>
+</a>

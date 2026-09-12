@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% comment %}
+The map.
+
+Every published location arrives in one file the browser fetches once,
+so panning and zooming needs no request for pins at all. What does need
+a request is the pane, because a card carries a photograph and a place
+name that the data file deliberately does not.
+{% endcomment %}
+
+{% block title %}Explore the map{% endblock %}
+{% block description %}Find snorkelling locations near you on the SnorkelMap, added by snorkellers.{% endblock %}
+
+{% comment %}
+The map runs to the edge of the window, so the bar above it does
+too: logo hard left, navigation hard right.
+{% endcomment %}
+{% block navbar_container_class %} navbar__container--wide{% endblock %}
+
+{% block extra_css %}
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/explore.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="explore-layout">
+
+  {% comment %}
+  On a phone this same element becomes a sheet over the map, peeking at
+  the foot of the screen and dragged up. One list, two presentations,
+  so the cards never need rendering twice.
+  {% endcomment %}
+  <aside class="explore-sidebar" id="explore-sidebar">
+    <button class="explore-sheet__handle" id="explore-sheet-handle"
+            type="button" aria-expanded="false"
+            aria-controls="explore-list">
+      <span class="explore-sheet__grip" aria-hidden="true"></span>
+      <span class="sr-only">Show the list of locations</span>
+    </button>
+
+    <div class="explore-sidebar__scroll" id="explore-list">
+      {% include "snorkel_locations/_pane_cards.html" %}
+    </div>
+  </aside>
+
+  <div class="explore-map-wrap">
+    <div id="explore-map"
+         data-map-data-url="{{ map_data_url }}"
+         data-cards-url="{% url 'explore_cards' %}"
+         data-card-url="{% url 'explore_card' '00000000-0000-0000-0000-000000000000' %}"
+         data-token="{{ mapbox_token }}"
+         data-limit="{{ pane_limit }}"
+         data-limit-mobile="{{ pane_limit_mobile }}"></div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.js"></script>
+<script src="{% static 'js/vendor/htmx.min.js' %}" defer></script>
+<script src="{% static 'js/explore_sample.js' %}" defer></script>
+<script src="{% static 'js/explore.js' %}" defer></script>
+{% endblock %}
