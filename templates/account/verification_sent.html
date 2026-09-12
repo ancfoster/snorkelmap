@@ -1,0 +1,38 @@
+{% extends 'blank_base.html' %}
+{% load i18n %}
+{% load static %}
+
+
+{% block title %}Verify your email address{% endblock %}
+{% block description %}Check your inbox to finish setting up your SnorkelMap account.{% endblock %}
+
+{% block content %}
+<div class="login-flex">
+    <div class="login-flex__themic-image-cont"></div>
+
+    <div class="login-flex__form-cont">
+        <a href="{% url 'home' %}">
+            <img class="login-flex__logo" src="{% static 'images/snorkelmap-logo.svg' %}" alt="SnorkelMap Logo">
+        </a>
+
+        <h1>{% trans "Verify Your Email Address" %}</h1>
+
+
+        {% if messages %}
+            <ul class="login-flex__notes">
+                {% for message in messages %}<li>{{ message }}</li>{% endfor %}
+            </ul>
+        {% endif %}
+
+        <p class="login-flex__message">
+            {% blocktrans %}We have sent you an email. Follow the link in it to
+            finish setting up your account. If it is not in your inbox, have a
+            look in your spam folder. {% endblocktrans %}
+        </p>
+
+        <a class="login-flex__button" href="{% url 'home' %}">
+            {% trans "Back to SnorkelMap" %}
+        </a>
+    </div>
+</div>
+{% endblock %}
