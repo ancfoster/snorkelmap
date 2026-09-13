@@ -12,5 +12,8 @@ urlpatterns = [
     path("", home, name="home"),
     path("", include('snorkelusers.urls')),
     path("", include('snorkel_locations.urls')),
+    path("", include('saved_locations.urls')),
+    path("", include('locations_snorkelled.urls')),
+    path("", include('snorkel_reviews.urls')),
     path('api/v1/', api_v1.urls)
 ]

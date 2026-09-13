@@ -1,0 +1,1337 @@
+/* The listing page.
+
+   Ported from the static prototype: layout, hero grid, cards, the
+   fullscreen location map and the two photo modals. What is not here is
+   what has nothing behind it yet, so nothing styles an element that
+   never renders: tides, weather, the conditions grid, visibility
+   reports and the discussion thread.
+
+   Everything a facility group reports as absent, the map markers and
+   the two action buttons are new, and sit at the foot of the file.
+   ──────────────────────────────────────────────────────────────────── */
+
+
+/* ── Page, cards, meta row, action buttons, hero grid ───────────── */
+.listing {
+  box-sizing: border-box; width: 100%; max-width: 1160px;
+  margin: 0 auto; padding: 16px 16px 40px 16px;
+  display: flex; flex-direction: column; gap: 24px;
+}
+.listing h2 { font-weight: 400; color: var(--sm-dark-text-headings); font-size: 1.5rem; margin: 0 0 16px 0; padding: 0; }
+.listing-name { font-size: 32px; color: #333; margin: 0; padding: 0; font-weight: 400; }
+
+.listing__top-row { display: flex; justify-content: space-between; gap: 12px; }
+@media screen and (max-width: 768px) { .listing__top-row { flex-direction: column-reverse; } }
+.listing__location-string { color: #067FB3; font-size: 14px; font-weight: 400; display: flex; flex-wrap: wrap; gap: 8px; }
+.location-string__slash { color: var(--sm-text-3rd-grey); }
+.location-string__slash:last-of-type { display: none; }
+.listing__top-row.editing-history {
+  display: flex; align-items: center; gap: 12px; font-size: 14px; color: #666666; font-weight: 500;
+  flex-direction: row !important; justify-content: flex-end !important;
+}
+.editing-history__button img { height: 12px; width: 12px; object-fit: contain; object-position: center; }
+
+.listing__descriptions { display: flex; flex-direction: column; gap: 1rem; }
+@media (min-width: 768px) {
+  .listing__descriptions { flex-direction: row; flex-wrap: wrap; }
+  .listing__description--general    { flex: 0 0 100%; }
+  .listing__description--surface,
+  .listing__description--underwater { flex: 0 0 calc(50% - 0.5rem); }
+}
+
+.listing__card {
+  background-color: #fefefe; box-sizing: border-box; padding: 24px;
+  border-radius: 16px; box-shadow: 0 8px 22px 0 rgba(0,0,0,0.08); display: flex; flex-direction: column;
+}
+.listing__card > h2 { margin: 0 0 16px 0; }
+
+.listing__card__columns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.listing__card-col { display: flex; flex-direction: column; gap: 8px; }
+
+.listing__chiplet {
+  border-radius: 56px; background: #E7F3FA; display: inline-flex;
+  padding: 5px 14px; align-items: center; gap: 8px;
+  color: #2a5f75; font-family: 'Inter', sans-serif; font-size: 0.83rem; font-weight: 400;
+}
+.listing__chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.listing__labels { font-size: 1rem; font-weight: 500; color: #484848; margin: 0 0 4px 0; }
+.listing__labels--spaced { margin-top: 20px; }
+
+.listing__col-comments { font-size: 0.875rem; color: #484848; line-height: 1.6; margin: 4px 0 0; }
+.listing__col-comments--empty { color: #9aabb4; font-style: italic; }
+
+.listing__card__comments-heading { font-size: 1.25rem; color: var(--sm-action-clear-bg-blue-txt); font-weight: 500; margin: 0 0 6px; }
+.listing__section-comments { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--sm-field-border-default); }
+.listing__section-comments p { font-size: 0.9rem; color: #484848; line-height: 1.65; margin: 0; }
+
+.listing__getting-there { display: grid; grid-template-columns: 40% 60%; gap: 32px; }
+.listing__getting-there__left,
+.listing__getting-there__right { display: flex; flex-direction: column; gap: 6px; }
+.listing__navigate-btn { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; width: fit-content; margin-top: 4px; }
+.listing__coord-text {
+  font-size: 20px; color: #333; font-weight: 400; margin: 0;
+  border-bottom: 1px solid var(--sm-action-clear-bg-blue-txt);
+  max-width: max-content; box-sizing: border-box; padding: 0 4px 4px 4px;
+}
+.listing__w3w {
+  display: flex; align-items: center; gap: 8px; font-size: 20px; color: #333; font-weight: 400; margin: 0;
+  border-bottom: 1px solid var(--sm-action-clear-bg-blue-txt);
+  max-width: max-content; box-sizing: border-box; padding: 0 4px 8px 4px;
+}
+.listing__w3w-icon { width: 22px; height: 22px; object-fit: contain; flex-shrink: 0; }
+
+/* ── META ROW — rating, difficulty, action buttons ─────────────────── */
+.listing__meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+.listing__meta-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.listing__rating {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.listing__rating-star {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+.listing__rating-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+.listing__rating-count {
+  font-size: 0.9rem;
+  color: var(--sm-action-clear-bg-blue-txt);
+  font-weight: 400;
+}
+.listing__difficulty {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.listing__difficulty-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
+}
+.listing__difficulty-label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+}
+.listing__meta-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.listing__action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 100vw;
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background-color 0.15s ease-in, color 0.15s ease-in,
+              border-color 0.15s ease-in;
+
+  /* Off: the accent colour on nothing. */
+  background: none;
+  border: 1.5px solid var(--sm-primary-accent);
+  color: var(--sm-primary-accent);
+}
+.listing__action-btn:visited { color: var(--sm-primary-accent); }
+.listing__action-btn:hover {
+  background: var(--sm-field-bg-focus-hover);
+}
+
+/* On: the accent colour as the fill, white on top of it. */
+.listing__action-btn--on,
+.listing__action-btn--on:visited {
+  background: var(--sm-primary-accent);
+  border-color: var(--sm-primary-accent);
+  color: #ffffff;
+}
+.listing__action-btn--on:hover {
+  background: var(--sm-action-blue-hover);
+  border-color: var(--sm-action-blue-hover);
+}
+
+/* The icon is an inlined <svg>, so the only thing wanted here is its
+   size. Its colour comes from currentColor inside the file, which
+   resolves to whatever colour the button is, which is what lets one
+   icon be accent blue on an empty button and white on a filled one.
+
+   The exported width and height are stripped when it is inlined, so
+   these are what decide it. */
+.listing__action-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  display: block;
+}
+
+/* The block of <symbol> definitions. It draws nothing itself and must
+   take up no room, but it cannot be display:none or a <use> pointing
+   into it renders nothing in some browsers. */
+.listing__icons {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+/* Responsive */
+@media (max-width: 767px) {
+  .listing__card__columns  { grid-template-columns: 1fr; }
+  .listing__getting-there  { grid-template-columns: 1fr; }
+  .listing__action-btn {
+    padding: 12px;
+  }
+  /* The label goes, the icon stays. The icon is a span too, so an
+     unqualified "span" here hides the whole contents and leaves three
+     empty pills. */
+  .listing__action-btn span:not(.listing__action-icon) {
+    display: none;
+  }
+  .listing__action-icon {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+/* ── HERO IMAGE GRID ─────────────────────────────────────────────────
+   Desktop: big surface photo left (54%), underwater + map right (46%)
+            stacked vertically in the right column.
+   Mobile:  surface full-width on top, underwater + map side-by-side below.
+   overflow: hidden on the container clips all corners — border-radius
+   updates automatically as the layout reflows on small screens.
+   ──────────────────────────────────────────────────────────────────── */
+.listing__hero {
+  display: flex;
+  gap: 4px;
+  height: 500px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: var(--sm-page-bg); /* gap fill matches page background */
+  flex-shrink: 0;
+}
+
+/* Left column — large surface image */
+.listing__hero-main {
+  flex: 0 0 54%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Right column — underwater + map stacked */
+.listing__hero-secondary {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
+}
+
+/* Every image panel */
+.listing__hero-panel {
+  position: relative;
+  overflow: hidden; /* clips the scale(1.05) zoom */
+  flex: 1;
+}
+
+.listing__hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+/* Scale on hover — overflow: hidden on .listing__hero-panel crops it */
+.listing__hero-panel:hover .listing__hero-img {
+  transform: scale(1.05);
+}
+
+/* Pill buttons overlaid on the image panels */
+.listing__hero-btn {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  transition: background 0.15s;
+  z-index: 2;
+  white-space: nowrap;
+}
+.listing__hero-btn:hover {
+  background: rgba(255, 255, 255, 1);
+}
+.listing__hero-btn img {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+/* ── RESPONSIVE ─────────────────────────────────────────────────────
+   Below 768px: surface stacks on top, underwater + map sit side-by-side
+   underneath. The container's overflow: hidden + border-radius handles
+   all corner clipping in both layouts — no individual radii needed.
+   ─────────────────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .listing__hero {
+    flex-direction: column;
+    height: auto;
+    border-radius: 16px;
+  }
+  .listing__hero-main {
+    flex: 0 0 auto;
+    height: 260px;
+  }
+  .listing__hero-secondary {
+    flex-direction: row;  /* underwater and map side-by-side */
+    flex: 0 0 auto;
+    height: 160px;
+  }
+}
+
+/* ── FULLSCREEN LOCATION MAP MODAL ──────────────────────────────────
+   z-index 110. Comment popup sits above at 120.
+   ─────────────────────────────────────────────────────────────────── */
+
+/* ── Fullscreen location map ────────────────────────────────────── */
+.lmap-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  background: #000;
+}
+.lmap-modal[hidden] { display: none; }
+
+.lmap-modal__map {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Style toggle pill — top centre */
+.lmap-modal__toggle {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 115;
+  display: flex;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 100vw;
+  padding: 4px;
+  gap: 2px;
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.lmap-modal__style-btn {
+  padding: 7px 20px;
+  border: none;
+  border-radius: 100vw;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  background: transparent;
+  color: var(--sm-text-3rd-grey);
+  transition: all 0.2s;
+}
+.lmap-modal__style-btn--active {
+  background: var(--sm-action-dark-blue-text);
+  color: #fff;
+}
+.lmap-modal__style-btn:not(.lmap-modal__style-btn--active):hover {
+  background: var(--sm-field-bg-focus-hover);
+}
+
+/* Close button — top right */
+.lmap-modal__close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 115;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.95);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: background 0.15s;
+  padding: 0;
+}
+.lmap-modal__close:hover { background: #fff; }
+.lmap-modal__close img {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
+/* Read-only comment popup — z-index 120 (above modal at 110) */
+.lmap-comment-popup {
+  position: absolute;
+  inset: 0;
+  z-index: 120;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+  padding: 20px;
+}
+.lmap-comment-popup.hidden { display: none; }
+
+.lmap-comment-popup__card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lmap-comment-popup__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--sm-dark-text-headings);
+}
+
+.lmap-comment-popup__text {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--sm-text-3rd-grey);
+  line-height: 1.65;
+}
+
+.lmap-comment-popup__close {
+  align-self: flex-end;
+  padding: 8px 22px;
+  border: none;
+  border-radius: 100vw;
+  background: var(--sm-action-dark-blue-text);
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.lmap-comment-popup__close:hover { background: var(--sm-action-blue-hover); }
+
+/* Name-only popup variant — title centred at 1.5rem, no note text */
+.lmap-comment-popup__card--name-only .lmap-comment-popup__title {
+  text-align: center;
+  font-size: 1.5rem;
+}
+
+/* ── Photo modals ───────────────────────────────────────────────── */
+.photo-modal-btn {
+  position: absolute; z-index: 2;
+  width: 44px; height: 44px; border-radius: 50%;
+  border: 1.5px solid var(--sm-primary-accent); background: #fff;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  padding: 0; transition: background 0.15s;
+}
+.photo-modal-btn:hover { background: var(--sm-field-bg-focus-hover); }
+.photo-modal-btn img   { width: 16px; height: 16px; object-fit: contain; }
+.photo-modal-btn--back  { top: 20px; left: 20px; }
+.photo-modal-btn--close { top: 20px; right: 20px; }
+
+/* ── PHOTOS GRID MODAL ───────────────────────────────────────────────── */
+.photos-modal { position: fixed; inset: 0; z-index: 110; background: #fff; overflow: hidden; }
+.photos-modal[hidden] { display: none; }
+
+.photos-modal__inner {
+  height: 100%; overflow-y: auto;
+  padding: 80px 48px 60px; box-sizing: border-box;
+  max-width: 1200px;
+  margin: 40px auto 0 auto;
+}
+.photos-modal__section { margin-bottom: 48px; }
+.photos-modal__section-title {
+  font-size: 2rem; font-weight: 400; color: #333; margin: 0 0 20px;
+}
+.photos-modal__grid { display: flex; flex-wrap: wrap; gap: 12px; }
+.photos-modal__thumb {
+  width: 180px; height: 180px; overflow: hidden;
+  border-radius: 10px; cursor: pointer; flex-shrink: 0;
+}
+.photos-modal__thumb img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transition: transform 0.35s ease;
+}
+.photos-modal__thumb:hover img { transform: scale(1.05); }
+
+@media (max-width: 767px) {
+  .photos-modal__inner { padding: 80px 16px 60px; }
+  .photos-modal__section-title { font-size: 1.5rem; }
+  .photos-modal__thumb { width: 100%; height: auto; aspect-ratio: 1; flex-shrink: 1; }
+}
+
+/* ── PHOTO DETAIL MODAL ──────────────────────────────────────────────── */
+.photo-detail-modal { position: fixed; inset: 0; z-index: 115; background: #fff; overflow: hidden; }
+.photo-detail-modal[hidden] { display: none; }
+
+.photo-detail-modal__layout {
+  display: flex; height: 100%;
+  padding: 80px 48px 40px 80px; gap: 40px;
+  box-sizing: border-box; overflow: hidden;
+}
+.photo-detail-modal__img-wrap { flex: 0 0 70%; overflow: hidden; border-radius: 12px; }
+.photo-detail-modal__img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.photo-detail-modal__sidebar {
+  flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0;
+}
+.photo-detail-modal__meta { flex-shrink: 0; }
+.photo-detail-modal__title {
+  font-size: 1.5rem; font-weight: 500; color: var(--sm-dark-text-headings); margin: 0 0 12px;
+}
+.photo-detail-modal__posted-by {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 0.875rem; color: var(--sm-text-3rd-grey); margin-bottom: 6px;
+}
+.photo-detail-modal__posted-by img { width: 20px; height: 20px; }
+.photo-detail-modal__date { font-size: 0.875rem; color: var(--sm-text-3rd-grey); margin: 0 0 8px; }
+.photo-detail-modal__likes {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.875rem; color: var(--sm-text-3rd-grey); margin-bottom: 16px;
+}
+.photo-detail-modal__likes img { width: 18px; height: 18px; }
+.photo-detail-modal__divider {
+  border: none; border-top: 1px solid var(--sm-field-border-default); margin: 0 0 16px;
+}
+.photo-detail-modal__comments-list {
+  flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 18px; padding-right: 4px;
+}
+.photo-detail-comment { display: flex; flex-direction: column; gap: 3px; }
+.photo-detail-comment__header { display: flex; align-items: center; gap: 8px; }
+.photo-detail-comment__avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+.photo-detail-comment__user { font-size: 0.875rem; font-weight: 600; color: var(--sm-text-3rd-grey); }
+.photo-detail-comment__text {
+  font-size: 0.875rem; color: var(--sm-text-3rd-grey);
+  line-height: 1.55; margin: 0; padding-left: 36px;
+}
+.photo-detail-comment__footer {
+  font-size: 0.75rem; color: #9aabb4; padding-left: 36px; display: flex; align-items: center; gap: 2px;
+}
+.photo-detail-comment__reply {
+  background: none; border: none; color: var(--sm-primary-accent);
+  font-size: 0.75rem; font-family: 'Inter', sans-serif; cursor: pointer; padding: 0;
+}
+.photo-detail-modal__add-comment {
+  flex-shrink: 0; display: flex; gap: 8px; align-items: center;
+  padding-top: 12px; border-top: 1px solid var(--sm-field-border-default); margin-top: 12px;
+}
+.photo-detail-modal__comment-input {
+  flex: 1; padding: 9px 16px; border: 1px solid var(--sm-field-border-default);
+  border-radius: 100vw; font-family: 'Inter', sans-serif; font-size: 0.875rem;
+  background: var(--sm-field-bg); color: var(--sm-field-value); outline: none; transition: border-color 0.15s;
+}
+.photo-detail-modal__comment-input:focus {
+  border-color: var(--sm-primary-accent); background: var(--sm-field-bg-focus-hover);
+}
+.photo-detail-modal__post-btn {
+  flex-shrink: 0; padding: 9px 20px; border: none; border-radius: 100vw;
+  background: var(--sm-action-dark-blue-text); color: #fff;
+  font-family: 'Inter', sans-serif; font-size: 0.875rem; font-weight: 500;
+  cursor: pointer; transition: background 0.15s;
+}
+.photo-detail-modal__post-btn:hover { background: var(--sm-action-blue-hover); }
+
+@media (max-width: 767px) {
+  .photo-detail-modal { overflow-y: auto; }
+  .photo-detail-modal__layout {
+    flex-direction: column; padding: 80px 16px 0;
+    height: auto; min-height: 100%; overflow: visible; gap: 20px;
+  }
+  .photo-detail-modal__img-wrap { flex: 0 0 auto; height: 280px; }
+  .photo-detail-modal__sidebar  { flex: 0 0 auto; overflow: visible; padding-bottom: 16px; }
+  .photo-detail-modal__comments-list { max-height: 220px; flex: 0 0 auto; }
+  .photo-detail-modal__add-comment {
+    position: sticky; bottom: 0; background: #fff; padding-bottom: 16px;
+  }
+}
+/* ── CONDITIONS SECTION ─────────────────────────────────────────────── */
+
+
+/* ── What is not here ────────────────────────────────────────────────
+   A facility group where somebody chose "None" is worth as much as one
+   where they chose something: "no toilets" is exactly what a person
+   wants to know before driving somewhere. So it is stated, in the same
+   card, rather than left as an absence the reader has to notice.
+   ─────────────────────────────────────────────────────────────────── */
+.listing__absent {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--sm-text-3rd-grey);
+  margin: 4px 0 0;
+  padding-left: 22px;
+  position: relative;
+}
+.listing__absent::before {
+  content: "—";
+  position: absolute;
+  left: 0;
+  color: var(--sm-field-border-default);
+  font-weight: 600;
+}
+
+/* ── Saved and snorkelled ────────────────────────────────────────────
+   Both are forms rather than links, so that a page prefetch or a
+   crawler cannot toggle them, and both live in the meta row's right
+   hand group.
+   ─────────────────────────────────────────────────────────────────── */
+.listing__action-form {
+  display: inline-flex;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+/* There was a defensive rule here removing bottom borders, guarding
+   against the form styling in main.css. That styling is scoped to
+   .login-flex__form-cont and never reached this form, so the rule
+   protected nothing and instead stripped the bottom border off the
+   button inside it: a pill open at the bottom, and one pixel shorter
+   than the share button beside it. */
+
+/* The on state lives with the rest of the button, further up. A second
+   copy here was overriding it by being later in the file, which is how
+   the filled button came out light blue rather than accent. */
+
+/* While a toggle is in flight. htmx puts this class on the element it
+   is about to replace. */
+.listing__action-form.htmx-request .listing__action-btn {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* ── Map markers ─────────────────────────────────────────────────────
+   Listed under the map panel as well as drawn on it, because a marker
+   with a note attached is worth reading without opening the map.
+   ─────────────────────────────────────────────────────────────────── */
+.listing__markers {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.listing__marker {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--sm-text-3rd-grey);
+}
+.listing__marker img {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+.listing__marker strong {
+  color: var(--sm-field-value);
+  font-weight: 500;
+}
+
+/* ── Difficulty ──────────────────────────────────────────────────────
+   The same four colours as the slider in the create form, so the dot
+   here means what the person set there.
+   ─────────────────────────────────────────────────────────────────── */
+.listing__difficulty-dot--1 { background-color: #43d946; }
+.listing__difficulty-dot--2 { background-color: #f39c12; }
+.listing__difficulty-dot--3 { background-color: #e67e22; }
+.listing__difficulty-dot--4 { background-color: #e3401b; }
+
+.listing__alt-names {
+  margin: -16px 0 0;
+  font-size: 0.95rem;
+  color: var(--sm-text-3rd-grey);
+}
+
+.listing__inline-icon {
+  width: 16px;
+  height: 16px;
+  vertical-align: -2px;
+  margin-right: 4px;
+}
+
+/* A marker inside the fullscreen map. Mapbox markers are DOM elements,
+   which is why they survive a style change and why they need sizing
+   here rather than in a layer's paint properties. */
+.lmap-marker {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.lmap-marker img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.45));
+}
+
+/* Seen by staff only, on a listing whose geocode failed. */
+.listing__staff-notice {
+  margin: 0;
+  padding: 12px 16px;
+  border: 1px solid var(--sm-invalid-border);
+  background: var(--sm-invalid-bg);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--sm-invalid);
+}
+
+/* The stand-in, when a listing has no above water photograph yet. It
+   is a flat graphic rather than a photo, so it is fitted inside the
+   panel instead of cropped to fill it. */
+.listing__hero-img--placeholder {
+  object-fit: contain;
+  background: var(--sm-field-bg);
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+/* ── Sharing ─────────────────────────────────────────────────────────
+   Desktop only. A phone opens its own share drawer, which reaches
+   every app somebody has and is what they expect; nothing here would
+   improve on it.
+   ─────────────────────────────────────────────────────────────────── */
+.share-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 130;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+}
+.share-modal[hidden] { display: none; }
+
+/* The blur is full screen; the card is only as big as it needs to be. */
+.share-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.share-modal__box {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  box-sizing: border-box;
+  background: var(--sm-card-bg);
+  border: 1px solid var(--sm-field-border-default);
+  border-radius: 16px;
+  padding: 28px 24px 24px;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.12);
+}
+.share-modal__title {
+  margin: 0 0 4px;
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--sm-dark-text-headings);
+}
+.share-modal__name {
+  margin: 0 0 20px;
+  font-size: 0.9rem;
+  color: var(--sm-text-3rd-grey);
+}
+
+.share-modal__link {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.share-modal__url {
+  flex: 1;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  font-size: 0.85rem;
+  color: var(--sm-field-value);
+  background: var(--sm-field-bg);
+  border: 1px solid var(--sm-field-border-default);
+  border-radius: 8px;
+}
+.share-modal__copy {
+  flex-shrink: 0;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  background: var(--sm-primary-accent);
+  color: #ffffff;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.share-modal__copy:hover { background: var(--sm-action-blue-hover); }
+/* Said rather than shown, because a copy that silently succeeds looks
+   exactly like one that silently failed. */
+.share-modal__copy--done { background: var(--sm-action-dark-blue-text); }
+
+.share-modal__options {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.share-modal__option {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  text-align: left;
+  font-size: 0.95rem;
+  color: var(--sm-body-hyperlink);
+  text-decoration: none;
+  cursor: pointer;
+}
+.share-modal__option:visited { color: var(--sm-body-hyperlink); }
+.share-modal__option:hover { background: var(--sm-field-bg-focus-hover); }
+
+.share-modal__close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: var(--sm-text-3rd-grey);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.share-modal__close:hover { background: var(--sm-field-bg-focus-hover); }
+
+/* ── Printing ────────────────────────────────────────────────────────
+   Print is one of the share options, and a page printed with its
+   navigation, its modals and its buttons on it is not much use to
+   somebody taking it to a beach.
+   ─────────────────────────────────────────────────────────────────── */
+@media print {
+  .navbar,
+  .offset,
+  .mobile-nav,
+  .listing__meta-right,
+  .listing__hero-btn,
+  .share-modal,
+  .photos-modal,
+  .photo-detail-modal,
+  .lmap-modal {
+    display: none !important;
+  }
+  .listing { max-width: none; padding: 0; gap: 16px; }
+  .listing__card {
+    break-inside: avoid;
+    border: 1px solid #ccc;
+    box-shadow: none;
+  }
+  .listing__hero { height: auto; max-height: 320px; }
+}
+
+
+/* ── Reviews ─────────────────────────────────────────────────────────
+
+   The block at the foot of the listing, in its three states, plus the
+   rating that sits beside the difficulty at the top of the page.
+
+   The star input is the only part of this worth reading twice. It is
+   five real radio buttons laid out backwards and turned round again
+   with row-reverse, which is what lets a checked star light the ones
+   below it with a sibling selector. Nothing here needs script: the
+   rating can be given, changed and submitted with JavaScript switched
+   off entirely.
+   ──────────────────────────────────────────────────────────────────── */
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* The figure at the top of the page. Its star is a <use> of the shared
+   symbol, so its colour comes from here rather than from the file. */
+.listing__rating-star { color: var(--sm-primary-accent); display: block; }
+.listing__rating-count,
+.listing__rating-none {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--sm-action-clear-bg-blue-txt);
+  text-decoration: none;
+}
+.listing__rating-count:hover,
+.listing__rating-none:hover { text-decoration: underline; }
+
+/* ── The block ─────────────────────────────────────────────────── */
+
+.reviews__layout {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+}
+@media screen and (max-width: 640px) {
+  .reviews__layout { flex-direction: column; gap: 20px; }
+}
+
+.reviews__summary {
+  flex: 0 0 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.reviews__average {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+.reviews__average-star {
+  width: 32px; height: 32px;
+  display: block;
+  color: var(--sm-primary-accent);
+  flex-shrink: 0;
+}
+.reviews__average-value {
+  font-size: 2rem;
+  line-height: 1;
+  font-weight: 400;
+  color: #333;
+}
+.reviews__count,
+.reviews__snorkelled {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--sm-text-3rd-grey, #666);
+}
+.reviews__count--none { font-style: italic; }
+
+/* Stacked, that basis is a height rather than a width, and a summary
+   three lines long sits in the top of a 180px box with a hole under
+   it. After the rule it overrides, not before: they carry the same
+   weight, so the order is what decides. */
+@media screen and (max-width: 640px) {
+  .reviews__summary { flex: 0 0 auto; width: 100%; }
+}
+
+/* ── One review ────────────────────────────────────────────────── */
+
+.reviews__list {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.reviews__empty {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--sm-text-3rd-grey, #666);
+}
+.review { display: flex; flex-direction: column; gap: 6px; }
+.review__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+/* A letter in a circle rather than a photograph. There are no
+   photographs of people on this site. */
+.review__avatar {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--sm-action-light-blue);
+  color: var(--sm-action-dark-blue-text);
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1;
+}
+.review__author {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #333;
+}
+.review__stars { display: inline-flex; gap: 2px; align-items: center; }
+.review__star {
+  width: 14px; height: 14px;
+  display: block;
+  color: var(--sm-primary-accent);
+}
+.review__star--empty { color: var(--sm-field-border-default); }
+.review__sep { color: var(--sm-field-border-default); }
+.review__date {
+  font-size: 0.85rem;
+  color: var(--sm-text-3rd-grey, #666);
+}
+.review__body {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: #333;
+  /* Somebody else's prose, so it breaks rather than stretching the
+     column when it arrives as one very long word. */
+  overflow-wrap: anywhere;
+}
+
+.reviews__rule {
+  width: 100%;
+  height: 0;
+  border: 0;
+  border-top: 1px solid var(--sm-field-border-default);
+  margin: 28px 0 24px 0;
+}
+
+/* ── The panel, signed out ─────────────────────────────────────── */
+
+.reviews__panel--signed-out { text-align: center; }
+.reviews__panel-title {
+  margin: 0 0 8px 0;
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--sm-primary-accent);
+}
+.reviews__panel-text {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #333;
+}
+.reviews__panel-text a { color: var(--sm-body-hyperlink); }
+
+/* ── The panel, signed in ──────────────────────────────────────── */
+
+.reviews__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.reviews__form .reviews__panel-title { margin: 0; }
+
+/* Said once, after something has just been saved. */
+.reviews__thanks {
+  margin: 0;
+  align-self: flex-start;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: var(--sm-field-bg-focus-hover);
+  color: var(--sm-action-dark-blue-text);
+  font-size: 0.9rem;
+}
+.reviews__errors {
+  margin: 0;
+  padding: 10px 14px 10px 30px;
+  border-radius: 8px;
+  border: 1px solid var(--sm-invalid-border);
+  background: var(--sm-invalid-bg);
+  color: var(--sm-invalid);
+  font-size: 0.9rem;
+}
+
+.reviews__field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+.reviews__label {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--sm-action-dark-blue-text);
+  padding: 0;
+}
+
+/* ── The star input ────────────────────────────────────────────── */
+
+.star-input {
+  display: inline-flex;
+  /* Written highest first so that a checked star can reach the lower
+     ones as following siblings, then turned back round here. */
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  gap: 6px;
+}
+.star-input__radio {
+  position: absolute;
+  width: 1px; height: 1px;
+  opacity: 0;
+  margin: 0;
+}
+.star-input__label {
+  cursor: pointer;
+  display: block;
+  line-height: 0;
+  color: var(--sm-primary-accent);
+}
+.star-input__star { width: 30px; height: 30px; display: block; }
+.star-input__star--filled { display: none; }
+
+/* Checked: that star and every lower one. The lower ones are the ones
+   that follow it, which is the whole reason the markup is backwards. */
+.star-input__radio:checked ~ .star-input__label .star-input__star--outline { display: none; }
+.star-input__radio:checked ~ .star-input__label .star-input__star--filled { display: block; }
+
+/* While the pointer is anywhere on the row, what is checked stops
+   mattering and what is under the pointer takes over.
+
+   The three rules below are deliberately all at the same weight as the
+   two above, so that which one wins is decided by the order they are
+   written in rather than by counting class names. :where() is what
+   holds the weight down: it adds no specificity of its own, so the
+   :has() that scopes the first pair is free. Written any other way the
+   reset outweighs the rule that is supposed to override it, and
+   hovering a low star while a high one is chosen lights nothing at
+   all, which is what happened the first time.
+
+   If :has() is not understood, the first pair is dropped and the rest
+   still works: the chosen rating shows, and hovering simply does not
+   put out a higher star. */
+:where(.star-input:has(.star-input__label:hover)) .star-input__radio:checked ~ .star-input__label .star-input__star--outline { display: block; }
+:where(.star-input:has(.star-input__label:hover)) .star-input__radio:checked ~ .star-input__label .star-input__star--filled { display: none; }
+
+.star-input .star-input__label:hover .star-input__star--outline,
+.star-input .star-input__label:hover ~ .star-input__label .star-input__star--outline { display: none; }
+.star-input .star-input__label:hover .star-input__star--filled,
+.star-input .star-input__label:hover ~ .star-input__label .star-input__star--filled { display: block; }
+
+/* The radio itself is off the page, so the ring has to be put back. */
+.star-input__radio:focus-visible + .star-input__label {
+  outline: 2px solid var(--sm-primary-accent);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+/* ── The box ───────────────────────────────────────────────────── */
+
+.reviews__textarea {
+  box-sizing: border-box;
+  width: 100%;
+  resize: vertical;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--sm-field-border-default);
+  background: var(--sm-field-bg);
+  color: var(--sm-field-value);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+.reviews__textarea:focus {
+  outline: none;
+  background: var(--sm-field-bg-focus-hover);
+  border-color: var(--sm-primary-accent);
+}
+.reviews__counter {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--sm-text-3rd-grey, #666);
+  min-height: 1em;
+}
+.reviews__counter--over { color: var(--sm-invalid); }
+
+/* ── The buttons ───────────────────────────────────────────────── */
+
+.reviews__buttons {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.reviews__btn {
+  padding: 10px 22px;
+  border-radius: 100vw;
+  border: 1.5px solid transparent;
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s ease-in, color 0.15s ease-in,
+              border-color 0.15s ease-in;
+}
+.reviews__btn--publish,
+.reviews__btn--update {
+  background: var(--sm-action-light-blue);
+  border-color: var(--sm-action-light-blue);
+  color: var(--sm-action-dark-blue-text);
+}
+.reviews__btn--publish:hover,
+.reviews__btn--update:not([disabled]):hover {
+  background: var(--sm-hover-blue);
+  border-color: var(--sm-hover-blue);
+}
+/* Nothing has changed yet, so there is nothing to save. */
+.reviews__btn--update[disabled] {
+  background: var(--sm-field-bg-disabled);
+  border-color: var(--sm-field-border-disabled);
+  color: var(--sm-field-value-disabled);
+  cursor: not-allowed;
+}
+.reviews__btn--delete {
+  background: var(--sm-invalid-bg);
+  border-color: #f3c9c4;
+  color: var(--sm-invalid);
+}
+.reviews__btn--delete:hover {
+  background: #fbdedb;
+  border-color: var(--sm-invalid);
+}
+.reviews__btn--cancel {
+  background: none;
+  border-color: var(--sm-field-border-default);
+  color: var(--sm-action-dark-blue-text);
+}
+.reviews__btn--cancel:hover { background: var(--sm-field-bg-focus-hover); }
+
+/* ── Have you been here? ───────────────────────────────────────── */
+
+.reviews__prompt {
+  margin-top: 16px;
+  padding: 14px 18px;
+  border-radius: 8px;
+  border: 1px solid var(--sm-field-border-default);
+  background: var(--sm-field-bg);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.reviews__prompt-text {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--sm-action-dark-blue-text);
+}
+.reviews__prompt-btn {
+  padding: 8px 18px;
+  border-radius: 100vw;
+  border: 1.5px solid var(--sm-primary-accent);
+  background: none;
+  color: var(--sm-primary-accent);
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+}
+.reviews__prompt-btn:hover { background: var(--sm-field-bg-focus-hover); }
+
+/* ── Confirming a deletion ─────────────────────────────────────── */
+
+.reviews__confirm {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.reviews__confirm[hidden] { display: none; }
+.reviews__confirm-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 80, 105, 0.45);
+  backdrop-filter: blur(3px);
+}
+.reviews__confirm-box {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 420px;
+  background: var(--sm-card-bg);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.reviews__confirm-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: var(--sm-dark-text-headings);
+}
+.reviews__confirm-text {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: #333;
+}
+.reviews__confirm-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}

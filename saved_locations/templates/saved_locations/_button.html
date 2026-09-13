@@ -1,0 +1,22 @@
+{% comment %}
+What the toggle endpoint returns: the save button in its new state,
+which replaces itself in the page.
+
+Only the button, because that is all this app is responsible for. The
+icon points at the symbol the listing page defines, so no artwork lives
+here and nothing has to be kept in step with it.
+{% endcomment %}
+<form class="listing__action-form"
+      method="post"
+      action="{% url 'toggle_saved' location.uuid %}"
+      hx-post="{% url 'toggle_saved' location.uuid %}"
+      hx-swap="outerHTML"
+      hx-disabled-elt="find button">
+  {% csrf_token %}
+  <button class="listing__action-btn{% if saved %} listing__action-btn--on{% endif %}"
+          type="submit"
+          aria-pressed="{% if saved %}true{% else %}false{% endif %}">
+    <svg class="listing__action-icon" aria-hidden="true" focusable="false"><use href="#icon-save"/></svg>
+    <span>{% if saved %}Saved{% else %}Save{% endif %}</span>
+  </button>
+</form>

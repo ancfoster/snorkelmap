@@ -12,44 +12,39 @@ from django.conf import settings
 from django.db import models
 
 
-class Favourite(models.Model):
-    """One person, one location, saved once.
-
-    Named in the singular because a row is one favourite; the app is
-    the plural. `user.favourites.all()` and
-    `location.favourited_by.all()` are what anything actually reads.
-    """
+class SavedLocation(models.Model):
+    """One person, one location, saved once."""
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="favourites",
+        related_name="saved_locations",
     )
     location = models.ForeignKey(
         "snorkel_locations.SnorkelLocation",
         on_delete=models.CASCADE,
-        related_name="favourited_by",
+        related_name="saved_by",
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = "favourite"
-        verbose_name_plural = "favourites"
-        # Newest first, which is the order a "your favourites" page
-        # wants without asking for it.
+        verbose_name = "saved location"
+        verbose_name_plural = "saved locations"
+        # Newest first, which is the order a "your saved locations"
+        # page wants without asking for it.
         ordering = ["-created_at"]
         constraints = [
             models.UniqueConstraint(
                 fields=["user", "location"],
-                name="unique_favourite_per_user_location",
+                name="unique_saved_location_per_user",
             ),
         ]
         indexes = [
-            # Covers "this person's favourites, newest first", which is
-            # the only read this table has.
+            # Covers "this person's saved locations, newest first",
+            # which is the only read this table has.
             models.Index(fields=["user", "-created_at"],
-                         name="favourite_user_recent_idx"),
+                         name="saved_location_recent_idx"),
         ]
 
     def __str__(self):
-        return f"{self.user} favourited {self.location}"
+        return f"{self.user} saved {self.location}"

@@ -1,10 +1,10 @@
 """Locations a person has actually been in the water at.
 
-The same shape as a favourite, and deliberately so: who, which
+The same shape as a saved location, and deliberately so: who, which
 location, and when they said so. What it means is different, though.
-A favourite is somewhere you want to go; this is somewhere you have
-been, which is what makes it worth anything to the rest of the
-community.
+A saved location is somewhere you want to go; this is somewhere you
+have been, which is what makes it worth anything to the rest of
+the community.
 
 One row per person per location, so the question it answers is "have
 you snorkelled here", not "how many times". If a log of individual

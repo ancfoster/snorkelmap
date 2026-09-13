@@ -1,0 +1,24 @@
+{% comment %}
+The rating at the top of the listing, beside the difficulty.
+
+Drawn in place when the page loads, and sent again out of band at the
+end of the reviews block whenever that block is swapped, so that
+leaving or removing a rating changes the figure at the top of the page
+in the same exchange. `oob` is what tells the two apart, and is set
+only by the reviews block.
+
+The count says ratings rather than reviews on purpose: every rating
+counts towards the average, and only some of them have words with them.
+{% endcomment %}
+<div class="listing__rating" id="listing-rating"{% if oob %} hx-swap-oob="true"{% endif %}>
+  {% if number_of_ratings %}
+    <svg class="listing__rating-star" aria-hidden="true" focusable="false">
+      <use href="#icon-star"/>
+    </svg>
+    <span class="listing__rating-value">{{ average_rating|floatformat:1 }}</span>
+    <a class="listing__rating-count" href="#reviews">({{ number_of_ratings }}
+      rating{{ number_of_ratings|pluralize }})</a>
+  {% else %}
+    <a class="listing__rating-none" href="#reviews">Not rated yet</a>
+  {% endif %}
+</div>

@@ -67,7 +67,8 @@ INSTALLED_APPS = [
     'snorkel_reviews',
     'snorkel_visibility',
     'locations_snorkelled',
-    'favourite_locations'
+    'saved_locations',
+    'contributions',
 ]
 
 MIDDLEWARE = [

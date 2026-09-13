@@ -33,7 +33,7 @@ def _payload_key(key):
 
 
 def _group(key, label, chips, *, none_option=False, single_select=False,
-           example=None, comments=False):
+           example=None, comments=False, none_text=""):
     return {
         "key": key,
         "payload_key": _payload_key(key),
@@ -43,6 +43,12 @@ def _group(key, label, chips, *, none_option=False, single_select=False,
         "single_select": single_select,
         "example": example,
         "comments": comments,
+        # What a listing says when somebody answered "None" for this
+        # group. Written per group rather than assembled from the label,
+        # because "no Washing and Changing" does not read as English and
+        # "no washing or changing facilities" does. Only groups that
+        # offer a None option need one.
+        "none_text": none_text,
     }
 
 
@@ -355,6 +361,8 @@ FACILITY_GROUPS = [
             ("lockers", "Lockers"),
         ],
         none_option=True, example="facWashing",
+        none_text=(
+            "Users have indicated there are no washing or changing facilities at this location."),
         comments=True,
     ),
     _group(
@@ -366,6 +374,8 @@ FACILITY_GROUPS = [
             ("shop-kiosk", "Shop / kiosk"),
         ],
         none_option=True, example="facFood",
+        none_text=(
+            "Users have indicated there are no food or drink facilities at this location."),
         comments=True,
     ),
     _group(
@@ -386,6 +396,8 @@ FACILITY_GROUPS = [
             ("emergency-phone", "Emergency phone / call point"),
         ],
         none_option=True, example="facSafety",
+        none_text=(
+            "Users have indicated there are no safety or emergency facilities at this location."),
         comments=True,
     ),
 ]
@@ -571,7 +583,8 @@ def labels_for(options, ids):
 def describe_group_map(section, stored):
     """Turn one stored section into something a template can loop over.
 
-    Returns a list of {"label", "selected", "comments"}, in the order
+    Returns a list of {"label", "selected", "comments", "absent"}, in
+    the order
     the groups are defined rather than the order the JSON happens to be
     in, and skipping groups the person left empty. Groups that no
     longer exist are dropped, so a listing created before a chip was
@@ -595,10 +608,20 @@ def describe_group_map(section, stored):
         if not selected and not comments:
             continue
 
+        # "None" is an answer, not an absence of one, and a different
+        # kind of answer from the rest: it says the reader should not
+        # expect to find any of this here. Pulled out of the list so
+        # the page can say so in words rather than showing a chip
+        # reading "None", which tells nobody anything.
+        absent = "none" in selected
+        selected = [i for i in selected if i != "none"]
+
         described.append({
             "label": group["label"],
             "selected": [label_for(group["key"], i) for i in selected],
             "comments": comments,
+            "absent": absent,
+            "absent_text": group["none_text"] if absent else "",
         })
 
     return described

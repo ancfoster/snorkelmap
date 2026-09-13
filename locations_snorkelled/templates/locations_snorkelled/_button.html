@@ -1,0 +1,32 @@
+{% comment %}
+What the toggle endpoint returns: the snorkelled button in its new
+state, which replaces itself in the page.
+
+Only the button and the count, because that is all this app is
+responsible for. The icon points at the symbol the listing page
+defines, so no artwork lives here and nothing has to be kept in step
+with it.
+{% endcomment %}
+<form class="listing__action-form"
+      id="snorkelled-action"
+      method="post"
+      action="{% url 'toggle_snorkelled' location.uuid %}"
+      hx-post="{% url 'toggle_snorkelled' location.uuid %}"
+      hx-swap="outerHTML"
+      hx-disabled-elt="find button">
+  {% csrf_token %}
+  <button class="listing__action-btn{% if snorkelled %} listing__action-btn--on{% endif %}"
+          type="submit"
+          aria-pressed="{% if snorkelled %}true{% else %}false{% endif %}">
+    <svg class="listing__action-icon" aria-hidden="true" focusable="false"><use href="#icon-snorkel"/></svg>
+    <span>{% if snorkelled %}Snorkelled{% else %}Mark as snorkelled{% endif %}</span>
+  </button>
+</form>
+{% comment %}
+The number of people who have been here is shown elsewhere on the
+listing, and marking or unmarking has just changed it. Sent back out of
+band so the page it came from does not have to be reloaded to be right.
+A page that does not show a count simply has nothing for this to land
+on.
+{% endcomment %}
+<span id="snorkelled-count" hx-swap-oob="true">{{ snorkelled_count }}</span>

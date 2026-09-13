@@ -1,0 +1,245 @@
+{% comment %}
+The reviews block, in whichever of its three states applies.
+
+It lives here, with the page it is part of, rather than in
+snorkel_reviews: what the listing looks like is the listing's business.
+What is in it is not. snorkel_reviews.display builds every value, and
+its two endpoints render this same file when the block is swapped, so
+the block drawn with the page and the block returned after a submission
+cannot drift apart.
+
+The whole section is replaced on every exchange, which is what lets the
+average, the count and somebody's own panel all change together without
+any of them being updated by hand. The rating at the top of the page
+goes with it, out of band, at the end.
+{% endcomment %}
+<section class="listing__card reviews" id="reviews">
+  <h2>Reviews</h2>
+
+  <div class="reviews__layout">
+    <div class="reviews__summary">
+      {% if number_of_ratings %}
+        <p class="reviews__average">
+          <svg class="reviews__average-star" aria-hidden="true" focusable="false">
+            <use href="#icon-star"/>
+          </svg>
+          <span class="reviews__average-value">{{ average_rating|floatformat:1 }}</span>
+        </p>
+        <p class="reviews__count">{{ number_of_ratings }}
+          rating{{ number_of_ratings|pluralize }}</p>
+      {% else %}
+        <p class="reviews__count reviews__count--none">No ratings yet</p>
+      {% endif %}
+
+      {% comment %}
+      The number carries an id of its own because marking the location
+      as snorkelled changes it without touching the rest of this block,
+      and sends the new figure back on its own to land here.
+      {% endcomment %}
+      <p class="reviews__snorkelled">
+        <span id="snorkelled-count">{{ users_snorkelled }}</span>
+        user{{ users_snorkelled|pluralize }}
+        ha{{ users_snorkelled|pluralize:"s,ve" }} snorkelled here
+      </p>
+    </div>
+
+    <div class="reviews__list">
+      {% for review in reviews %}
+        <article class="review">
+          <div class="review__head">
+            <span class="review__avatar" aria-hidden="true">{{ review.initial }}</span>
+            <span class="review__author">{{ review.username }}</span>
+            <span class="review__stars" role="img"
+                  aria-label="{{ review.rating }} out of 5">
+              {% for filled in review.stars %}
+                <svg class="review__star{% if not filled %} review__star--empty{% endif %}"
+                     aria-hidden="true" focusable="false">
+                  <use href="#icon-star{% if not filled %}-outline{% endif %}"/>
+                </svg>
+              {% endfor %}
+            </span>
+            <span class="review__sep" aria-hidden="true">|</span>
+            <time class="review__date"
+                  datetime="{{ review.created_at|date:'Y-m-d' }}">{{ review.created_at|date:"F Y" }}</time>
+          </div>
+          {% if review.body %}
+            <p class="review__body">{{ review.body|linebreaksbr }}</p>
+          {% endif %}
+        </article>
+      {% empty %}
+        <p class="reviews__empty">
+          {% if my_review %}
+            Nobody else has reviewed this location yet.
+          {% else %}
+            No one has reviewed this location yet.
+          {% endif %}
+        </p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <hr class="reviews__rule">
+
+  {% if not user.is_authenticated %}
+    {% comment %} One: nobody is signed in. {% endcomment %}
+    <div class="reviews__panel reviews__panel--signed-out">
+      <h3 class="reviews__panel-title">Snorkelled Here?</h3>
+      <p class="reviews__panel-text">
+        <a href="{% url 'sm_login' %}?next={{ location.get_absolute_url|urlencode }}">Login</a>
+        or
+        <a href="{% url 'custom_signup' %}?next={{ location.get_absolute_url|urlencode }}">Sign Up</a>
+        and leave a review.
+      </p>
+    </div>
+  {% else %}
+    {% comment %}
+    Two and three: the same form either way. Whether it says leave or
+    update is the only difference, because it is the same thing being
+    said either way and the person should not have to care which of
+    the two they are doing.
+    {% endcomment %}
+    <form class="reviews__panel reviews__form"
+          id="review-form"
+          method="post"
+          action="{% url 'submit_review' location.uuid %}"
+          hx-post="{% url 'submit_review' location.uuid %}"
+          hx-target="#reviews"
+          hx-swap="outerHTML"
+          hx-disabled-elt="find button[type=submit]"
+          data-initial-rating="{{ chosen }}"
+          data-initial-body="{{ body }}">
+      {% csrf_token %}
+      <h3 class="reviews__panel-title">
+        {% if my_review %}Your Review or Rating{% else %}Leave a Review or Rating{% endif %}
+      </h3>
+
+      {% if thanks %}
+        <p class="reviews__thanks" role="status">{{ thanks }}</p>
+      {% endif %}
+
+      {% if review_form.errors %}
+        <ul class="reviews__errors" role="alert">
+          {% for field, messages in review_form.errors.items %}
+            {% for message in messages %}<li>{{ message }}</li>{% endfor %}
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      <fieldset class="reviews__field reviews__field--rating">
+        <legend class="reviews__label">Rating</legend>
+        {% comment %}
+        Five radios, highest first, turned back round by CSS. Written
+        this way so that a checked star can light the ones below it
+        with a sibling selector, which means the stars work with no
+        script running at all, and so that the whole thing is still a
+        labelled radio group to anything reading the page aloud.
+        {% endcomment %}
+        <div class="star-input">
+          {% for value in star_values %}
+            <input class="star-input__radio" type="radio" name="rating"
+                   id="star-{{ value }}" value="{{ value }}"
+                   {% if chosen == value %}checked{% endif %}>
+            <label class="star-input__label" for="star-{{ value }}">
+              <svg class="star-input__star star-input__star--outline"
+                   aria-hidden="true" focusable="false">
+                <use href="#icon-star-outline"/>
+              </svg>
+              <svg class="star-input__star star-input__star--filled"
+                   aria-hidden="true" focusable="false">
+                <use href="#icon-star"/>
+              </svg>
+              <span class="sr-only">{{ value }} star{{ value|pluralize }}</span>
+            </label>
+          {% endfor %}
+        </div>
+      </fieldset>
+
+      <div class="reviews__field">
+        <label class="reviews__label" for="review-body">Review (Optional)</label>
+        <textarea class="reviews__textarea" id="review-body" name="body"
+                  rows="5" maxlength="900"
+                  placeholder="What was it like snorkelling here?">{{ body }}</textarea>
+        <p class="reviews__counter" id="review-counter" aria-live="polite"></p>
+      </div>
+
+      <div class="reviews__buttons">
+        {% if my_review %}
+          <button class="reviews__btn reviews__btn--delete" type="button"
+                  data-open-delete>Delete</button>
+          {% comment %}
+          Disabled until something is actually different, so that the
+          button is never an invitation to save what is already saved.
+          Enabled by listing.js the moment the rating or the text stops
+          matching what the form was drawn with.
+          {% endcomment %}
+          <button class="reviews__btn reviews__btn--update" type="submit"
+                  id="review-submit" disabled>Update</button>
+        {% else %}
+          <button class="reviews__btn reviews__btn--publish" type="submit">
+            Publish as {{ user.get_username }}
+          </button>
+        {% endif %}
+      </div>
+    </form>
+
+    {% if prompt_snorkel %}
+      {% comment %}
+      Asked rather than assumed. Marking it updates the button at the
+      top of the page and the count above, and then this goes away.
+      {% endcomment %}
+      <div class="reviews__prompt" id="snorkel-prompt">
+        <p class="reviews__prompt-text">Have you been in the water here?</p>
+        <form method="post"
+              action="{% url 'toggle_snorkelled' location.uuid %}"
+              hx-post="{% url 'toggle_snorkelled' location.uuid %}"
+              hx-target="#snorkelled-action"
+              hx-swap="outerHTML"
+              hx-on::after-request="this.closest('#snorkel-prompt').remove()">
+          {% csrf_token %}
+          <button class="reviews__prompt-btn" type="submit">
+            Mark {{ location_name }} as snorkelled
+          </button>
+        </form>
+      </div>
+    {% endif %}
+
+    {% if my_review %}
+      {% comment %}
+      The confirmation. Inside the block on purpose: deleting swaps the
+      whole block, so the dialog is replaced by one that is closed, and
+      nothing has to remember to close it.
+      {% endcomment %}
+      <div class="reviews__confirm" id="review-delete-modal" role="dialog"
+           aria-modal="true" aria-labelledby="review-delete-title" hidden>
+        <div class="reviews__confirm-backdrop" data-close-delete></div>
+        <div class="reviews__confirm-box">
+          <h3 class="reviews__confirm-title" id="review-delete-title">
+            Confirm deletion
+          </h3>
+          <p class="reviews__confirm-text">
+            Your rating and review of {{ location_name }} will be removed.
+            This cannot be undone.
+          </p>
+          <div class="reviews__confirm-buttons">
+            <button class="reviews__btn reviews__btn--cancel" type="button"
+                    data-close-delete>Cancel</button>
+            <form method="post"
+                  action="{% url 'delete_review' location.uuid %}"
+                  hx-post="{% url 'delete_review' location.uuid %}"
+                  hx-target="#reviews"
+                  hx-swap="outerHTML"
+                  hx-disabled-elt="find button">
+              {% csrf_token %}
+              <button class="reviews__btn reviews__btn--delete" type="submit">
+                Delete
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  {% endif %}
+</section>
+{% if fragment %}
+  {% include "snorkel_locations/_rating_inline.html" with oob=True %}
+{% endif %}

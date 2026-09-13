@@ -1,0 +1,29 @@
+{% comment %}
+One group inside a card: a heading, its chips, whatever was said about
+it, and, where somebody answered None, a sentence saying so.
+
+"None" is an answer worth as much as any other. Somebody deciding
+whether to drive an hour to a beach wants to know there are no toilets,
+and a card that simply omits the group leaves them guessing. So it is
+stated in words rather than shown as a chip reading "None", which would
+tell nobody anything.
+{% endcomment %}
+<div class="listing__card-col">
+  <p class="listing__labels">{{ group.label }}</p>
+
+  {% if group.absent %}
+    <p class="listing__absent">
+      {{ group.absent_text|default:"Users have indicated there is none of this at this location." }}
+    </p>
+  {% elif group.selected %}
+    <div class="listing__chips">
+      {% for item in group.selected %}
+        <span class="listing__chiplet">{{ item }}</span>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if group.comments %}
+    <p class="listing__col-comments">{{ group.comments }}</p>
+  {% endif %}
+</div>
