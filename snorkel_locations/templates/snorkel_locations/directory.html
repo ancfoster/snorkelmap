@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% comment %}
+The text index of the map.
+
+Every published listing appears here exactly once, under its country
+and then its region, so the whole collection can be read and crawled
+without loading a map. The view hands over a finished nested structure,
+which keeps this to three plain loops.
+{% endcomment %}
+
+{% block title %}Snorkel Directory{% endblock %}
+{% block description %}An A to Z of the snorkelling locations added to SnorkelMap, listed by country and region.{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/directory.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="directory">
+
+  <header class="directory__head">
+    <h1>Snorkel Directory</h1>
+    <p class="directory__sub">
+      Explore the snorkel locations added to SnorkelMap by users so far.
+      Want a more visual view, <a href="{% url 'home' %}">view the SnorkelMap</a>.
+    </p>
+  </header>
+
+  <section class="directory__invite">
+    <div class="directory__invite-text">
+      <h2 class="directory__invite-heading">Know somewhere that is not on here?</h2>
+      <p>
+        Every location on SnorkelMap has been added by another user. Anyone can add a location to the map, add the places you know and help snorkelling community.
+      </p>
+    </div>
+    <a class="directory__invite-button" href="{% url 'create' %}">Add a location</a>
+  </section>
+
+  {% for country in countries %}
+    <section class="directory__country">
+      <h2 class="directory__country-name">{{ country.name }}</h2>
+      <div class="directory__country-inner">
+          <div class="directory__regions">
+          {% if country.unplaced %}
+            <div class="directory__region">
+              {% if country.unplaced_label %}
+                <h3 class="directory__region-name">{{ country.unplaced_label }}</h3>
+              {% endif %}
+              <ul class="directory__locations">
+                {% for location in country.unplaced %}
+                  <li><a href="{{ location.url }}">{{ location.name }}</a></li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+
+          {% for region in country.regions %}
+            <div class="directory__region">
+              <h3 class="directory__region-name">{{ region.name }}</h3>
+              <ul class="directory__locations">
+                {% for location in region.locations %}
+                  <li><a href="{{ location.url }}">{{ location.name }}</a></li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endfor %}
+        </div>
+
+      </div>
+
+    </section>
+  {% empty %}
+    <p class="directory__empty">
+      No locations have been published yet. Yours could be the first.
+    </p>
+  {% endfor %}
+
+</div>
+{% endblock %}

@@ -1,13 +1,643 @@
 {% extends 'base.html' %}
-{% load allauth account %}
-{% block title %}Welcome to SnorkelMap{% endblock %}
-{% block description %}Snorkel Map is a community powered snorkelling guide, a place where people can discover new places to snorkel and anyone can contribute.{% endblock %}
 {% load static %}
 
-{% block content %}
-<div class="create-step" id="0"></div>
+{% block title %}Add a Location{% endblock %}
+{% block description %}Add a snorkelling location to SnorkelMap. Share what a place is really like above and below the water, so other snorkellers know what to expect before they get there.{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/create.css' %}">
+  <link rel="stylesheet" href="{% static 'css/marker_map.css' %}">
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.css" rel="stylesheet">
 {% endblock %}
+
+{% block content %}
+{% if not user.is_authenticated %}
+
+  <p>You need to be logged in</p>
+
+{% else %}
+
+{# ─── RESUME DRAFT (internal step 0, never presented as a numbered step) ─── #}
+<div class="create-step" id="step-resume">
+  <div class="create-intro create-intro--resume">
+    <h1 class="create-intro__title">Pick up where you left off?</h1>
+    <p class="create-intro__body">It looks like you were working on adding a new location, <strong id="resume-location-name">this location</strong>, would you like to resume adding the location or start fresh?</p>
+    <div class="create-intro__actions">
+      <button class="btn btn--dark btn--full" id="resume-continue-btn" type="button">Resume adding location</button>
+      <button class="btn btn--secondary btn--full" id="resume-fresh-btn" type="button">Delete draft, start fresh</button>
+    </div>
+  </div>
+</div>
+
+{# ─── INTRO ─── #}
+<div class="create-step create-step--active" id="step-0">
+  <div class="create-intro">
+    <h1 class="create-intro__title">Add a new location to SnorkelMap</h1>
+    <div class="create-intro__section">
+      <h2 class="create-intro__heading">You're adding a location for everyone</h2>
+      <p class="create-intro__body">Once saved, your entry goes live on SnorkelMap for the whole community to use. Snorkellers planning a trip, researchers, and conservation groups may all rely on what you share, so accuracy matters more than completeness.</p>
+    </div>
+    <div class="create-intro__section">
+      <h2 class="create-intro__heading">Other snorkellers can add to and edit this location</h2>
+      <p class="create-intro__body">A location is not yours alone once it is published. Other members can add photos, correct details, update hazard information and edit what you have written, in the same way as a shared reference site. Every change is recorded in the location's edit history, so nothing is lost and you can see who changed what.</p>
+      <p class="create-intro__body">This means you do not need to get everything right first time, and you do not need to fill in the parts you are unsure about. Someone who knows the site will fill in the gaps.</p>
+    </div>
+    <div class="create-intro__section">
+      <h2 class="create-intro__heading">Only add what you know</h2>
+      <p class="create-intro__body">Every field is optional except a name, a pin and one photo. A short, accurate entry is far more useful than a full one with guesses in it.</p>
+    </div>
+    <div class="create-intro__section">
+      <h2 class="create-intro__heading">One photo is needed to publish</h2>
+      <p class="create-intro__body">To publish a location you need at least one photo of the above water surroundings, so people can recognise the place when they arrive. Underwater photos are welcome but not required, and you can add them at any time later.</p>
+    </div>
+    <div class="create-intro__section">
+      <h2 class="create-intro__heading">What makes a good entry</h2>
+      <ul class="create-intro__list">
+        <li>Descriptions in your own words, based on your own experience</li>
+        <li>Hazards, nature and things you have personally observed</li>
+        <li>Only fill in what you know, others will fill in any gaps</li>
+      </ul>
+    </div>
+    <label class="create-intro__check">
+      <input type="checkbox" id="intro-checkbox">
+      <span>I understand</span>
+    </label>
+    <button class="btn btn--dark btn--full" id="intro-start" disabled>Start adding location</button>
+  </div>
+</div>
+
+{# ─── STEP 1: WHERE IS IT ─── #}
+<div class="create-step create-step--map" id="step-1">
+  <div class="map-panel">
+    <div class="map-panel__top">
+      <span class="map-panel__step-label">Step 1 of {{ step_total }}</span>
+      <div class="step-donut-wrap" id="donut-step-1"></div>
+    </div>
+    <h2 class="map-panel__heading">1. Where is it</h2>
+    <p class="map-panel__body">Search for a nearby town to get close, then zoom in and drag the centre of the map to the right spot. This could be the main entry point, or the middle of a bay, cove, beach or reef. This position will be displayed on the main snorkel map.</p>
+    <button class="btn btn--dark btn--full" id="confirm-location-btn" disabled>Confirm location</button>
+  </div>
+  <div class="map-wrap" id="map-wrap">
+    <div id="mapbox-map" class="map-wrap__map"></div>
+    <div class="map-wrap__crosshair crosshair--warning" id="map-crosshair">
+      <svg class="crosshair-svg" viewBox="0 0 84 84" xmlns="http://www.w3.org/2000/svg">
+        <path d="M44 6.5V0H40V6.5C22 7.5 7.5 22 6.5 40H0V44H6.5C7.5 62 22 76.5 40 77.5V84H44V77.5C62 76.5 76.5 62 77.5 44H84V40H77.5C76.5 22 62 7.5 44 6.5ZM44 73.5V55.1H40V73.5C24.2 72.5 11.5 59.8 10.5 44H28.9V40H10.5C11.5 24.2 24.2 11.5 40 10.5V29H44V10.5C59.8 11.5 72.5 24.2 73.5 40H55.1V44H73.5C72.5 59.8 59.8 72.5 44 73.5Z" fill="currentColor" stroke="#333333" stroke-width="1.5" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="map-wrap__search">
+      <input type="text" id="map-search-input" class="map-search__input" placeholder="Search for a place" autocomplete="off">
+      <div class="map-search__results" id="map-search-results"></div>
+    </div>
+    <div class="map-style-toggle map-style-toggle--finder" id="finder-style-toggle">
+      <button class="map-style-toggle__btn map-style-toggle__btn--active" type="button" data-style="terrain">Terrain</button>
+      <button class="map-style-toggle__btn" type="button" data-style="satellite">Satellite</button>
+    </div>
+    <div class="zoom-gate" id="zoom-gate">
+      <div class="zoom-gate__bar-wrap">
+        <div class="zoom-gate__bar-bg">
+          <div class="zoom-gate__bar-amber"></div>
+          <div class="zoom-gate__bar-green"></div>
+        </div>
+        <input type="range" class="zoom-gate__slider" id="zoom-slider" min="4" max="18.5" step="0.05" value="5" autocomplete="off">
+      </div>
+      <div class="zoom-gate__labels">
+        <span class="zoom-gate__label-amber">Too far out &mdash; zoom in more</span>
+        <span class="zoom-gate__label-green">Ready to confirm</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# ─── STEP 2: BASIC DETAILS ─── #}
+<div class="create-step" id="step-2">
+  <div class="step-header">
+    <div class="step-header__inner">
+      <h2 class="step-header__title">2. Basic Details</h2>
+      <div class="step-donut-wrap" id="donut-step-2"></div>
+    </div>
+  </div>
+  <div class="step-content">
+    <div class="location-meta-breadcrumb" id="location-meta-step2" style="display:none"></div>
+
+    <div class="form-field">
+      <p class="form-field__helper">Use the name local people use, or a descriptive name if there isn't one. Avoid vague names like "Rocky beach".</p>
+      <label class="form-field__label" for="location-name">Location Name <span class="form-field__required">*</span></label>
+      <input type="text" id="location-name" class="form-field__input" placeholder="e.g. Backwash Bay" autocomplete="off" data-field="name">
+      <p class="form-field__example">e.g. Playa de la Malagueta, Backwash Bay</p>
+      <div class="field-error" id="err-name"></div>
+    </div>
+
+    <div class="form-field">
+      <label class="form-field__label">Alternate Names <span class="form-field__optional">(Optional)</span></label>
+      <p class="form-field__helper">If there are other names people use for this place, add them here. This helps others find the location when they search for it.</p>
+      <button class="btn btn--secondary btn--sm" id="alt-name-open" type="button">Add Alternate Name</button>
+      <div class="tag-list" id="alt-names-list"></div>
+    </div>
+
+    <div class="form-field">
+      <label class="form-field__label" for="description">Description <span class="form-field__required">*</span></label>
+      <p class="form-field__helper">Help fellow snorkellers understand what the location is like, above and below the water, and what to expect when they get there. Please mention anything worth cautioning others about: a current that picks up on a certain tide, a slippery exit, boat traffic through the bay, water quality after heavy rain. If something gave you pause, it is worth writing down.</p>
+      <textarea id="description" class="form-field__textarea" rows="7" placeholder="Describe the location, what it is like underwater, and anything others should be careful of..." data-field="description"></textarea>
+      <button class="btn btn--ghost btn--sm" type="button" data-example="description">Read an example</button>
+      <div class="field-error" id="err-description"></div>
+    </div>
+
+    <div class="form-field">
+      <label class="form-field__label" for="entry-point-desc">Entry Point Description <span class="form-field__optional">(Optional)</span></label>
+      <p class="form-field__helper">How do people actually get in and out of the water? Steps, a slipway, a shingle beach, a scramble over boulders. Mention anything that changes with the tide or the conditions.</p>
+      <textarea id="entry-point-desc" class="form-field__textarea" rows="4" placeholder="Describe the entry and exit points..." data-field="entryPointDescription"></textarea>
+      <button class="btn btn--ghost btn--sm" type="button" data-example="entryPoint">Read an example</button>
+    </div>
+
+    <div class="form-section">
+      <h3 class="form-section__heading">Access Type <span class="form-field__required">*</span></h3>
+      <p class="form-section__helper">How do people access this location? Select all that apply.</p>
+      <div class="chip-group__items" id="chips-accessType">
+        {% for id, label in access_types %}
+          <button type="button" class="chip" data-id="{{ id }}" data-state-key="accessType">{{ label }}</button>
+        {% endfor %}
+      </div>
+      <div class="field-error" id="err-access"></div>
+    </div>
+
+    <div class="form-section">
+      <h3 class="form-section__heading">Water Type <span class="form-field__required">*</span></h3>
+      <div id="chips-waterType">
+        {% for wgroup in water_type_groups %}
+          <div class="chip-sub-group" data-water-group="{{ wgroup.id }}">
+            <span class="chip-sub-group__label">{{ wgroup.label }}</span>
+            <div class="chip-group__items">
+              {% for chip in wgroup.chips %}
+                <button type="button" class="chip"
+                        data-id="{{ chip.id }}"
+                        data-state-key="waterType"
+                        data-water-group="{{ wgroup.id }}">{{ chip.label }}</button>
+              {% endfor %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      <div class="field-error" id="err-water"></div>
+    </div>
+
+    <div class="form-section">
+      <h3 class="form-section__heading">Difficulty</h3>
+      <p class="form-section__helper">How difficult is this location to snorkel?</p>
+      <div id="difficulty-slider-wrap">
+        <div class="difficulty-slider">
+          <div class="difficulty-slider__track"></div>
+          <div class="difficulty-slider__ticks">
+            {% for label in difficulty_labels %}<span class="difficulty-slider__tick"></span>{% endfor %}
+          </div>
+          <input type="range" class="difficulty-slider__input" min="1" max="{{ difficulty_labels|length }}"
+                 step="1" value="1" aria-label="Difficulty" autocomplete="off"
+                 data-field="difficulty" data-field-type="int">
+          <div class="difficulty-slider__labels">
+            {% for label in difficulty_labels %}<span class="difficulty-slider__label">{{ label }}</span>{% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {# Optional visibility report, filed at creation time #}
+    <div class="form-section">
+      <h3 class="form-section__heading">Visibility Report <span class="form-field__optional">(Optional)</span></h3>
+      <p class="form-section__helper">If you remember roughly how far you could see the day you snorkelled here, add a report. If you are not sure, leave this alone and carry on, it is not needed to publish and a rough guess is worse than nothing.</p>
+      <p class="form-section__helper">Visibility changes constantly, so one report is only ever a snapshot. Once this location is live, anyone who snorkels here can add their own report, and the listing shows the picture that builds up over time.</p>
+      <div class="vis-report-form vis-report-form--untouched" id="vis-create-form">
+        <p class="vis-report-form__hint" id="vis-create-hint">Drag the slider to add a report</p>
+        <div class="vis-slider-labels">
+          {% for label in visibility_category_labels %}<span>{{ label }}</span>{% endfor %}
+        </div>
+        <div class="vis-slider-wrap">
+          <input type="range" id="vis-create-slider" class="vis-slider-input" min="0" max="12" step="0.5"
+                 value="0" autocomplete="off" aria-label="Visibility in metres" data-field="visibilityValue">
+        </div>
+        <div class="vis-scale">
+          {% for label in visibility_scale_labels %}<span>{{ label }}</span>{% endfor %}
+        </div>
+
+        {# Only shown once the slider has actually been moved #}
+        <div class="vis-report-form__details">
+          <label class="form-field__label" for="vis-create-date">Date you snorkelled here</label>
+          <p class="form-field__helper">Reports can be for any date within the last {{ visibility_max_age_days }} days.</p>
+          <input type="date" id="vis-create-date" class="vis-date-input" autocomplete="off" data-field="visibilityDate">
+
+          <label class="form-field__label form-field__label--spaced" for="vis-create-comment">Optional Comments</label>
+          <p class="form-field__example">e.g. "Visibility poor because of runoff from nearby river" or "Flat calm sea as slight Northerly, some current running along the shore East to West but visibility was okay."</p>
+          <textarea id="vis-create-comment" class="form-field__textarea form-field__textarea--compact" rows="3"
+                    placeholder="Add a comment about the conditions..." data-field="visibilityComment"></textarea>
+
+          <button class="btn btn--ghost btn--sm" type="button" id="vis-create-clear">Clear visibility report</button>
+        </div>
+        <div class="field-error" id="err-visibility"></div>
+      </div>
+    </div>
+  </div>
+  <div class="step-bar-offset"></div>
+  <div class="step-bar">
+    <div class="step-bar__inner">
+      <button class="btn btn--ghost step-bar__btn" type="button" data-goto="1">&larr; Where is it</button>
+      <button class="btn btn--dark step-bar__btn" type="button" id="step2-continue">Upload Media &rarr;</button>
+    </div>
+  </div>
+</div>
+
+{# ─── STEP 3: UPLOAD MEDIA ─── #}
+<div class="create-step" id="step-3">
+  <div class="step-header">
+    <div class="step-header__inner">
+      <h2 class="step-header__title">3. Upload media</h2>
+      <div class="step-donut-wrap" id="donut-step-3"></div>
+    </div>
+  </div>
+  <div class="step-content">
+    <p class="step-subheading">To publish a location we need at least one photo of the above water surroundings, so people can recognise the place when they arrive. Underwater photos are welcome but not required.</p>
+    {% for section in media_sections %}
+      <div class="form-section" data-media-key="{{ section.key }}">
+        <h3 class="form-section__heading">
+          {{ section.label }}
+          {% if section.required %}<span class="form-field__required">*</span>{% else %}<span class="form-field__optional">(Optional)</span>{% endif %}
+        </h3>
+        <p class="form-section__helper">{{ section.helper }}</p>
+        <div class="photo-grid" id="{{ section.slug }}-photos-grid"></div>
+        <div class="drop-zone" id="{{ section.slug }}-drop-zone">
+          <div class="drop-zone__inner">
+            <svg class="drop-zone__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+            <p class="drop-zone__text">Drop files or <span class="drop-zone__link">click to upload</span></p>
+            <p class="drop-zone__hint">{{ media_hint }}</p>
+          </div>
+          <input type="file" id="{{ section.slug }}-file-input" class="drop-zone__input" accept="{{ media_accept }}" multiple>
+        </div>
+        {% comment %}
+        Files that failed the gate are listed here, one line each, and
+        cleared the next time this section is added to. They are kept
+        separate from the step's own validation error so that "this
+        photo was too small" cannot be mistaken for "you have not added
+        a photo yet".
+        {% endcomment %}
+        <ul class="media-rejects" id="{{ section.slug }}-media-rejects" hidden></ul>
+        {% if section.required %}<div class="field-error" id="err-photos"></div>{% endif %}
+      </div>
+    {% endfor %}
+  </div>
+  <div class="step-bar-offset"></div>
+  <div class="step-bar">
+    <div class="step-bar__inner">
+      <button class="btn btn--ghost step-bar__btn" type="button" data-goto="2">&larr; Basic Details</button>
+      <button class="btn btn--dark step-bar__btn" type="button" id="step3-continue">Environment &rarr;</button>
+    </div>
+  </div>
+</div>
+
+{# ─── STEP 4: UNDERWATER ENVIRONMENT ─── #}
+<div class="create-step" id="step-4">
+  <div class="step-header">
+    <div class="step-header__inner">
+      <h2 class="step-header__title">4. Underwater Environment</h2>
+      <div class="step-donut-wrap" id="donut-step-4"></div>
+    </div>
+  </div>
+  <div class="step-content">
+    <p class="step-subheading">When you snorkelled this location, what did you see? Each group has a "See examples" button with pictures if you are not sure.</p>
+    <div class="form-section">
+      <h3 class="form-section__heading">Environment Types <span class="form-field__required">*</span></h3>
+      <p class="form-section__helper">Select all that apply.</p>
+    </div>
+    <div id="environment-types-container">
+      {% for group in environment_groups %}
+        {% include "snorkel_locations/_chip_group.html" with group=group payload_group="environmentTypes" payload_key=group.payload_key %}
+      {% endfor %}
+    </div>
+    <div class="field-error" id="err-env"></div>
+  </div>
+  <div class="step-bar-offset"></div>
+  <div class="step-bar">
+    <div class="step-bar__inner">
+      <button class="btn btn--ghost step-bar__btn" type="button" data-goto="3">&larr; Upload Media</button>
+      <button class="btn btn--dark step-bar__btn" type="button" id="step4-continue">Marine Life &rarr;</button>
+    </div>
+  </div>
+</div>
+
+{# ─── STEP 5: MARINE LIFE ─── #}
+<div class="create-step" id="step-5">
+  <div class="step-header">
+    <div class="step-header__inner">
+      <h2 class="step-header__title">5. Types of marine life</h2>
+      <div class="step-donut-wrap" id="donut-step-5"></div>
+    </div>
+  </div>
+  <div class="step-content">
+    <p class="step-subheading">What kind of marine life did you see? We are looking for the types of marine life rather than specific species. Each group has a "See examples" button with pictures.</p>
+    <div id="marine-life-container">
+      {% for group in marine_life_groups %}
+        {% include "snorkel_locations/_chip_group.html" with group=group payload_group="marineLife" payload_key=group.payload_key %}
+      {% endfor %}
+    </div>
+    <div class="field-error" id="err-marine"></div>
+    <div class="form-field form-field--section-comments">
+      <h3 class="form-section__heading">Optional Comments</h3>
+      <p class="form-field__example">e.g. "The rocky ridges have rows of bright white dead man's fingers. Large spider crabs can also be seen here."</p>
+      <textarea id="marine-life-comments" class="form-field__textarea" rows="3" placeholder="Any other marine life worth mentioning..." data-field="marineLifeComments"></textarea>
+    </div>
+  </div>
+  <div class="step-bar-offset"></div>
+  <div class="step-bar">
+    <div class="step-bar__inner">
+      <button class="btn btn--ghost step-bar__btn" type="button" data-goto="4">&larr; Environment</button>
+      <button class="btn btn--dark step-bar__btn" type="button" id="step5-continue">Hazards &rarr;</button>
+    </div>
+  </div>
+</div>
+
+{# ─── STEP 6: HAZARDS ─── #}
+<div class="create-step" id="step-6">
+  <div class="step-header">
+    <div class="step-header__inner">
+      <h2 class="step-header__title">6. Hazards</h2>
+      <div class="step-donut-wrap" id="donut-step-6"></div>
+    </div>
+  </div>
+  <div class="step-content">
+    <p class="step-subheading">What kind of hazards did you see?</p>
+    <div id="hazards-container">
+      {% for group in hazard_groups %}
+        {% include "snorkel_locations/_chip_group.html" with group=group payload_group="hazards" payload_key=group.payload_key %}
+      {% endfor %}
+    </div>
+    <div class="form-field form-field--section-comments">
+      <h3 class="form-section__heading">Optional Comments</h3>
+      <textarea id="hazards-comments" class="form-field__textarea" rows="3" placeholder="Any other hazards worth noting..." data-field="hazardsComments"></textarea>
+    </div>
+  </div>
+  <div class="step-bar-offset"></div>
+  <div class="step-bar">
+    <div class="step-bar__inner">
+      <button class="btn btn--ghost step-bar__btn" type="button" data-goto="5">&larr; Marine Life</button>
+      <button class="btn btn--dark step-bar__btn" type="button" data-goto="7">Facilities &rarr;</button>
+    </div>
+  </div>
+</div>
+
+{# ─── STEP 7: FACILITIES ─── #}
+<div class="create-step" id="step-7">
+  <div class="step-header">
+    <div class="step-header__inner">
+      <h2 class="step-header__title">7. Facilities</h2>
+      <div class="step-donut-wrap" id="donut-step-7"></div>
+    </div>
+  </div>
+  <div class="step-content">
+    <p class="step-subheading">What kind of facilities are nearby? Select the ones you know of, or "None" if you know there are none.</p>
+    <div id="facilities-container">
+      {% for group in facility_groups_before %}
+        {% include "snorkel_locations/_chip_group.html" with group=group payload_group="facilities" payload_key=group.payload_key %}
+      {% endfor %}
+
+      {# ── Getting there ── #}
+      <div class="form-section" id="getting-there-section">
+        <h3 class="form-section__heading">Getting There</h3>
+        <p class="form-section__helper">Is there anything users need to know about getting to this location, for example how to get to the entry point from the parking area, or any other information specific to accessing or navigating to this location.</p>
+        <textarea class="form-field__textarea form-field__textarea--compact" rows="3"
+                  placeholder="Add anything useful about getting here..."
+                  data-field="gettingThereComments"></textarea>
+
+        <h4 class="form-subsection__heading">Is there parking?</h4>
+        <div class="chip-group__items" id="parking-available-chips">
+          {% for id, label in parking_availability %}
+            <button type="button" class="chip" data-parking-available="{{ id }}">{{ label }}</button>
+          {% endfor %}
+        </div>
+        <div class="chip-group__items" id="parking-type-chips" style="display:none">
+          {% for id, label in parking_types %}
+            <button type="button" class="chip" data-id="{{ id }}" data-state-key="facParking">{{ label }}</button>
+          {% endfor %}
+        </div>
+        <p class="form-field__label">Optional Comments</p>
+        <p class="form-field__example">e.g. "Room for approximately eight cars at the top of the path" or "Pay and Display in operation between April and September"</p>
+        <textarea class="form-field__textarea form-field__textarea--compact" rows="2"
+                  placeholder="Add parking details..." data-field="facParkingComments"></textarea>
+
+        <h4 class="form-subsection__heading">Public Transport</h4>
+        <div class="chip-group__items" data-group-key="facTransport" data-none-option="true">
+          {% for id, label in transport_types %}
+            <button type="button" class="chip" data-id="{{ id }}" data-state-key="facTransport">{{ label }}</button>
+          {% endfor %}
+          <button type="button" class="chip chip--none" data-id="none" data-state-key="facTransport">None</button>
+        </div>
+        <p class="form-field__label">Optional Comments</p>
+        <p class="form-field__example">e.g. "Aberdour train station is approximately 15 minutes on foot from the car park entrance." or "The nearest bus stop is Giles Place (route 33), a 10-minute walk from the water's edge."</p>
+        <textarea class="form-field__textarea form-field__textarea--compact" rows="2"
+                  placeholder="Describe nearby public transport options..." data-field="facTransportDescription"></textarea>
+      </div>
+
+      {% for group in facility_groups_after %}
+        {% include "snorkel_locations/_chip_group.html" with group=group payload_group="facilities" payload_key=group.payload_key %}
+      {% endfor %}
+    </div>
+    <div class="form-field">
+      <label class="form-field__label" for="facility-other">Anything else?</label>
+      <textarea id="facility-other" class="form-field__textarea" rows="3" placeholder="Any other facilities worth noting..." data-field="facOther"></textarea>
+    </div>
+  </div>
+  <div class="step-bar-offset"></div>
+  <div class="step-bar">
+    <div class="step-bar__inner">
+      <button class="btn btn--ghost step-bar__btn" type="button" data-goto="6">&larr; Hazards</button>
+      <button class="btn btn--dark step-bar__btn" type="button" data-goto="8">Location Map &rarr;</button>
+    </div>
+  </div>
+</div>
+
+{# ─── STEP 8: LOCATION MAP ─── #}
+<div class="create-step" id="step-8">
+  <div class="step-header">
+    <div class="step-header__inner">
+      <h2 class="step-header__title">8. Location Map</h2>
+      <div class="step-donut-wrap" id="donut-step-8"></div>
+    </div>
+  </div>
+  <div class="sm-annotate-map-cont">
+    <div class="note-overlay hidden">
+      <div class="note-overlay__dialog" role="dialog" aria-modal="true" aria-labelledby="note-overlay-title">
+        <h2 class="note-overlay__title" id="note-overlay-title"></h2>
+        <textarea class="note-overlay__textarea" maxlength="550" rows="6"
+                  placeholder="Add a note &mdash; charges, opening hours, conditions&hellip;"></textarea>
+        <span class="note-overlay__counter">0 / 550</span>
+        <div class="note-overlay__actions">
+          <button type="button" class="note-overlay__btn note-overlay__btn--cancel">Cancel</button>
+          <button type="button" class="note-overlay__btn note-overlay__btn--confirm">Confirm</button>
+        </div>
+      </div>
+    </div>
+    <div id="sm-annotate-map-cont__map"></div>
+
+    <div class="map-style-toggle map-style-toggle--annotate" id="annotate-style-toggle">
+      <button class="map-style-toggle__btn map-style-toggle__btn--active" type="button" data-style="satellite">Satellite</button>
+      <button class="map-style-toggle__btn" type="button" data-style="terrain">Terrain</button>
+    </div>
+
+    <button class="sm-annotate-map__help" id="annotate-help-btn" type="button" aria-label="What is this step for?">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M9.4 9.2a2.7 2.7 0 015.2.9c0 1.8-2.6 2.2-2.6 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        <circle cx="12" cy="17.4" r="1.15" fill="currentColor"/>
+      </svg>
+    </button>
+
+    <div class="sm-annotate-map__toolbar">
+      {# Marker drawer is rendered server side from choices.MARKER_LIBRARY #}
+      <div class="sm-annotate-map__marker-drawer marker-drawer hidden">
+        <div class="marker-drawer__list">
+          {% for category in marker_library %}
+            <div class="marker-drawer__category">
+              <span class="marker-drawer__category-title">{{ category.category }}</span>
+              <div class="marker-drawer__grid">
+                {% for id, name in category.markers %}
+                  <div class="marker-drawer__item" data-marker-id="{{ id }}" data-marker-name="{{ name }}">
+                    <img class="marker-drawer__icon" src="{% static 'images/sm-map-icons/' %}{{ id }}.png" alt="">
+                    <span class="marker-drawer__label">{{ name }}</span>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <button class="btn btn--dark sm-annotate-map-toolbar__btn sm-annotate-map-toolbar__btn--add-marker" aria-label="Add marker to location map">
+        <svg width="25" height="32" viewBox="0 0 25 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M11.2579 18.9379H13.742V13.8878H18.7103V11.3627H13.742V6.31263H11.2579V11.3627H6.28975V13.8878H11.2579V18.9379ZM12.5 32C8.33223 28.3291 5.20695 24.9129 3.12417 21.7512C1.04139 18.5893 0 15.6865 0 13.0427C0 9.15809 1.23612 6.01313 3.70835 3.60788C6.18086 1.20263 9.11141 0 12.5 0C15.8886 0 18.8191 1.20263 21.2916 3.60788C23.7639 6.01313 25 9.15809 25 13.0427C25 15.6865 23.9586 18.5893 21.8758 21.7512C19.793 24.9129 16.6678 28.3291 12.5 32Z" fill="currentColor"/>
+        </svg>
+        <span>Add Map Marker</span>
+      </button>
+    </div>
+  </div>
+  <div class="step-bar">
+    <div class="step-bar__inner">
+      <button class="btn btn--ghost step-bar__btn" type="button" data-goto="7">&larr; Facilities</button>
+      <button class="btn btn--dark step-bar__btn" type="button" id="publish-btn">Publish</button>
+    </div>
+  </div>
+</div>
+
+{# ─── PUBLISH ─── #}
+{% comment %}
+Not a numbered step. Once the user is here the submission is in flight, so
+there is no way back: the history guard and the unload prompt both engage.
+{% endcomment %}
+<div class="create-step" id="step-publish">
+  <div class="create-publish">
+    <h1 class="create-publish__heading">Publishing your location</h1>
+    <p class="create-publish__body" id="publish-status-line">Hold on while we save <strong id="publish-location-name">your location</strong>. Please keep this page open.</p>
+
+    <ol class="publish-progress" id="publish-progress">
+      <li class="publish-progress__item" data-stage="validate">
+        <span class="publish-progress__marker" aria-hidden="true"></span>
+        <span class="publish-progress__label">Checking your entry</span>
+        <span class="publish-progress__detail"></span>
+      </li>
+      <li class="publish-progress__item" data-stage="location">
+        <span class="publish-progress__marker" aria-hidden="true"></span>
+        <span class="publish-progress__label">Creating the location</span>
+        <span class="publish-progress__detail"></span>
+      </li>
+      <li class="publish-progress__item" data-stage="media">
+        <span class="publish-progress__marker" aria-hidden="true"></span>
+        <span class="publish-progress__label">Uploading photos</span>
+        <span class="publish-progress__detail"></span>
+      </li>
+      <li class="publish-progress__item" data-stage="finalise">
+        <span class="publish-progress__marker" aria-hidden="true"></span>
+        <span class="publish-progress__label">Finishing up</span>
+        <span class="publish-progress__detail"></span>
+      </li>
+    </ol>
+
+    <div class="publish-error" id="publish-error" hidden>
+      <p class="publish-error__text" id="publish-error-text"></p>
+      <button class="btn btn--dark" type="button" id="publish-retry">Try again</button>
+      <button class="btn btn--ghost" type="button" id="publish-back">Back to the location map</button>
+    </div>
+  </div>
+</div>
+
+{# ─── THANK YOU ─── #}
+<div class="create-step" id="step-thankyou">
+  <div class="create-thankyou">
+    <h1 class="create-thankyou__heading">Thank you!</h1>
+    <p class="create-thankyou__body">Thank you for helping the community by adding another snorkel location to the map. Your contribution is invaluable.</p>
+    {% comment %}
+    Shown when the listing was created but a photograph did not make
+    it. The listing exists, so there is nothing to resubmit: the only
+    useful thing the person can do is open it and add the photo again.
+    {% endcomment %}
+    <div class="create-thankyou__notice" id="thankyou-notice" hidden>
+      <p class="create-thankyou__notice-text" id="thankyou-notice-text"></p>
+    </div>
+    <a class="btn btn--dark btn--full" id="view-location-btn" href="#">
+      View <span id="thankyou-location-name">Your Location</span>
+    </a>
+    <div class="create-thankyou__points">
+      <p class="create-thankyou__points-value">+100 Points</p>
+      <p class="create-thankyou__points-label">You have just received 100 contribution points!</p>
+    </div>
+  </div>
+</div>
+
+{# ─── MODAL SHELL + EXAMPLE CONTENT ─── #}
+<div class="sm-modal" id="example-modal" inert>
+  <div class="sm-modal__overlay" id="modal-overlay"></div>
+  <div class="sm-modal__box" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="sm-modal__close" id="modal-close" type="button" aria-label="Close">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 1l12 12M13 1L1 13"/></svg>
+    </button>
+    <h3 class="sm-modal__title" id="modal-title">Example</h3>
+    <div class="sm-modal__body" id="modal-body"></div>
+  </div>
+</div>
+
+{% include "snorkel_locations/_examples.html" %}
+
+{# ─── ADD ALTERNATE NAME MODAL ─── #}
+<div class="sm-modal" id="alt-name-modal" inert>
+  <div class="sm-modal__overlay" id="alt-name-modal-overlay"></div>
+  <div class="sm-modal__box sm-modal__box--narrow" role="dialog" aria-modal="true" aria-labelledby="alt-name-modal-title">
+    <button class="sm-modal__close" id="alt-name-modal-close" type="button" aria-label="Close">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 1l12 12M13 1L1 13"/></svg>
+    </button>
+    <h3 class="sm-modal__title" id="alt-name-modal-title">Add an alternate name</h3>
+    <div class="sm-modal__body">
+      <label class="form-field__label" for="alt-name-modal-input">Alternate name</label>
+      <input type="text" id="alt-name-modal-input" class="form-field__input" placeholder="e.g. The Cauldron" autocomplete="off">
+      <p class="form-field__example">Another name locals or visitors use for this place.</p>
+    </div>
+    <div class="sm-modal__footer">
+      <button class="btn btn--dark" id="alt-name-modal-add" type="button">Add Name</button>
+    </div>
+  </div>
+</div>
+
+{% endif %}
+{% endblock %}
+
 {% block extra_js %}
-{{ mapbox_token|json_script:"mapbox-token" }}
-<script src="{% static 'js/create.js'%}"></script>
+{% if user.is_authenticated %}
+  {{ mapbox_token|json_script:"mapbox-token" }}
+  {{ marker_icon_base|json_script:"marker-icon-base" }}
+  {{ step_total|json_script:"step-total" }}
+  {{ visibility_max_age_days|json_script:"visibility-max-age-days" }}
+  {{ media_rules|json_script:"media-rules" }}
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.js"></script>
+  {% comment %}
+  exifr reads the capture date and GPS out of JPEG and HEIC files.
+  Vendored rather than loaded from a CDN so the create page has no
+  third party runtime dependency. MIT licensed, version 7.1.3, the
+  "lite" build.
+  {% endcomment %}
+  <script src="{% static 'js/vendor/exifr.lite.umd.js' %}"></script>
+  <script src="{% static 'js/media_validate.js' %}"></script>
+  <script src="{% static 'js/create.js' %}"></script>
+  <script src="{% static 'js/marker_map.js' %}"></script>
+{% endif %}
 {% endblock %}

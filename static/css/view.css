@@ -1,0 +1,20 @@
+.listing {
+    width: 100%;
+    max-width: 1120px;
+    box-sizing: border-box;
+    margin: 0 16px;
+}
+    .listing--top-row {
+        display: flex;
+        flex-direction: row;
+    }
+    .location-breadcrumb {
+        display: flex;
+        gap: 4px;
+        color: #067FB3;
+        font-size: 1rem
+
+    }
+.listing--name-row {
+    
+}

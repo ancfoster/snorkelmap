@@ -2,194 +2,493 @@
 {% load static %}
 
 {% comment %}
-A plain reading of one listing.
+One snorkelling location.
 
-Deliberately unstyled beyond the site's base: definition lists and
-bullet lists, in the order the form asks for them. Its job is to show
-that everything submitted arrived intact and can be read back, which is
-easier to check when nothing is hidden behind a layout.
+Layout, cards and modals follow the static prototype. What is not here
+is what has nothing behind it yet, so that nothing on the page is a
+promise the site cannot keep: no tides, no weather, no conditions grid,
+no visibility reports, no discussion, no rating and no editing history.
+Each of those arrives with the model that backs it.
+
+Every value is prepared by views.listing_context, so this file is loops
+and conditionals. The one thing it decides for itself is what to show
+when a section is empty.
 {% endcomment %}
 
 {% block title %}{{ revision.name }}{% endblock %}
+{% block description %}{{ revision.description|striptags|truncatewords:30 }}{% endblock %}
+
+{% block extra_css %}
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/listing.css' %}">
+{% endblock %}
 
 {% block content %}
-<article class="listing">
-
-  <header>
-    <h1>{{ revision.name }}</h1>
-    {% if revision.alternate_names %}
-      <p>Also known as: {{ revision.alternate_names|join:", " }}</p>
-    {% endif %}
+  {% comment %}
+  The icons, once each. Everything that draws one points at a symbol
+  here with <use>, including the fragments the two toggle endpoints
+  return, so the artwork lives in one place and nothing outside this
+  page carries a copy of it.
+  {% endcomment %}
+  <svg class="listing__icons" aria-hidden="true" focusable="false">
+    <defs>
+    <symbol id="icon-snorkel" viewBox="0 0 20 20" fill="none">
+      <g clip-path="url(#snorkel-clip0_692_386)">
+      <path d="M13.3333 5.83333H3.33333C3.11232 5.83333 2.90036 5.92113 2.74408 6.07741C2.5878 6.23369 2.5 6.44565 2.5 6.66666V10.4167C2.5 10.9692 2.71949 11.4991 3.11019 11.8898C3.5009 12.2805 4.0308 12.5 4.58333 12.5H5C5.44203 12.5 5.86595 12.3244 6.17851 12.0118C6.49107 11.6993 6.66667 11.2754 6.66667 10.8333C6.66667 10.3913 6.84226 9.96738 7.15482 9.65482C7.46738 9.34226 7.89131 9.16666 8.33333 9.16666C8.77536 9.16666 9.19928 9.34226 9.51184 9.65482C9.82441 9.96738 10 10.3913 10 10.8333C10 11.2754 10.1756 11.6993 10.4882 12.0118C10.8007 12.3244 11.2246 12.5 11.6667 12.5H12.0833C12.6359 12.5 13.1658 12.2805 13.5565 11.8898C13.9472 11.4991 14.1667 10.9692 14.1667 10.4167V6.66666C14.1667 6.44565 14.0789 6.23369 13.9226 6.07741C13.7663 5.92113 13.5543 5.83333 13.3333 5.83333Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M8.33325 14.1667C8.33325 14.6087 8.50885 15.0326 8.82141 15.3452C9.13397 15.6577 9.55789 15.8333 9.99992 15.8333H12.9166C14.1322 15.8333 15.298 15.3504 16.1575 14.4909C17.017 13.6314 17.4999 12.4656 17.4999 11.25V3.33333" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <defs>
+      <clipPath id="snorkel-clip0_692_386">
+      <rect width="20" height="20" fill="currentColor"/>
+      </clipPath>
+      </defs>
+    </symbol>
+    <symbol id="icon-save" viewBox="0 0 20 20" fill="none">
+      <path d="M4 17.5V4.16667C4 3.70833 4.16319 3.31597 4.48958 2.98958C4.81597 2.66319 5.20833 2.5 5.66667 2.5H14C14.4583 2.5 14.8507 2.66319 15.1771 2.98958C15.5035 3.31597 15.6667 3.70833 15.6667 4.16667V17.5L9.83333 15L4 17.5ZM5.66667 14.9583L9.83333 13.1667L14 14.9583V4.16667H5.66667V14.9583Z" fill="#2980A3"/>
+    </symbol>
+    <symbol id="icon-share" viewBox="0 0 20 20" fill="none">
+      <mask id="share-mask0_692_366" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
+      <rect width="20" height="20" fill="currentColor"/>
+      </mask>
+      <g mask="url(#share-mask0_692_366)">
+      <path d="M5.25646 17.9167C4.83549 17.9167 4.47917 17.7708 4.1875 17.4792C3.89583 17.1875 3.75 16.8312 3.75 16.4102V8.58979C3.75 8.16882 3.89583 7.8125 4.1875 7.52084C4.47917 7.22917 4.83549 7.08334 5.25646 7.08334H7.38771V8.33334H5.25646C5.19229 8.33334 5.13354 8.36007 5.08021 8.41354C5.02674 8.46688 5 8.52563 5 8.58979V16.4102C5 16.4744 5.02674 16.5331 5.08021 16.5865C5.13354 16.6399 5.19229 16.6667 5.25646 16.6667H14.7435C14.8077 16.6667 14.8665 16.6399 14.9198 16.5865C14.9733 16.5331 15 16.4744 15 16.4102V8.58979C15 8.52563 14.9733 8.46688 14.9198 8.41354C14.8665 8.36007 14.8077 8.33334 14.7435 8.33334H12.6123V7.08334H14.7435C15.1645 7.08334 15.5208 7.22917 15.8125 7.52084C16.1042 7.8125 16.25 8.16882 16.25 8.58979V16.4102C16.25 16.8312 16.1042 17.1875 15.8125 17.4792C15.5208 17.7708 15.1645 17.9167 14.7435 17.9167H5.25646ZM9.375 13.125V3.93271L7.83333 5.47438L6.95521 4.58334L10 1.53854L13.0448 4.58334L12.1667 5.47438L10.625 3.93271V13.125H9.375Z" fill="#2980A3"/>
+      </g>
+    </symbol>
+    <symbol id="icon-close" viewBox="0 0 24 24" fill="none">
+      <path d="M11.667 9.35059L21 0.0175781L23.3154 2.33301L13.9912 11.6582L13.9824 11.667L23.3154 21L21 23.3154L11.667 13.9824L11.6582 13.9912L2.33301 23.3154L0.0175781 21L9.35059 11.667L0.0166016 2.33301L2.33301 0.0166016L11.667 9.35059Z" fill="#0096CD" stroke="#0096CD" stroke-width="0.025"/>
+    </symbol>
     {% comment %}
-    Visible to staff only, since only staff can reach a listing whose
-    geography failed to resolve without already knowing it exists. The
-    admin view that lists these properly comes later.
+    The two stars. Both are the same shape drawn twice in the source
+    files, once as a fill and once as an outline, so they are the only
+    pair here that cannot be one symbol. Neither carries a colour: the
+    filled one takes it from fill and the outline one from stroke, both
+    set to currentColor, so blue, grey and white are decided in the
+    stylesheet by whatever they sit inside.
     {% endcomment %}
-    {% if location.questionable_geocode and user.is_staff %}
-      <p><strong>The location lookup for this listing failed.</strong>
-      Its country, region and town could not be determined when it was
-      created, so its address may be wrong.</p>
-    {% endif %}
-    {% if location.status != 1 %}
-      {% if user.is_staff and user != revision.created_by %}
-        <p><strong>This listing is not published yet.</strong> You can
-        see it because you are staff. It goes live once an above water
-        photograph has been uploaded and checked.</p>
-      {% else %}
-        <p><strong>Your location is saved, but it is not visible to
-        anyone else yet.</strong> It needs one photograph of the above
-        water surroundings, and that upload did not finish. Add a photo
-        here and it goes live straight away. Nothing else needs doing,
-        and there is no need to add the location again.</p>
-      {% endif %}
-    {% endif %}
-  </header>
+    <symbol id="icon-star" viewBox="0 0 31 29">
+      <path d="M15.2168 0L18.9786 10.8223L30.4337 11.0557L21.3036 17.9777L24.6214 28.9443L15.2168 22.4L5.81223 28.9443L9.13004 17.9777L-0.000107765 11.0557L11.455 10.8223L15.2168 0Z" fill="currentColor"/>
+    </symbol>
+    <symbol id="icon-star-outline" viewBox="0 0 31 29" fill="none">
+      <path d="M18.0342 11.1504L18.2627 11.8076L18.958 11.8223L27.5361 11.9961L20.6992 17.1807L20.1445 17.6016L20.3467 18.2676L22.8311 26.4795L15.7881 21.5791L15.2168 21.1816L14.6455 21.5791L7.60156 26.4795L10.0869 18.2676L10.2891 17.6016L9.73438 17.1807L2.89648 11.9961L11.4756 11.8223L12.1709 11.8076L12.3994 11.1504L15.2168 3.04492L18.0342 11.1504Z" stroke="currentColor" stroke-width="2"/>
+    </symbol>
+    </defs>
+  </svg>
 
-  <h2>Where it is</h2>
-  <dl>
-    <dt>Coordinates</dt>
-    <dd>{{ location.latitude|floatformat:5 }}, {{ location.longitude|floatformat:5 }}</dd>
-    {% if location.w3w %}<dt>what3words</dt><dd>{{ location.w3w }}</dd>{% endif %}
-    {% if location.locale %}<dt>Town</dt><dd>{{ location.locale.name }}</dd>{% endif %}
-    {% if location.region %}<dt>Region</dt><dd>{{ location.region.name }}</dd>{% endif %}
-    {% if location.country %}<dt>Country</dt><dd>{{ location.country.name }}</dd>
-    {% else %}<dt>Country</dt><dd>Open water</dd>{% endif %}
-    <dt>Permanent link</dt>
-    <dd><a href="{% url 'detail_by_uuid' %}?uuid={{ location.uuid }}">/location/?uuid={{ location.uuid }}</a></dd>
-  </dl>
+<main class="listing">
 
-  <h2>The basics</h2>
-  <dl>
-    <dt>Difficulty</dt><dd>{{ difficulty }}</dd>
-    <dt>Access</dt><dd>{{ access_types|join:", "|default:"Not given" }}</dd>
-    <dt>Water type</dt><dd>{{ water_types|join:", "|default:"Not given" }}</dd>
-  </dl>
-
-  {% if revision.description %}
-    <h2>Description</h2>
-    <p>{{ revision.description|linebreaks }}</p>
-  {% endif %}
-
-  {% if revision.entry_description %}
-    <h2>Getting in and out</h2>
-    <p>{{ revision.entry_description|linebreaks }}</p>
-  {% endif %}
-
-  {% comment %} Photographs. Only verified ones reach the template. {% endcomment %}
-  <h2>Above water</h2>
-  {% if surface_photos %}
-    <ul class="listing__photos">
-      {% for photo in surface_photos %}
-        <li>
-          <a href="{{ photo.full }}">
-            <img src="{{ photo.thumbnail }}" alt="{{ photo.description|default:revision.name }}"
-                 loading="lazy" width="600">
-          </a>
-          {% if photo.description %}<p>{{ photo.description }}</p>{% endif %}
-          <p>
-            {{ photo.width }} x {{ photo.height }}
-            {% if photo.captured_at %}&middot; taken {{ photo.captured_at|date:"j M Y" }}{% endif %}
-          </p>
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>No photographs have been verified yet.</p>
-  {% endif %}
-
-  {% if underwater_photos %}
-    <h2>Underwater</h2>
-    <ul class="listing__photos">
-      {% for photo in underwater_photos %}
-        <li>
-          <a href="{{ photo.full }}">
-            <img src="{{ photo.thumbnail }}" alt="{{ photo.description|default:revision.name }}"
-                 loading="lazy" width="600">
-          </a>
-          {% if photo.description %}<p>{{ photo.description }}</p>{% endif %}
-        </li>
-      {% endfor %}
-    </ul>
-  {% endif %}
+  <div class="listing__top-row">
+    <div class="listing__location-string">
+      {% if location.country %}<span>{{ location.country.name }}</span>{% endif %}
+      {% if location.region %}<span class="location-string__slash">/</span><span>{{ location.region.name }}</span>{% endif %}
+      {% if location.locale %}<span class="location-string__slash">/</span><span>{{ location.locale.name }}</span>{% endif %}
+      {% if not location.country %}<span>Open water</span>{% endif %}
+    </div>
+  </div>
 
   {% comment %}
-  The chip groups. Each one arrives as a label, the selections, and any
-  comment the person added, so all four sections render the same way.
+  Staff only, because only staff can reach a listing whose geography
+  failed to resolve without already knowing it exists. The admin view
+  that lists these properly comes later; until then this is the only
+  way anybody finds out.
   {% endcomment %}
-  {% if environment %}
-    <h2>Underwater environment</h2>
-    {% for group in environment %}
-      <h3>{{ group.label }}</h3>
-      <ul>{% for item in group.selected %}<li>{{ item }}</li>{% endfor %}</ul>
-      {% if group.comments %}<p>{{ group.comments }}</p>{% endif %}
-    {% endfor %}
+  {% if location.questionable_geocode and user.is_staff %}
+    <p class="listing__staff-notice">
+      <strong>The location lookup for this listing failed.</strong>
+      Its country, region and town could not be determined when it was
+      created, so its address may be wrong.
+    </p>
   {% endif %}
 
+  <h1 class="listing-name">{{ revision.name }}</h1>
+  {% if revision.alternate_names %}
+    <p class="listing__alt-names">Also known as {{ revision.alternate_names|join:", " }}</p>
+  {% endif %}
+
+  <div class="listing__meta-row" id="meta-row">
+    <div class="listing__meta-left">
+      {% include "snorkel_locations/_rating_inline.html" %}
+      {% if difficulty %}
+        <div class="listing__difficulty">
+          <span class="listing__difficulty-dot listing__difficulty-dot--{{ revision.difficulty }}"></span>
+          <span class="listing__difficulty-label">{{ difficulty }} Difficulty</span>
+        </div>
+      {% endif %}
+    </div>
+    <div class="listing__meta-right">
+      {% comment %}
+      Both buttons are written out here rather than pulled in from
+      the apps that store them. What they look like belongs to this
+      page; those apps own the rows behind them, and their toggle
+      endpoints return this same markup from their own templates.
+      {% endcomment %}
+      {% if user.is_authenticated %}
+        <form class="listing__action-form"
+              id="snorkelled-action"
+              method="post"
+              action="{% url 'toggle_snorkelled' location.uuid %}"
+              hx-post="{% url 'toggle_snorkelled' location.uuid %}"
+              hx-swap="outerHTML"
+              hx-disabled-elt="find button">
+          {% csrf_token %}
+          <button class="listing__action-btn{% if snorkelled %} listing__action-btn--on{% endif %}"
+                  type="submit"
+                  aria-pressed="{% if snorkelled %}true{% else %}false{% endif %}">
+            <svg class="listing__action-icon" aria-hidden="true" focusable="false"><use href="#icon-snorkel"/></svg>
+            <span>{% if snorkelled %}Snorkelled{% else %}Mark as snorkelled{% endif %}</span>
+          </button>
+        </form>
+
+        <form class="listing__action-form"
+              method="post"
+              action="{% url 'toggle_saved' location.uuid %}"
+              hx-post="{% url 'toggle_saved' location.uuid %}"
+              hx-swap="outerHTML"
+              hx-disabled-elt="find button">
+          {% csrf_token %}
+          <button class="listing__action-btn{% if saved %} listing__action-btn--on{% endif %}"
+                  type="submit"
+                  aria-pressed="{% if saved %}true{% else %}false{% endif %}">
+            <svg class="listing__action-icon" aria-hidden="true" focusable="false"><use href="#icon-save"/></svg>
+            <span>{% if saved %}Saved{% else %}Save{% endif %}</span>
+          </button>
+        </form>
+      {% else %}
+        {% comment %}
+        Signed out these are links to the login page, so somebody is
+        asked to sign in before anything is submitted rather than
+        after.
+        {% endcomment %}
+        <a class="listing__action-btn"
+           href="{% url 'sm_login' %}?next={{ location.get_absolute_url|urlencode }}">
+          <svg class="listing__action-icon" aria-hidden="true" focusable="false"><use href="#icon-snorkel"/></svg>
+          <span>Mark as snorkelled</span>
+        </a>
+        <a class="listing__action-btn"
+           href="{% url 'sm_login' %}?next={{ location.get_absolute_url|urlencode }}">
+          <svg class="listing__action-icon" aria-hidden="true" focusable="false"><use href="#icon-save"/></svg>
+          <span>Save</span>
+        </a>
+      {% endif %}
+
+      <button class="listing__action-btn" type="button" id="share-button"
+              data-share-title="{{ revision.name }}"
+              data-share-url="{{ request.build_absolute_uri }}">
+        <svg class="listing__action-icon" aria-hidden="true" focusable="false"><use href="#icon-share"/></svg>
+        <span>Share</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="listing__hero" id="listing-hero">
+    <div class="listing__hero-main listing__hero-panel">
+      <img class="listing__hero-img{% if not surface_photos %} listing__hero-img--placeholder{% endif %}"
+           src="{{ hero_image }}" alt="{{ hero_image_alt }}">
+      {% if all_photos_count %}
+        <button class="listing__hero-btn" type="button" data-open-photos>
+          <img src="{% static 'images/icons/all-photos.svg' %}" alt="">
+          <span>Show all photos</span>
+        </button>
+      {% endif %}
+    </div>
+
+    <div class="listing__hero-secondary">
+      {% if underwater_photos %}
+        <div class="listing__hero-panel">
+          <img class="listing__hero-img" src="{{ underwater_photos.0.full }}"
+               alt="{{ underwater_photos.0.description|default:revision.name }}">
+        </div>
+      {% endif %}
+
+      {% if map_image %}
+        <div class="listing__hero-panel">
+          <img class="listing__hero-img" src="{{ map_image }}"
+               alt="Map of {{ revision.name }}">
+          <button class="listing__hero-btn" type="button" data-open-map>
+            <img src="{% static 'images/icons/map.svg' %}" alt="">
+            <span>Location map</span>
+          </button>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if revision.description or revision.entry_description %}
+    <div class="listing__card">
+      {% if revision.description %}
+        <div class="listing__description listing__description--general">
+          <h2>Description</h2>
+          <p>{{ revision.description|linebreaksbr }}</p>
+        </div>
+      {% endif %}
+      {% if revision.entry_description %}
+        <div class="listing__description listing__description--entry-point">
+          <h2>Entry Point Description</h2>
+          <p>{{ revision.entry_description|linebreaksbr }}</p>
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <div class="listing__card" id="card-basic-info">
+    <h2>Essential Information</h2>
+    <div class="listing__card__columns">
+      <div class="listing__card-col">
+        <p class="listing__labels">Access Type</p>
+        <div class="listing__chips">
+          {% for item in access_types %}<span class="listing__chiplet">{{ item }}</span>{% empty %}
+            <p class="listing__col-comments listing__col-comments--empty">Not given</p>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="listing__card-col">
+        <p class="listing__labels">Water Type</p>
+        <div class="listing__chips">
+          {% for item in water_types %}<span class="listing__chiplet">{{ item }}</span>{% empty %}
+            <p class="listing__col-comments listing__col-comments--empty">Not given</p>
+          {% endfor %}
+        </div>
+      </div>
+      {% for group in environment %}
+        {% include "snorkel_locations/_chip_list.html" %}
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="listing__card" id="card-getting-there">
+    <h2>Getting There</h2>
+    <div class="listing__card__columns">
+      <div class="listing__card-col">
+        <p class="listing__labels">Coordinates</p>
+        <p class="listing__col-comments">
+          {{ location.latitude|floatformat:5 }}, {{ location.longitude|floatformat:5 }}
+        </p>
+        {% if location.w3w %}
+          <p class="listing__labels listing__labels--spaced">what3words</p>
+          <p class="listing__col-comments">
+            <img class="listing__inline-icon" src="{% static 'images/icons/w3w.svg' %}" alt="">
+            {{ location.w3w }}
+          </p>
+        {% endif %}
+      </div>
+
+      <div class="listing__card-col">
+        <p class="listing__labels">Parking</p>
+        {% if parking_available %}
+          <p class="listing__col-comments">{{ parking_available }}</p>
+        {% endif %}
+        {% if parking_types %}
+          <div class="listing__chips">
+            {% for item in parking_types %}<span class="listing__chiplet">{{ item }}</span>{% endfor %}
+          </div>
+        {% endif %}
+        {% if parking_comments %}
+          <p class="listing__col-comments">{{ parking_comments }}</p>
+        {% endif %}
+        {% if not parking_available and not parking_types %}
+          <p class="listing__col-comments listing__col-comments--empty">Not given</p>
+        {% endif %}
+      </div>
+
+      <div class="listing__card-col">
+        <p class="listing__labels">Public Transport</p>
+        {% if transport_types %}
+          <div class="listing__chips">
+            {% for item in transport_types %}<span class="listing__chiplet">{{ item }}</span>{% endfor %}
+          </div>
+        {% endif %}
+        {% if transport_description %}
+          <p class="listing__col-comments">{{ transport_description }}</p>
+        {% endif %}
+        {% if not transport_types and not transport_description %}
+          <p class="listing__col-comments listing__col-comments--empty">Not given</p>
+        {% endif %}
+      </div>
+    </div>
+    {% include "snorkel_locations/_section_comments.html" with text=getting_there_comments %}
+  </div>
+
+  <div class="listing__card" id="card-facilities">
+    <h2>Facilities</h2>
+    {% if facilities %}
+      <div class="listing__card__columns">
+        {% for group in facilities %}
+          {% include "snorkel_locations/_chip_list.html" %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="listing__col-comments listing__col-comments--empty">
+        Nothing has been added about the facilities here yet.
+      </p>
+    {% endif %}
+    {% include "snorkel_locations/_section_comments.html" with text=facilities_other %}
+  </div>
+
   {% if marine_life or marine_life_comments %}
-    <h2>Marine life</h2>
-    {% for group in marine_life %}
-      <h3>{{ group.label }}</h3>
-      <ul>{% for item in group.selected %}<li>{{ item }}</li>{% endfor %}</ul>
-      {% if group.comments %}<p>{{ group.comments }}</p>{% endif %}
-    {% endfor %}
-    {% if marine_life_comments %}<p>{{ marine_life_comments }}</p>{% endif %}
+    <div class="listing__card" id="card-marine-life">
+      <h2>Types of Marine Life which have been Seen Here</h2>
+      <div class="listing__card__columns">
+        {% for group in marine_life %}
+          {% include "snorkel_locations/_chip_list.html" %}
+        {% endfor %}
+      </div>
+      {% include "snorkel_locations/_section_comments.html" with text=marine_life_comments %}
+    </div>
   {% endif %}
 
   {% if hazards or hazards_comments %}
-    <h2>Hazards</h2>
-    {% for group in hazards %}
-      <h3>{{ group.label }}</h3>
-      <ul>{% for item in group.selected %}<li>{{ item }}</li>{% endfor %}</ul>
-      {% if group.comments %}<p>{{ group.comments }}</p>{% endif %}
-    {% endfor %}
-    {% if hazards_comments %}<p>{{ hazards_comments }}</p>{% endif %}
+    <div class="listing__card" id="card-hazards">
+      <h2>Hazards</h2>
+      <div class="listing__card__columns">
+        {% for group in hazards %}
+          {% include "snorkel_locations/_chip_list.html" %}
+        {% endfor %}
+      </div>
+      {% include "snorkel_locations/_section_comments.html" with text=hazards_comments %}
+    </div>
   {% endif %}
 
-  <h2>Getting there</h2>
-  <dl>
-    {% if parking_available %}<dt>Parking</dt><dd>{{ parking_available }}</dd>{% endif %}
-    {% if parking_types %}<dt>Parking type</dt><dd>{{ parking_types|join:", " }}</dd>{% endif %}
-    {% if parking_comments %}<dt>Parking notes</dt><dd>{{ parking_comments }}</dd>{% endif %}
-    {% if transport_types %}<dt>Public transport</dt><dd>{{ transport_types|join:", " }}</dd>{% endif %}
-    {% if transport_description %}<dt>Transport notes</dt><dd>{{ transport_description }}</dd>{% endif %}
-    {% if getting_there_comments %}<dt>Notes</dt><dd>{{ getting_there_comments }}</dd>{% endif %}
-  </dl>
+  {% include "snorkel_locations/_reviews.html" %}
 
-  {% if facilities or facilities_other %}
-    <h2>Facilities</h2>
-    {% for group in facilities %}
-      <h3>{{ group.label }}</h3>
-      <ul>{% for item in group.selected %}<li>{{ item }}</li>{% endfor %}</ul>
-      {% if group.comments %}<p>{{ group.comments }}</p>{% endif %}
-    {% endfor %}
-    {% if facilities_other %}<p>{{ facilities_other }}</p>{% endif %}
-  {% endif %}
+</main>
 
-  {% if markers %}
-    <h2>Map markers</h2>
-    <ul>
-      {% for marker in markers %}
-        <li>
-          {{ marker.properties.name|default:marker.properties.markerId }}
-          {% if marker.properties.note %}: {{ marker.properties.note }}{% endif %}
-          {% if marker.geometry.coordinates %}
-            ({{ marker.geometry.coordinates.1|floatformat:5 }},
-             {{ marker.geometry.coordinates.0|floatformat:5 }})
-          {% endif %}
-        </li>
-      {% endfor %}
+{% comment %} ── Modals ─────────────────────────────────────────────
+They are in the page rather than built by script so that their markup
+is readable and escaped by Django, and so the photographs in them are
+real links before anything runs.
+{% endcomment %}
+
+<div class="photos-modal" id="photos-modal" role="dialog" aria-modal="true"
+     aria-label="All photographs" hidden>
+  <div class="photos-modal__inner">
+    {% if surface_photos %}
+      <div class="photos-modal__section">
+        <h2 class="photos-modal__section-title">Above water</h2>
+        <div class="photos-modal__grid">
+          {% for photo in surface_photos %}
+            <div class="photos-modal__thumb" data-photo-index="{{ forloop.counter0 }}"
+                 data-photo-section="surface">
+              <img src="{{ photo.thumbnail }}" loading="lazy"
+                   alt="{{ photo.description|default:revision.name }}">
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+    {% if underwater_photos %}
+      <div class="photos-modal__section">
+        <h2 class="photos-modal__section-title">Underwater</h2>
+        <div class="photos-modal__grid">
+          {% for photo in underwater_photos %}
+            <div class="photos-modal__thumb" data-photo-index="{{ forloop.counter0 }}"
+                 data-photo-section="underwater">
+              <img src="{{ photo.thumbnail }}" loading="lazy"
+                   alt="{{ photo.description|default:revision.name }}">
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+  <button class="photo-modal-btn photo-modal-btn--close" id="photos-modal-close"
+          type="button" aria-label="Close photographs">
+    <img src="{% static 'images/icons/close.svg' %}" alt="">
+  </button>
+</div>
+
+<div class="photo-detail-modal" id="photo-detail-modal" role="dialog"
+     aria-modal="true" aria-label="Photograph" hidden>
+  <button class="photo-modal-btn photo-modal-btn--back" id="photo-detail-back"
+          type="button" aria-label="Back to all photographs">
+    <img src="{% static 'images/icons/back-arrow.svg' %}" alt="">
+  </button>
+  <button class="photo-modal-btn photo-modal-btn--close" id="photo-detail-close"
+          type="button" aria-label="Close">
+    <img src="{% static 'images/icons/close.svg' %}" alt="">
+  </button>
+  <div class="photo-detail-modal__layout">
+    <div class="photo-detail-modal__img-wrap">
+      <img class="photo-detail-modal__img" id="photo-detail-img" src="" alt="">
+    </div>
+    <div class="photo-detail-modal__sidebar">
+      <div class="photo-detail-modal__meta">
+        <h2 class="photo-detail-modal__title" id="photo-detail-title"></h2>
+        <p class="photo-detail-modal__date" id="photo-detail-date"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% comment %}
+Sharing. On a phone this never opens: the browser's own share drawer
+does, which is what people expect and which reaches every app they
+have. This is the desktop fallback, where no such drawer exists.
+{% endcomment %}
+<div class="share-modal" id="share-modal" role="dialog" aria-modal="true"
+     aria-labelledby="share-modal-title" hidden>
+  <div class="share-modal__backdrop" data-close-share></div>
+  <div class="share-modal__box">
+    <h2 class="share-modal__title" id="share-modal-title">Share location</h2>
+    <p>Copy link to clipboard</p>
+    <div class="share-modal__link">
+      <input class="share-modal__url" id="share-url" type="text" readonly
+             value="{{ request.build_absolute_uri }}"
+             aria-label="Link to this location">
+      <button class="share-modal__copy" type="button" id="share-copy">Copy</button>
+    </div>
+
+    <ul class="share-modal__options">
+      <li><a class="share-modal__option" id="share-facebook" href="#"
+             target="_blank" rel="noopener noreferrer">Facebook</a></li>
+      <li><a class="share-modal__option" id="share-whatsapp" href="#"
+             target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
+      <li><a class="share-modal__option" id="share-email" href="#">Email</a></li>
+      <li><button class="share-modal__option" type="button" id="share-print">Print</button></li>
     </ul>
-  {% endif %}
 
-  <h2>Submission</h2>
-  <dl>
-    <dt>Added by</dt>
-    <dd>{{ revision.created_by.username|default:"Unknown" }}</dd>
-    <dt>Added</dt>
-    <dd>{{ revision.created_at|date:"j M Y, H:i" }}</dd>
-    <dt>Revision</dt>
-    <dd>{{ revision.increment }}</dd>
-  </dl>
+    <button class="share-modal__close" type="button" data-close-share
+            aria-label="Close">
+      <svg class="listing__action-icon" aria-hidden="true" focusable="false"><use href="#icon-close"/></svg>
+    </button>
+  </div>
+</div>
 
-</article>
+<div class="lmap-modal" id="lmap-modal" role="dialog" aria-modal="true"
+     aria-label="Location map" hidden
+     data-token="{{ mapbox_token }}"
+     data-latitude="{{ location.latitude|stringformat:'f' }}"
+     data-longitude="{{ location.longitude|stringformat:'f' }}">
+  <div class="lmap-modal__map" id="lmap-map"></div>
+
+  <div class="lmap-modal__toggle">
+    <button class="lmap-modal__style-btn lmap-modal__style-btn--active"
+            type="button" data-style="satellite">Satellite</button>
+    <button class="lmap-modal__style-btn" type="button" data-style="terrain">Terrain</button>
+  </div>
+
+  <button class="lmap-modal__close" id="lmap-close" type="button" aria-label="Close map">
+    <img src="{% static 'images/icons/close.svg' %}" alt="">
+  </button>
+
+  <div class="lmap-comment-popup hidden" id="lmap-comment-popup">
+    <div class="lmap-comment-popup__card">
+      <h3 class="lmap-comment-popup__title" id="lmap-comment-title"></h3>
+      <p class="lmap-comment-popup__text" id="lmap-comment-text"></p>
+      <button class="lmap-comment-popup__close" id="lmap-comment-close" type="button">Close</button>
+    </div>
+  </div>
+</div>
+
+{% comment %}
+The marker features, and the photographs, handed to the page as data
+rather than assembled into JavaScript. json_script escapes for a script
+block properly, which string interpolation into JS does not.
+{% endcomment %}
+{{ markers|json_script:"listing-markers" }}
+{{ photo_data|json_script:"listing-photos" }}
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.js"></script>
+<script src="{% static 'js/vendor/htmx.min.js' %}" defer></script>
+<script src="{% static 'js/listing.js' %}" defer></script>
 {% endblock %}

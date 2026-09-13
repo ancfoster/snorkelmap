@@ -1,0 +1,161 @@
+/* The directory: an A-Z of countries, their regions and their listings.
+   Laid out as one card per country, the regions inside it flowing
+   across three columns on desktop, two on tablet and one on a phone. */
+
+.directory {
+  max-width: 1120px;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 auto;
+  padding: 32px 16px 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.directory__head h1 {
+  margin: 0 0 8px 0;
+  font-size: 2rem;
+}
+.directory__sub {
+  margin: 0;
+  max-width: 60ch;
+  color: var(--sm-text-3rd-grey);
+  line-height: 1.55;
+}
+
+/* The invitation to add a location. */
+.directory__invite {
+  box-sizing: border-box;
+  background-color: #F9FBFC;
+  border: 1px solid var(--sm-primary-accent);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.directory__invite-text {
+  max-width: 64ch;
+}
+.directory__invite-heading {
+  margin: 0 0 4px 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--sm-action-dark-blue-text);
+}
+.directory__invite-text p {
+  margin: 0;
+  color: var(--sm-action-dark-blue-text);
+  line-height: 1.55;
+}
+.directory__invite-button {
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border-radius: 100vw;
+  background-color: var(--sm-primary-accent);
+  color: var(--sm-white);
+  text-decoration: none;
+  font-size: 1rem;
+  transition: background-color 0.2s ease-in;
+}
+.directory__invite-button:hover,
+.directory__invite-button:visited {
+  color: var(--sm-white);
+}
+.directory__invite-button:hover {
+  background-color: var(--sm-action-blue-hover);
+}
+
+
+.directory__country {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.directory__country-inner {
+  box-sizing: border-box;
+  background-color: var(--sm-card-bg);
+  border: 1px solid var(--sm-field-border-default);
+  border-radius: 16px;
+  padding: 24px;
+}
+.directory__country-name {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--sm-dark-text-headings);
+}
+
+.directory__regions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px 32px;
+}
+
+.directory__region {
+  min-width: 0;
+}
+.directory__region-name {
+  margin: 0 0 8px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--sm-field-value);
+}
+
+.directory__locations {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.directory__locations li {
+  /* A long name wraps rather than pushing the column wider. */
+  overflow-wrap: anywhere;
+}
+.directory__locations a {
+  text-decoration: none;
+  line-height: 1.4;
+}
+.directory__locations a:hover {
+  text-decoration: underline;
+}
+
+.directory__empty {
+  color: var(--sm-text-3rd-grey);
+}
+
+@media screen and (max-width: 900px) {
+  .directory__regions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .directory {
+    padding: 24px 16px 48px;
+  }
+  .directory__regions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .directory__invite {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .directory__invite-button {
+    width: 100%;
+  }
+  .directory__country {
+    padding: 20px 16px;
+  }
+  .directory__head h1 {
+    font-size: 1.625rem;
+  }
+}

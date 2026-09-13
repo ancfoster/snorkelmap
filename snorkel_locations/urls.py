@@ -1,10 +1,22 @@
 from django.urls import path
 
-from . import views
+from . import explore, views
 
 urlpatterns = [
 
     path("add-location/", views.create, name="create"),
+
+    # An A-Z of every country with a published listing, then its
+    # regions, then the listings themselves.
+    path("directory/", views.directory, name="directory"),
+
+    # The map, and the two HTML fragments it asks for as it moves.
+    # Both fragments sit here rather than under /api/v1/ because they
+    # return markup, not JSON.
+    path("explore/", explore.explore, name="explore"),
+    path("explore/cards/", explore.explore_cards, name="explore_cards"),
+    path("explore/card/<uuid:location_uuid>/", explore.explore_card,
+         name="explore_card"),
 
     # The permanent address. /location/?uuid=<uuid> redirects to
     # whatever the canonical path currently is, so a link saved
@@ -15,9 +27,9 @@ urlpatterns = [
     # The canonical addresses. One pattern per depth, and since Django
     # matches on segment count there is no ambiguity between them.
     #
-    #   /location/gb/scottish-borders/st-abbs/st-abbs-harbour/
-    #   /location/gb/scottish-borders/st-abbs-harbour/
-    #   /location/gb/st-abbs-harbour/
+    #   /location/united-kingdom/scottish-borders/st-abbs/st-abbs-harbour/
+    #   /location/united-kingdom/scottish-borders/st-abbs-harbour/
+    #   /location/united-kingdom/st-abbs-harbour/
     #   /location/ocean/mid-atlantic-ridge/
     #
     # Longest first so the more specific pattern is tried first.

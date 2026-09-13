@@ -1,0 +1,35 @@
+<div class="form-section"
+     data-group-key="{{ group.key }}"
+     {% if payload_group %}data-payload-group="{{ payload_group }}"{% endif %}
+     {% if payload_key %}data-payload-key="{{ payload_key }}"{% endif %}
+     {% if group.none_option %}data-none-option="true"{% endif %}
+     {% if group.single_select %}data-single-select="true"{% endif %}>
+
+  <h3 class="form-section__heading">{{ group.label }}</h3>
+
+  <div class="chip-group__items">
+    {% for chip in group.chips %}
+      <button type="button" class="chip"
+              data-id="{{ chip.id }}"
+              data-state-key="{{ group.key }}">{{ chip.label }}</button>
+    {% endfor %}
+    {% if group.none_option %}
+      <button type="button" class="chip chip--none"
+              data-id="none"
+              data-state-key="{{ group.key }}">None</button>
+    {% endif %}
+  </div>
+
+  {% if group.comments %}
+    <p class="form-field__helper">Optional Comments</p>
+    <textarea class="form-field__textarea form-field__textarea--compact"
+              rows="2"
+              placeholder="Add any detail..."
+              data-field="{{ group.key }}Comments"></textarea>
+  {% endif %}
+
+  {% if group.example %}
+    <button type="button" class="btn btn--ghost btn--sm"
+            data-example="{{ group.example }}">See examples</button>
+  {% endif %}
+</div>

@@ -1,0 +1,713 @@
+{% load static %}
+{% comment %}
+
+Keys come from choices.py: a group with example="mlFish" needs a block
+here with data-example="mlFish".
+{% endcomment %}
+<div class="sm-examples" id="example-content" hidden>
+
+  {# Example Description #}
+  <div class="sm-example" data-example="description" data-title="Example Description">
+    <p>Starney Bay is located in the St Abbs Head Nature Reserve. A fairly steep path leads down from the main footpath at the top of the cliffs down to a rocky pebble beach.</p>
+    <p>St. Abbs is known for its visibilty, offering better visiblity than other locations along the East Coast. At Starbey Bay you will find a variety of different underwater environments and a variety of cold water wildlife. Suitable for beginners with some previous snorkelling experience. This location is best snorkelled in spring, sumemr and autumn when conditions are calmer.  </p>
+  </div>
+
+  {# Example Entry Point Description#}
+  <div class="sm-example" data-example="entryPoint" data-title="Example Entry Point Description">
+    <p>The main entry is via the stone steps beside the harbour wall at St Abbs village. The steps are steep, and the lower three are covered in weed and very slippery at anything below half tide, so it is worth sitting down to put fins on.</p>
+    <p>An alternative entry over large boulders is possible 100 metres to the north, but only in a flat calm and only above half tide. Exit is at the same steps, there is a rope handrail on the left hand side.</p>
+  </div>
+
+  {# Reef — Examples #}
+  <div class="sm-example" data-example="envReef" data-title="Examples of Reefs">
+    <p>A reef is a shallow marine structure built from rock, coral, or other hard substrates that creates habitat for marine life. In reef science, a reef can be described both as an ecological type (the community of organisms living there) and an environment type (the physical conditions and setting that shape how that community functions).</p>
+    <p>There are 15–30+ distinct reef types, but here are a few examples you may have encountered.</p>
+    <div class="example-grid">
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/environment/tropical-coral-reef.jpg' %}"
+             alt="Tropical Coral Reef (Image: Jim Maragos/USFWS)">
+        <figcaption class="example-card__caption">Reef</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  {# Rocky — Examples #}
+  <div class="sm-example" data-example="envRocky" data-title="Examples of Rocky Environments">
+    <ul>
+    <li><strong>Rocky Shore:</strong> Bedrock running from the shoreline into the water.</li>
+    <li><strong>Boulders:</strong> Large loose rocks, often with gullies and swim-throughs between them.</li>
+    <li><strong>Drop Off:</strong> A sudden steep increase in depth, sometimes near vertical.</li>
+    <li><strong>Pinnacles:</strong> Isolated rock towers rising from deeper water.</li>
+    </ul>
+    <div class="example-grid">
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/environment/rocky-shore.jpg' %}"
+             alt="Rocky Shore">
+        <figcaption class="example-card__caption">Rocky Shore</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/environment/boulders.jpg' %}"
+             alt="Boulders">
+        <figcaption class="example-card__caption">Boulders</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/environment/drop-off.jpg' %}"
+             alt="Drop Off">
+        <figcaption class="example-card__caption">Drop Off</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/environment/pinnacles.jpg' %}"
+             alt="Pinnacles">
+        <figcaption class="example-card__caption">Pinnacles</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  {# Seabed & Substrate — Examples #}
+  <div class="sm-example" data-example="envSeabed" data-title="Examples of Seabed & Substrate">
+    <ul>
+    <li><strong>Sandy Bottom:</strong> Fine, pale sediment. Often good for rays and flatfish.</li>
+    <li><strong>Volcanic Sand:</strong> Dark grey or black sand, common around volcanic islands.</li>
+    <li><strong>Pebble / Shingle:</strong> Rounded stones, usually where there is wave action.</li>
+    <li><strong>Rubble:</strong> Broken coral or rock fragments, often at the base of a reef.</li>
+    <li><strong>Mud:</strong> Soft silt that clouds easily when disturbed.</li>
+    </ul>
+    <div class="example-grid">
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/environment/sandy-bottom.jpg' %}"
+             alt="Sandy Bottom">
+        <figcaption class="example-card__caption">Sandy Bottom</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/environment/volcanic-sand.jpg' %}"
+             alt="Volcanic Sand">
+        <figcaption class="example-card__caption">Volcanic Sand</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/environment/shell-bed.jpg' %}"
+             alt="Shell Bed">
+        <figcaption class="example-card__caption">Shell Bed</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/environment/pebble-shingle.jpg' %}"
+             alt="Pebble / Shingle">
+        <figcaption class="example-card__caption">Pebble / Shingle</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/environment/gravel-bed.jpg' %}"
+             alt="Gravel Bed">
+        <figcaption class="example-card__caption">Gravel Bed</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/environment/rubble.jpg' %}"
+             alt="Rubble">
+        <figcaption class="example-card__caption">Rubble</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/environment/mud.jpg' %}"
+             alt="Mud">
+        <figcaption class="example-card__caption">Mud</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  {# Vegetated — Examples #}
+  <div class="sm-example" data-example="envVegetated" data-title="Emaples of Vegetated Envionments">
+    <ul>
+    <li><strong>Kelp Forest:</strong> Tall brown seaweed with a canopy at or near the surface. Common around the UK, Ireland and other cool coasts.</li>
+    <li><strong>Seagrass Meadow:</strong> Grass-like flowering plants rooted in sand or mud.</li>
+    <li><strong>Mangroves:</strong> Salt-tolerant trees with submerged root systems, an important nursery habitat.</li>
+    <li><strong>Posidonia Meadow:</strong> Mediterranean seagrass forming dense, deep meadows.</li>
+    </ul>
+    <div class="example-grid">
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/environment/kelp-forest.jpg' %}"
+             alt="Kelp Forest">
+        <figcaption class="example-card__caption">Kelp Forest</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/environment/seagrass-meadow.jpg' %}"
+             alt="Seagrass Meadow">
+        <figcaption class="example-card__caption">Seagrass Meadow</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/environment/mangroves.jpg' %}"
+             alt="Mangroves">
+        <figcaption class="example-card__caption">Mangroves</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/environment/posidonia.jpg' %}"
+             alt="Posidonia Meadow">
+        <figcaption class="example-card__caption">Posidonia Meadow</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  {# Structures — Examples #}
+  <div class="sm-example" data-example="envStructures" data-title="Examples of Structures">
+    <ul>
+    <li><strong>Wreck:</strong> A sunken vessel, whole or broken up.</li>
+    <li><strong>Artificial Reef Structure:</strong> Deliberately placed blocks, modules or sunken material now colonised by marine life.</li>
+    <li><strong>Pier / Jetty Piling:</strong> Vertical supports, usually heavily encrusted and good for small life.</li>
+    <li><strong>Tetrapods:</strong> Interlocking concrete sea defence blocks.</li>
+    </ul>
+    <div class="example-grid">
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/environment/wreck.jpg' %}"
+             alt="Wreck">
+        <figcaption class="example-card__caption">Wreck</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/environment/plane.jpg' %}"
+             alt="Plane">
+        <figcaption class="example-card__caption">Plane</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/environment/artificial-reef.jpg' %}"
+             alt="Artificial Reef Structure">
+        <figcaption class="example-card__caption">Artificial Reef Structure</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/environment/pier-jetty.jpg' %}"
+             alt="Pier / Jetty Piling">
+        <figcaption class="example-card__caption">Pier / Jetty Piling</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/environment/harbour-wall.jpg' %}"
+             alt="Sea / Harbour Wall">
+        <figcaption class="example-card__caption">Sea / Harbour Wall</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/environment/tetrapods.jpg' %}"
+             alt="Tetrapods">
+        <figcaption class="example-card__caption">Tetrapods</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  {# Geological — Examples #}
+  <div class="sm-example" data-example="envGeological" data-title="Geological Environment Examples">
+    <ul>
+    <li><strong>Sea Cave:</strong> A cave cut into rock by wave action, entered from the water.</li>
+    <li><strong>Sea Arch / Swim-through:</strong> A gap or tunnel through rock that you can swim through.</li>
+    <li><strong>Lava / Volcanic Formation:</strong> Solidified lava flows, tubes and columns.</li>
+    <li><strong>Flooded Limestone / Karst:</strong> Cenotes, sinkholes and flooded limestone systems.</li>
+    </ul>
+    <div class="example-grid">
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/environment/sea-cave.jpg' %}"
+             alt="Sea Cave">
+        <figcaption class="example-card__caption">Sea Cave</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/environment/sea-arch.jpg' %}"
+             alt="Sea Arch / Swim-through">
+        <figcaption class="example-card__caption">Sea Arch / Swim-through</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/environment/lava-volcanic.jpg' %}"
+             alt="Lava / Volcanic Formation">
+        <figcaption class="example-card__caption">Lava / Volcanic Formation</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/environment/flooded-limestone.jpg' %}"
+             alt="Flooded Limestone / Karst">
+        <figcaption class="example-card__caption">Flooded Limestone / Karst</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  {# Fish — What do these categories mean? #}
+  <div class="sm-example" data-example="mlFish" data-title="Examples of Fish">
+    <ul>
+    <li><strong>Colourful reef fish:</strong> Angelfish, butterflyfish, wrasse, damselfish. Coold water examples include cuckoo wrasse and ballan wrasse.</li>
+    <li><strong>Schooling fish:</strong> Sardines, sand eels, mackerel, jacks. These are fish which move in a group of many individuals of the same species.</li>
+    <li><strong>Flatfish:</strong> Plaice, flounder, dab, halibut, turbot, sole. Lying flat on the seabed, often half buried.</li>
+    <li><strong>Large pelagic fish:</strong> Open water fish such as tuna, marlin and sunfish.</li>
+    <li><strong>Big coastal fish:</strong> Wolffish, bass, pollack, cod, grouper. </li>
+    <li><strong>Medium fish:</strong> Mullet, parrotfish, bream, mackerel, salmon and sea trout.</li>
+    <li><strong>Small &amp; juvenile fish:</strong> Blennies, gobies, sticklebacks and the young of larger species.</li>
+    </ul>
+    <div class="example-grid">
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/sharks.jpg' %}"
+             alt="Sharks">
+        <figcaption class="example-card__caption">Sharks</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/rays.jpg' %}"
+             alt="Rays">
+        <figcaption class="example-card__caption">Rays</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/colourful-reef.jpg' %}"
+             alt="Colourful Reef Fish">
+        <figcaption class="example-card__caption">Colourful Reef Fish</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/schooling-fish.jpg' %}"
+             alt="Schooling Fish">
+        <figcaption class="example-card__caption">Schooling Fish</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/flatfish.jpg' %}"
+             alt="Flatfish (plaice, halibut)">
+        <figcaption class="example-card__caption">Flatfish (plaice, halibut)</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/eels.jpg' %}"
+             alt="Eels">
+        <figcaption class="example-card__caption">Eels</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/large-pelagic.jpg' %}"
+             alt="Large pelagic fish">
+        <figcaption class="example-card__caption">Large pelagic fish</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/big-coastal.jpg' %}"
+             alt="Big coastal fish">
+        <figcaption class="example-card__caption">Big coastal fish</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/medium-fish.jpg' %}"
+             alt="Medium fish (salmon, mullet)">
+        <figcaption class="example-card__caption">Medium fish (salmon, mullet)</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/small-juvenile.jpg' %}"
+             alt="Small & juvenile fish">
+        <figcaption class="example-card__caption">Small & juvenile fish</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/seahorses.jpg' %}"
+             alt="Seahorses">
+        <figcaption class="example-card__caption">Seahorses</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  {# Marine Mammals — Examples #}
+  <div class="sm-example" data-example="mlMammals" data-title="Marine Mammals — Examples">
+    <ul>
+    </ul>
+    <div class="example-grid">
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/seals.jpg' %}"
+             alt="Seals">
+        <figcaption class="example-card__caption">Seals</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/sea-lions.jpg' %}"
+             alt="Sea Lions">
+        <figcaption class="example-card__caption">Sea Lions</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/dolphins-porpoises.jpg' %}"
+             alt="Dolphins & Porpoises">
+        <figcaption class="example-card__caption">Dolphins & Porpoises</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/whales.jpg' %}"
+             alt="Whales">
+        <figcaption class="example-card__caption">Whales</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/manatees-dugongs.jpg' %}"
+             alt="Manatees & Dugongs">
+        <figcaption class="example-card__caption">Manatees & Dugongs</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  {# Crustaceans — Examples #}
+  <div class="sm-example" data-example="mlCrustaceans" data-title="Crustaceans — Examples">
+    <ul>
+    </ul>
+    <div class="example-grid">
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/crabs.jpg' %}"
+             alt="Crabs">
+        <figcaption class="example-card__caption">Crabs</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/lobsters.jpg' %}"
+             alt="Lobsters">
+        <figcaption class="example-card__caption">Lobsters</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/shrimp.jpg' %}"
+             alt="Shrimp">
+        <figcaption class="example-card__caption">Shrimp</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/crayfish.jpg' %}"
+             alt="Crayfish">
+        <figcaption class="example-card__caption">Crayfish</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  {# Molluscs — Examples #}
+  <div class="sm-example" data-example="mlMolluscs" data-title="Molluscs — Examples">
+    <ul>
+    <li><strong>Scallops:</strong> Sitting on or recessed into sand and gravel.</li>
+    </ul>
+    <div class="example-grid">
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/mussels.jpg' %}"
+             alt="Mussels">
+        <figcaption class="example-card__caption">Mussels</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/scallops.jpg' %}"
+             alt="Scallops">
+        <figcaption class="example-card__caption">Scallops</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/clams.jpg' %}"
+             alt="Clams">
+        <figcaption class="example-card__caption">Clams</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/snails.jpg' %}"
+             alt="Snails">
+        <figcaption class="example-card__caption">Snails</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/limpets.jpg' %}"
+             alt="Limpets">
+        <figcaption class="example-card__caption">Limpets</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/nudibranchs.jpg' %}"
+             alt="Nudibranchs / Sea Slugs">
+        <figcaption class="example-card__caption">Nudibranchs / Sea Slugs    <li><strong>Nudibranchs / Sea Slugs:</strong> Small, often brightly coloured. Nudibranchs, also known as sea slugs, are much like their land-based relatives that you may spot in your garden. </li>
+</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  {# Echinoderms — Examples #}
+  <div class="sm-example" data-example="mlEchinoderm" data-title="Echinoderms — Examples">
+    <ul>
+    <li><strong>Starfish &amp; Brittle Stars:</strong> Common starfish, sunstars, and dense brittle star beds.</li>
+    <li><strong>Urchins:</strong> Spiny, often wedged into rock. See the hazards step if they are numerous.</li>
+    </ul>
+    <div class="example-grid">
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/starfish.jpg' %}"
+             alt="Starfish & Brittle Stars">
+        <figcaption class="example-card__caption">Starfish & Brittle Stars</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/urchins.jpg' %}"
+             alt="Urchins">
+        <figcaption class="example-card__caption">Urchins</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/sea-cucumbers.jpg' %}"
+             alt="Sea Cucumbers">
+        <figcaption class="example-card__caption">Sea Cucumbers</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/feather-stars.jpg' %}"
+             alt="Feather Stars">
+        <figcaption class="example-card__caption">Feather Stars</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  {# Cnidarians — What do these categories mean? #}
+  <div class="sm-example" data-example="mlCnidarians" data-title="Cnidarians — What do these categories mean?">
+    <ul>
+    <li><strong>Hard corals:</strong> Brain coral, staghorn coral, table coral.</li>
+    <li><strong>Soft corals:</strong> Sea fans, gorgonians, dead man's fingers.</li>
+    <li><strong>Sea anemones:</strong> Plumose, jewel, beadlet and carpet anemones.</li>
+    <li><strong>Hydroids:</strong> Fine feathery growths on rock and weed. Some sting.</li>
+    </ul>
+    <div class="example-grid">
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/hard-corals.jpg' %}"
+             alt="Hard Corals">
+        <figcaption class="example-card__caption">Hard Corals</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/soft-corals.jpg' %}"
+             alt="Soft Corals (dead man's fingers)">
+        <figcaption class="example-card__caption">Soft Corals (dead man's fingers)</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/sea-anemones.jpg' %}"
+             alt="Sea Anemones">
+        <figcaption class="example-card__caption">Sea Anemones</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/jellyfish.jpg' %}"
+             alt="Jellyfish">
+        <figcaption class="example-card__caption">Jellyfish</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/hydroids.jpg' %}"
+             alt="Hydroids">
+        <figcaption class="example-card__caption">Hydroids</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  {# Reptiles — Examples #}
+  <div class="sm-example" data-example="mlReptiles" data-title="Reptiles — Examples">
+    <ul><li><strong>Turtles:</strong> Green, hawksbill and loggerhead are the usual snorkelling encounters.</li></ul>
+    <div class="example-grid">
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/sea-snakes.jpg' %}"
+             alt="Sea Snakes">
+        <figcaption class="example-card__caption">Sea Snakes</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/turtles.jpg' %}"
+             alt="Turtles">
+        <figcaption class="example-card__caption">Turtles</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/marine-iguanas.jpg' %}"
+             alt="Marine Iguanas">
+        <figcaption class="example-card__caption">Marine Iguanas</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  {# Cephalopods — What do these categories mean? #}
+  <div class="sm-example" data-example="mlCephalopods" data-title="Cephalopods — What do these categories mean?">
+    <ul>
+    <li><strong>Octopus:</strong> Eight-armed molluscs in rocky crevices.</li>
+    <li><strong>Cuttlefish:</strong> Remarkable colour-changing ability.</li>
+    <li><strong>Squid:</strong> Fast-moving, often seen near the surface at dusk.</li>
+    </ul>
+    <div class="example-grid">
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/octopus.jpg' %}"
+             alt="Octopus">
+        <figcaption class="example-card__caption">Octopus</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/squid.jpg' %}"
+             alt="Squid">
+        <figcaption class="example-card__caption">Squid</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/cuttlefish.jpg' %}"
+             alt="Cuttlefish">
+        <figcaption class="example-card__caption">Cuttlefish</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  {# Sessile Life — Examples #}
+  <div class="sm-example" data-example="mlSessile" data-title="Sessile Life — Examples">
+    <ul>
+    <li><strong>Sea Sponges:</strong> Encrusting or branching, filtering water.</li>
+    <li><strong>Tube Worms &amp; Feather Dusters:</strong> Fans that retract instantly when you get close.</li>
+    <li><strong>Tunicates:</strong> Sea squirts, often in colonies on rock and wreckage.</li>
+    </ul>
+    <div class="example-grid">
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/sea-sponges.jpg' %}"
+             alt="Sea Sponges">
+        <figcaption class="example-card__caption">Sea Sponges</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/worms.jpg' %}"
+             alt="Tube Worms & Feather Dusters">
+        <figcaption class="example-card__caption">Tube Worms & Feather Dusters</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/tunicates.jpg' %}"
+             alt="Tunicates">
+        <figcaption class="example-card__caption">Tunicates</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  {# Birds — Examples #}
+  <div class="sm-example" data-example="mlBirds" data-title="Birds — Examples">
+    <ul><li><strong>Diving seabirds:</strong> Guillemots, shags, cormorants and gannets seen underwater.</li></ul>
+    <div class="example-grid">
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/marine-life/diving-seabirds.jpg' %}"
+             alt="Diving Seabirds">
+        <figcaption class="example-card__caption">Diving Seabirds</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  {# Currents — Examples #}
+  <div class="sm-example" data-example="hazCurrents" data-title="Currents — Examples">
+    <ul>
+    <li><strong>Rip current:</strong> A band of churned water moving seaward. Move parallel to shore to escape.</li>
+    <li><strong>Tidal current:</strong> A sustained directional flow that changes with the tide.</li>
+    <li><strong>Surge:</strong> A rhythmic push and pull from swell reflecting off rock.</li>
+    </ul>
+  </div>
+
+  {# Marine Life Hazards — Examples #}
+  <div class="sm-example" data-example="hazMarineLife" data-title="Marine Life Hazards — Examples">
+    <ul>
+    <li><strong>Jellyfish:</strong> Check the water before entering. Lion's mane and Portuguese man o' war both sting badly.</li>
+    <li><strong>Stinging coral:</strong> Fire coral causes an immediate burning rash.</li>
+    <li><strong>Biting fish:</strong> Triggerfish defend nesting sites aggressively and will bite fins and legs. Grey triggerfish are increasingly seen in UK and Irish waters.</li>
+    <li><strong>Territorial mammals:</strong> Bull seals during the breeding season.</li>
+    <li><strong>Spiny creatures:</strong> Sea urchins, weever fish and scorpionfish underfoot or in the sand.</li>
+    </ul>
+    <div class="example-grid">
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/hazards/jellyfish.jpg' %}"
+             alt="Jellyfish">
+        <figcaption class="example-card__caption">Jellyfish</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/hazards/large-sharks.jpg' %}"
+             alt="Large sharks">
+        <figcaption class="example-card__caption">Large sharks</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/hazards/stinging-animals.jpg' %}"
+             alt="Stinging animals">
+        <figcaption class="example-card__caption">Stinging animals</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/hazards/stinging-coral.jpg' %}"
+             alt="Stinging coral">
+        <figcaption class="example-card__caption">Stinging coral</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/hazards/biting-fish.jpg' %}"
+             alt="Biting fish (trigger fish)">
+        <figcaption class="example-card__caption">Biting fish (trigger fish)</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/hazards/territorial-mammals.jpg' %}"
+             alt="Territorial mammals">
+        <figcaption class="example-card__caption">Territorial mammals</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/hazards/sea-snakes-haz.jpg' %}"
+             alt="Sea snakes">
+        <figcaption class="example-card__caption">Sea snakes</figcaption>
+      </figure>
+      <figure class="example-card">
+        <img class="example-card__img" loading="lazy"
+             src="{% static 'images/examples/hazards/spiny-creatures.jpg' %}"
+             alt="Spiny creatures">
+        <figcaption class="example-card__caption">Spiny creatures</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  {# Washing & Changing — Example #}
+  <div class="sm-example" data-example="facWashing" data-title="Washing & Changing — Example">
+    <p>Toilets and changing at the harbour car park (April to October). Showers at the dive centre on the main street.</p>
+  </div>
+
+  {# Food & Drink — Example #}
+  <div class="sm-example" data-example="facFood" data-title="Food & Drink — Example">
+    <p>Cafe at the top of the harbour, open weekends out of season. Nearest supermarket is in Eyemouth, about 10 minutes by car.</p>
+  </div>
+
+  {# Safety & Emergency — Example #}
+  <div class="sm-example" data-example="facSafety" data-title="Safety & Emergency — Example">
+    <p>No lifeguard cover. Public rescue equipment (lifebuoy) on the harbour wall by the steps. Nearest A&amp;E is Borders General Hospital, roughly 45 minutes away.</p>
+  </div>
+
+  {# Marking up the location map #}
+  <div class="sm-example" data-example="locationMapHelp" data-title="Marking up the location map">
+    <p>This map is where you show people what is actually where. Everything you add here appears on the location's map for other snorkellers.</p>
+    <ul>
+    <li>Tap <strong>Add Map Marker</strong> and choose a marker. It drops in the centre of the map.</li>
+    <li>Drag the marker to the right spot.</li>
+    <li>Use the speech bubble on a marker to add a note, for example "steps are very slippery below half tide" or "pay and display, April to September".</li>
+    <li>Use the bin icon to remove a marker you no longer want.</li>
+    </ul>
+    <p>The entry and exit points are the most useful markers you can add. Everything else is a bonus.</p>
+    <p>You can switch between satellite and terrain view using the buttons at the top of the map.</p>
+  </div>
+
+</div>
