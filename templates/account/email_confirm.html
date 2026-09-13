@@ -1,39 +1,75 @@
-{% extends "account/base_entrance.html" %}
+{% extends 'blank_base.html' %}
 {% load i18n %}
 {% load account %}
-{% load allauth %}
-{% block head_title %}
-    {% trans "Confirm Email Address" %}
-{% endblock head_title %}
+{% load static %}
+
+{% comment %}
+Where the link in the confirmation email lands. allauth's own version
+extends its entrance base, so it arrives unstyled with a sign in menu.
+Same card as the login and signup pages instead.
+
+Three states, and the last two are the ones people actually meet: the
+link worked, the address belongs to somebody else already, or the link
+has expired.
+{% endcomment %}
+
+{% block title %}Confirm your email address{% endblock %}
+
 {% block content %}
-    {% element h1 %}
-        {% trans "Confirm Email Address" %}
-    {% endelement %}
-    {% if confirmation %}
-        {% user_display confirmation.email_address.user as user_display %}
-        {% if can_confirm %}
-            {% element p %}
-                {% blocktrans with confirmation.email_address.email as email %}Please confirm that <a href="mailto:{{ email }}">{{ email }}</a> is an email address for user {{ user_display }}.{% endblocktrans %}
-            {% endelement %}
-            {% url 'account_confirm_email' confirmation.key as action_url %}
-            {% element form method="post" action=action_url %}
-                {% slot actions %}
+<div class="login-flex">
+    <div class="login-flex__themic-image-cont"></div>
+
+    <div class="login-flex__form-cont">
+        <a href="{% url 'home' %}">
+            <img class="login-flex__logo" src="{% static 'images/snorkelmap-logo.svg' %}" alt="SnorkelMap Logo">
+        </a>
+
+        <h1>{% trans "Confirm Email Address" %}</h1>
+
+        {% if confirmation %}
+            {% user_display confirmation.email_address.user as user_display %}
+
+            {% if can_confirm %}
+                <p class="login-flex__message">
+                    {% blocktrans with email=confirmation.email_address.email %}Confirm
+                    that <strong>{{ email }}</strong> belongs to
+                    {{ user_display }}, and the account is ready to
+                    use.{% endblocktrans %}
+                </p>
+
+                <form class="login-flex__form--action-only" method="post"
+                      action="{% url 'account_confirm_email' confirmation.key %}">
                     {% csrf_token %}
                     {{ redirect_field }}
-                    {% element button type="submit" %}
-                        {% trans 'Confirm' %}
-                    {% endelement %}
-                {% endslot %}
-            {% endelement %}
+                    <button type="submit">{% trans "Confirm" %}</button>
+                </form>
+
+            {% else %}
+                <p class="login-flex__message">
+                    {% blocktrans with email=confirmation.email_address.email %}We
+                    cannot confirm <strong>{{ email }}</strong>, because it is
+                    already confirmed on a different
+                    account.{% endblocktrans %}
+                </p>
+                <a class="login-flex__button" href="{% url 'sm_login' %}">
+                    {% trans "Go to login" %}
+                </a>
+            {% endif %}
+
         {% else %}
-            {% element p %}
-                {% blocktrans %}Unable to confirm {{ email }} because it is already confirmed by a different account.{% endblocktrans %}
-            {% endelement %}
+            <p class="login-flex__message">
+                {% blocktrans %}This confirmation link has expired, or it has
+                already been used. Sign in and ask for a new one, and we will
+                send another email.{% endblocktrans %}
+            </p>
+            <a class="login-flex__button" href="{% url 'sm_login' %}">
+                {% trans "Go to login" %}
+            </a>
         {% endif %}
-    {% else %}
-        {% url 'account_email' as email_url %}
-        {% element p %}
-            {% blocktrans %}This email confirmation link expired or is invalid. Please <a href="{{ email_url }}">issue a new email confirmation request</a>.{% endblocktrans %}
-        {% endelement %}
-    {% endif %}
-{% endblock content %}
+
+        <a class="login-flex__quiet-link" href="{% url 'home' %}">
+            {% trans "Back to SnorkelMap" %}
+        </a>
+    </div>
+</div>
+{% endblock %}
