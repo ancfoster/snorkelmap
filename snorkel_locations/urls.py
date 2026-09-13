@@ -1,10 +1,20 @@
 from django.urls import path
 
-from . import explore, views
+from . import editing, explore, views
 
 urlpatterns = [
 
     path("add-location/", views.create, name="create"),
+
+    # Editing a listing, and reading what has been changed. Both take
+    # the listing in the query string rather than in the path, for the
+    # same reason /location/ does: a listing's path changes when it is
+    # renamed, and neither of these links should go stale because
+    # somebody fixed a spelling. Keeping them off /location/ also keeps
+    # them out of the way of the catch-all patterns at the foot of this
+    # file, which would otherwise swallow them.
+    path("edit/", editing.edit, name="edit_location"),
+    path("history/", editing.history, name="location_history"),
 
     # An A-Z of every country with a published listing, then its
     # regions, then the listings themselves.

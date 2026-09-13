@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% comment %}
+Editing a listing.
+
+Five ways to arrive and five things to say, chosen by `state`, which
+editing.py works out. Four of them are explanations rather than the
+form, because each one is something the person needs told: that editing
+needs an account, what editing here means at all, that they have not
+said which listing, that there is no such listing, or that this one has
+been closed to editing.
+
+The form itself is the fifth. It is not here yet.
+{% endcomment %}
+
+{% block title %}{% if revision %}Edit {{ revision.name }}{% else %}Edit a listing{% endif %}{% endblock %}
+{% block description %}SnorkelMap listings are written and kept up to date by the people who snorkel them.{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/edit.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="edit">
+
+  {% if state == "editing" %}
+
+    <div class="edit__header">
+      <a class="edit__back" href="{{ location.get_absolute_url }}">Back to the listing</a>
+      <h1 class="edit__title">Editing {{ revision.name }}</h1>
+    </div>
+
+    {% if locked_notice %}
+      {% comment %}
+      Only a moderator gets this far on a locked listing, and they
+      should know why nobody else is editing it.
+      {% endcomment %}
+      <p class="edit__staff-notice">
+        <strong>This listing is locked.</strong>
+        You can edit it because of your moderator account.
+        {% if locked_message %}{{ locked_message }}{% endif %}
+      </p>
+    {% endif %}
+
+    <div class="edit__intro">
+      <p>
+        This listing was written by somebody else. You can add what is
+        missing and correct what is wrong, and your changes will be
+        visible to everyone as soon as you save them.
+      </p>
+      <p>
+        Every change is recorded in the listing's history, which anybody
+        can read. Thank you for keeping it up to date: SnorkelMap is
+        only as good as the people who snorkel these places make it.
+      </p>
+    </div>
+
+    {% comment %}
+    The form arrives next. Left as a plain note rather than a disabled
+    imitation of it, because a page that pretends to be able to do
+    something it cannot is worse than one that says so.
+    {% endcomment %}
+    <div class="edit__placeholder">
+      <p>The editing form is being built and will appear here.</p>
+    </div>
+
+  {% elif state == "locked" %}
+
+    <div class="edit__panel">
+      <h1 class="edit__panel-title">This listing is locked</h1>
+      <p>
+        {{ revision.name }} has been closed to editing by a moderator,
+        so no changes can be made to it at the moment.
+      </p>
+      {% if locked_message %}
+        <p class="edit__locked-message">{{ locked_message }}</p>
+      {% endif %}
+      <p>
+        If you think something on it is wrong, please get in touch and
+        somebody will look at it.
+      </p>
+      <a class="edit__button" href="{{ location.get_absolute_url }}">
+        Back to the listing
+      </a>
+    </div>
+
+  {% elif state == "signed-out-listing" %}
+
+    <div class="edit__panel">
+      <h1 class="edit__panel-title">Sign in to edit this listing</h1>
+      <p>
+        Anybody with a SnorkelMap account can edit {{ revision.name }}.
+        Changes are shown with the name of whoever made them, which is
+        why an account is needed before you can save one.
+      </p>
+      <p>Signing up takes a minute and costs nothing.</p>
+      <div class="edit__buttons">
+        <a class="edit__button" href="{% url 'sm_login' %}?next={{ request.get_full_path|urlencode }}">
+          Log in
+        </a>
+        <a class="edit__button edit__button--quiet" href="{% url 'custom_signup' %}?next={{ request.get_full_path|urlencode }}">
+          Create an account
+        </a>
+      </div>
+      <a class="edit__quiet-link" href="{{ location.get_absolute_url }}">
+        Back to the listing
+      </a>
+    </div>
+
+  {% elif state == "no-uuid" %}
+
+    <div class="edit__panel">
+      <h1 class="edit__panel-title">Which listing did you want to edit?</h1>
+      <p>
+        This address needs to know which snorkelling location you are
+        editing, and it has not been told. That usually means a link was
+        copied without the part on the end of it.
+      </p>
+      <p>
+        Open the listing you want to change and use the Edit link at the
+        top of it, and you will arrive here with everything filled in.
+      </p>
+      <div class="edit__buttons">
+        <a class="edit__button" href="{% url 'directory' %}">Browse the directory</a>
+        <a class="edit__button edit__button--quiet" href="{% url 'explore' %}">Open the map</a>
+      </div>
+    </div>
+
+  {% elif state == "not-found" %}
+
+    <div class="edit__panel">
+      <h1 class="edit__panel-title">That listing could not be found</h1>
+      <p>
+        Nothing on SnorkelMap matches the listing in this link. It may
+        have been removed, or the link may have been cut short somewhere
+        between being copied and being opened.
+      </p>
+      <div class="edit__buttons">
+        <a class="edit__button" href="{% url 'directory' %}">Browse the directory</a>
+        <a class="edit__button edit__button--quiet" href="{% url 'explore' %}">Open the map</a>
+      </div>
+    </div>
+
+  {% else %}
+
+    {% comment %}
+    Signed out, and no listing named. Somebody who has arrived here on
+    their own, so the thing to explain is what editing on SnorkelMap
+    means before asking them to sign in for it.
+    {% endcomment %}
+    <div class="edit__panel edit__panel--wide">
+      <h1 class="edit__panel-title">Editing on SnorkelMap</h1>
+
+      <p class="edit__lead">
+        Every snorkelling location on SnorkelMap was written by somebody
+        who has been in the water there, and any of it can be improved
+        by anybody else who has.
+      </p>
+
+      <h2 class="edit__subtitle">How it works</h2>
+      <p>
+        A listing is not owned by the person who started it. If you know
+        the car park now charges, that the steps are out at low water,
+        or that the seals have moved along the coast, you can say so.
+        Add what is missing, correct what has changed, and leave the
+        rest alone.
+      </p>
+      <p>
+        Changes appear on the listing straight away. Every one of them
+        is kept, with the name of whoever made it, in a history anybody
+        can read, so nothing is lost and nothing is anonymous.
+      </p>
+
+      <h2 class="edit__subtitle">What we ask</h2>
+      <ul class="edit__list">
+        <li>Write about places you have actually snorkelled.</li>
+        <li>Say what you know, and leave out what you are guessing at.</li>
+        <li>
+          Be careful with hazards. Somebody may get in the water on the
+          strength of what you write.
+        </li>
+        <li>Leave a note explaining anything that is not obvious.</li>
+      </ul>
+
+      <p>
+        To start editing, open a listing and use the Edit link at the top
+        of it. You will need an account, which is free.
+      </p>
+
+      <div class="edit__buttons">
+        <a class="edit__button" href="{% url 'directory' %}">Browse the directory</a>
+        <a class="edit__button edit__button--quiet" href="{% url 'custom_signup' %}">Create an account</a>
+      </div>
+    </div>
+
+  {% endif %}
+
+</main>
+{% endblock %}

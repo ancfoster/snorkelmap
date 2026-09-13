@@ -1,0 +1,182 @@
+/* Editing a listing, and its history page.
+
+   Stage one: the page the form will sit in, and the four explanations
+   that stand in its place when the form cannot be shown. The form's own
+   styling arrives with the form.
+   ──────────────────────────────────────────────────────────────────── */
+
+.edit {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 24px 16px 56px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ── The editing page itself ───────────────────────────────────── */
+
+.edit__header { display: flex; flex-direction: column; gap: 8px; }
+.edit__back {
+  font-size: 0.9rem;
+  color: var(--sm-body-hyperlink);
+  text-decoration: none;
+  align-self: flex-start;
+}
+.edit__back:hover { text-decoration: underline; }
+.edit__title {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 400;
+  color: #333;
+}
+
+.edit__intro {
+  box-sizing: border-box;
+  background: var(--sm-field-bg-focus-hover);
+  border: 1px solid var(--sm-field-border-default);
+  border-radius: 12px;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.edit__intro p {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--sm-action-dark-blue-text);
+}
+
+.edit__staff-notice {
+  margin: 0;
+  padding: 14px 18px;
+  border-radius: 12px;
+  border: 1px solid #f3c9c4;
+  background: var(--sm-invalid-bg);
+  color: var(--sm-invalid);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.edit__placeholder {
+  box-sizing: border-box;
+  background: var(--sm-card-bg);
+  border: 1px dashed var(--sm-field-border-default);
+  border-radius: 16px;
+  padding: 40px 24px;
+  text-align: center;
+}
+.edit__placeholder p {
+  margin: 0;
+  color: var(--sm-text-3rd-grey, #666);
+  font-size: 0.95rem;
+}
+
+/* ── The explanations ──────────────────────────────────────────── */
+
+.edit__panel {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 640px;
+  margin: 24px auto 0 auto;
+  background: var(--sm-card-bg);
+  border-radius: 16px;
+  box-shadow: 0 8px 22px 0 rgba(0, 0, 0, 0.08);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.edit__panel--wide { max-width: 760px; }
+
+.edit__panel-title {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 400;
+  color: var(--sm-dark-text-headings);
+}
+.edit__subtitle {
+  margin: 8px 0 0 0;
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: var(--sm-dark-text-headings);
+}
+.edit__panel p {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: #333;
+}
+.edit__lead { font-size: 1.05rem !important; }
+
+.edit__list {
+  margin: 0;
+  padding-left: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #333;
+}
+
+.edit__locked-message {
+  padding: 14px 18px;
+  border-radius: 8px;
+  border: 1px solid var(--sm-field-border-default);
+  background: var(--sm-field-bg);
+  color: var(--sm-action-dark-blue-text) !important;
+}
+
+.edit__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+.edit__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 24px;
+  border-radius: 100vw;
+  border: 1.5px solid var(--sm-action-light-blue);
+  background: var(--sm-action-light-blue);
+  color: var(--sm-action-dark-blue-text);
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1;
+  text-decoration: none;
+  align-self: flex-start;
+  transition: background-color 0.15s ease-in, border-color 0.15s ease-in;
+}
+.edit__button:visited { color: var(--sm-action-dark-blue-text); }
+.edit__button:hover {
+  background: var(--sm-hover-blue);
+  border-color: var(--sm-hover-blue);
+}
+.edit__button--quiet {
+  background: none;
+  border-color: var(--sm-field-border-default);
+}
+.edit__button--quiet:hover {
+  background: var(--sm-field-bg-focus-hover);
+  border-color: var(--sm-primary-accent);
+}
+
+.edit__quiet-link {
+  font-size: 0.9rem;
+  color: var(--sm-body-hyperlink);
+  text-decoration: none;
+  align-self: flex-start;
+}
+.edit__quiet-link:hover { text-decoration: underline; }
+
+@media screen and (max-width: 640px) {
+  .edit__panel { padding: 24px 20px; }
+  .edit__title { font-size: 1.6rem; }
+  .edit__button { width: 100%; }
+}

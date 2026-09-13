@@ -132,6 +132,33 @@ class SnorkelLocation(models.Model):
     # writes it, so it can always be rebuilt from the rows themselves.
     users_snorkelled = models.PositiveIntegerField(default=0)
 
+    # Who wrote the listing in the first place. This never changes: a
+    # listing edited by fifty people was still started by one, and that
+    # is worth keeping. Who made any given change is on the revision,
+    # which is the other half of the same question.
+    #
+    # SET_NULL rather than CASCADE, because a closed account must not
+    # take a beach off the map with it. The listing outlives the
+    # person who added it.
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name="locations_created",
+    )
+
+    # Editing closed. Set by a moderator when a listing is being
+    # argued over, or is the subject of a complaint, or is simply
+    # wrong in a way that needs sorting out before anybody else adds
+    # to it. Nullable because that is how it was asked for; anything
+    # reading it should go through `is_locked`, which treats not
+    # answered and no the same way.
+    locked = models.BooleanField(null=True, blank=True, default=False)
+    # Shown to anybody who tries to edit it. Optional: without one they
+    # are told it is locked and nothing more, which is better than a
+    # made up reason.
+    locked_message = models.TextField(blank=True, default="")
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     admin_notes = models.JSONField(null=True, blank=True)
@@ -139,6 +166,17 @@ class SnorkelLocation(models.Model):
 
     class Meta:
         indexes = [models.Index(fields=["country", "region", "locale"])]
+
+    @property
+    def is_locked(self):
+        """Whether editing is closed.
+
+        `locked` is nullable, so there are three stored values and only
+        two meanings. Everything that decides whether somebody may edit
+        reads this rather than the field, so null and False cannot
+        drift apart in one place and not another.
+        """
+        return bool(self.locked)
 
     @property
     def latitude(self):
@@ -226,14 +264,30 @@ class LocationRevision(models.Model):
         "LocationMedia", on_delete=models.SET_NULL,
         null=True, blank=True, related_name="+",
     )
+    # The underwater equivalent, and optional in a way the one above is
+    # not: plenty of listings have no underwater photograph at all, and
+    # a listing is still worth having without one.
+    featured_underwater_image = models.ForeignKey(
+        "LocationMedia", on_delete=models.SET_NULL,
+        null=True, blank=True, related_name="+",
+    )
+    # Who made this revision, which for the first one is also who
+    # started the listing. Once a listing has been edited the two are
+    # different questions, and the other one is answered by
+    # SnorkelLocation.created_by.
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL, null=True,
         related_name="location_revisions",
     )
     created_at = models.DateTimeField(auto_now_add=True)
-    revision_comment = models.CharField(  
-        max_length=255, blank=True, default="" 
+    # What the person says they changed and why, in their own words.
+    # Optional, and shown alongside the revision in the listing's
+    # history. 300 characters: long enough for a sentence or two of
+    # explanation, short enough that it stays a note rather than
+    # becoming somewhere to argue.
+    revision_comment = models.CharField(
+        max_length=300, blank=True, default=""
     )
     diff = models.JSONField(default=dict, blank=True)
     class Meta:

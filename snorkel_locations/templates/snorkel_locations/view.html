@@ -44,7 +44,7 @@ when a section is empty.
       </defs>
     </symbol>
     <symbol id="icon-save" viewBox="0 0 20 20" fill="none">
-      <path d="M4 17.5V4.16667C4 3.70833 4.16319 3.31597 4.48958 2.98958C4.81597 2.66319 5.20833 2.5 5.66667 2.5H14C14.4583 2.5 14.8507 2.66319 15.1771 2.98958C15.5035 3.31597 15.6667 3.70833 15.6667 4.16667V17.5L9.83333 15L4 17.5ZM5.66667 14.9583L9.83333 13.1667L14 14.9583V4.16667H5.66667V14.9583Z" fill="currentColor"/>
+      <path d="M4 17.5V4.16667C4 3.70833 4.16319 3.31597 4.48958 2.98958C4.81597 2.66319 5.20833 2.5 5.66667 2.5H14C14.4583 2.5 14.8507 2.66319 15.1771 2.98958C15.5035 3.31597 15.6667 3.70833 15.6667 4.16667V17.5L9.83333 15L4 17.5ZM5.66667 14.9583L9.83333 13.1667L14 14.9583V4.16667H5.66667V14.9583Z" fill="#2980A3"/>
     </symbol>
     <symbol id="icon-share" viewBox="0 0 20 20" fill="none">
       <mask id="share-mask0_692_366" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
@@ -82,6 +82,24 @@ when a section is empty.
       {% if location.region %}<span class="location-string__slash">/</span><span>{{ location.region.name }}</span>{% endif %}
       {% if location.locale %}<span class="location-string__slash">/</span><span>{{ location.locale.name }}</span>{% endif %}
       {% if not location.country %}<span>Open water</span>{% endif %}
+    </div>
+
+    {% comment %}
+    Editing is open to anybody with an account, so the link is shown to
+    everybody. Signed out it goes to the login page and comes back
+    here afterwards, which is kinder than letting somebody write an
+    edit and only then discovering they cannot save it.
+    {% endcomment %}
+    <div class="listing__actions">
+      <a class="listing__action-link"
+         href="{% if user.is_authenticated %}{{ edit_url }}{% else %}{% url 'sm_login' %}?next={{ edit_url|urlencode }}{% endif %}">
+        <img class="listing__action-link-icon" src="{% static 'images/icons/edit.svg' %}" alt="">
+        <span>Edit</span>
+      </a>
+      <a class="listing__action-link" href="{{ history_url }}">
+        <img class="listing__action-link-icon" src="{% static 'images/icons/history.svg' %}" alt="">
+        <span>View History</span>
+      </a>
     </div>
   </div>
 

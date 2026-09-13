@@ -31,6 +31,43 @@
 }
 .editing-history__button img { height: 12px; width: 12px; object-fit: contain; object-position: center; }
 
+/* Edit and View History, top right of the listing. Pills that only
+   show their background under the pointer, so the pair reads as two
+   quiet links until somebody goes for one. */
+.listing__actions { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.listing__action-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border-radius: 100vw;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  color: #666666;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.15s ease-in, color 0.15s ease-in;
+}
+.listing__action-link:visited { color: #666666; }
+.listing__action-link:hover,
+.listing__action-link:focus-visible {
+  background: var(--sm-action-light-blue);
+  color: var(--sm-action-dark-blue-text);
+}
+.listing__action-link-icon {
+  width: 16px; height: 16px;
+  display: block;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+/* The top row turns into a column-reverse on a phone, which would put
+   these above the breadcrumb. Ordering them first puts them last once
+   the axis is reversed, so the breadcrumb stays on top. */
+@media screen and (max-width: 768px) {
+  .listing__actions { order: -1; align-self: flex-start; margin-left: -14px; }
+}
+
 .listing__descriptions { display: flex; flex-direction: column; gap: 1rem; }
 @media (min-width: 768px) {
   .listing__descriptions { flex-direction: row; flex-wrap: wrap; }

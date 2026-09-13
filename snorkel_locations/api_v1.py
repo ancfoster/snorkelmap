@@ -98,6 +98,10 @@ def create_submission(request, payload: SubmissionIn):
             region=region,
             locale=locale,
             questionable_geocode=geocode_failed,
+            # Who started it, which never changes however many people
+            # edit it afterwards. Who made any given change is on the
+            # revision instead.
+            created_by=request.user,
             # Live immediately. A listing used to wait for its first
             # photograph to reach the bucket and pass verification,
             # which meant a dropped connection or a rejected photo left

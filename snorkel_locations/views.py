@@ -3,6 +3,7 @@ import uuid as uuid_lib
 from django.conf import settings
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 
 from . import choices, geography, media_storage, static_map
 from .choices import create_page_context
@@ -170,6 +171,13 @@ def listing_context(request, location):
                                     ("underwater", underwater))
             for photo in photos
         ],
+
+        # Where the two links at the top of the page go. Built here
+        # rather than in the template because both carry the listing in
+        # a query string, and building a query string in a template is
+        # how you end up with one that is not escaped.
+        "edit_url": f"{reverse('edit_location')}?uuid={location.uuid}",
+        "history_url": f"{reverse('location_history')}?uuid={location.uuid}",
 
         # The modal draws a real map, so it needs the same public token
         # the create page uses.
