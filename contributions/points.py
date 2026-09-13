@@ -32,12 +32,14 @@ def recalculate(user):
 def award(user, kind, *, location=None, review=None, revision=None):
     """Record a contribution, and bring the person's total up to date.
 
-    Returns the row, whether it was written now or was already there.
-    Repeating an award is harmless: the unique constraints mean the
-    second attempt finds the first one rather than paying twice, which
-    is what makes this safe to call from a path that can be retried.
+    Returns the row and whether it was written now, in that order, the
+    same way get_or_create does. The second half matters to anything
+    that wants to tell somebody what they have just earned: repeating
+    an award is harmless, because the unique constraints mean the
+    second attempt finds the first one rather than paying twice, and
+    that is exactly the case where nothing was earned.
     """
-    contribution, _ = Contribution.objects.get_or_create(
+    contribution, created = Contribution.objects.get_or_create(
         user=user,
         kind=kind,
         location=location,
@@ -46,7 +48,7 @@ def award(user, kind, *, location=None, review=None, revision=None):
         defaults={"points": Contribution.POINTS[kind]},
     )
     recalculate(user)
-    return contribution
+    return contribution, created
 
 
 def withdraw(user, kind, *, location=None, review=None, revision=None):

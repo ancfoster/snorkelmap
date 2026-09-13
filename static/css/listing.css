@@ -942,7 +942,9 @@
 }
 
 .reviews__summary {
-  flex: 0 0 180px;
+  /* A fixed column rather than a share of the row, so the reviews
+     beside it start in the same place whatever is in it. */
+  flex: 0 0 210px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -954,13 +956,13 @@
   margin: 0;
 }
 .reviews__average-star {
-  width: 32px; height: 32px;
+  width: 36px; height: 36px;
   display: block;
   color: var(--sm-primary-accent);
   flex-shrink: 0;
 }
 .reviews__average-value {
-  font-size: 2rem;
+  font-size: 2.5rem;
   line-height: 1;
   font-weight: 400;
   color: #333;
@@ -979,24 +981,44 @@
    weight, so the order is what decides. */
 @media screen and (max-width: 640px) {
   .reviews__summary { flex: 0 0 auto; width: 100%; }
+  .reviews__main { width: 100%; }
+  .review__avatar { width: 40px; height: 40px; font-size: 1.05rem; }
+  .review__author { font-size: 1.05rem; }
 }
 
 /* ── One review ────────────────────────────────────────────────── */
 
-.reviews__list {
+/* The right hand column: the reviews, the rule and the panel, all
+   starting at the same place. The summary is a column beside this, not
+   a heading above it, which is why the rule does not run the full
+   width of the card. */
+.reviews__main {
   flex: 1 1 auto;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+}
+.reviews__list {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
 }
 .reviews__empty {
   margin: 0;
   font-size: 0.95rem;
   color: var(--sm-text-3rd-grey, #666);
 }
-.review { display: flex; flex-direction: column; gap: 6px; }
-.review__head {
+/* The avatar sits beside a column holding the name, the stars and the
+   words, so the words line up under the name rather than under the
+   circle. */
+.review { display: flex; align-items: flex-start; gap: 16px; }
+.review__text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.review__meta {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1005,37 +1027,37 @@
 /* A letter in a circle rather than a photograph. There are no
    photographs of people on this site. */
 .review__avatar {
-  width: 28px; height: 28px;
+  width: 48px; height: 48px;
   border-radius: 50%;
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--sm-action-light-blue);
-  color: var(--sm-action-dark-blue-text);
-  font-size: 0.8rem;
-  font-weight: 600;
+  background: var(--sm-primary-accent);
+  color: #ffffff;
+  font-size: 1.25rem;
+  font-weight: 500;
   line-height: 1;
 }
 .review__author {
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-size: 1.15rem;
+  font-weight: 400;
   color: #333;
 }
-.review__stars { display: inline-flex; gap: 2px; align-items: center; }
+.review__stars { display: inline-flex; gap: 3px; align-items: center; }
 .review__star {
-  width: 14px; height: 14px;
+  width: 18px; height: 18px;
   display: block;
   color: var(--sm-primary-accent);
 }
 .review__star--empty { color: var(--sm-field-border-default); }
 .review__sep { color: var(--sm-field-border-default); }
 .review__date {
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: var(--sm-text-3rd-grey, #666);
 }
 .review__body {
-  margin: 0;
+  margin: 8px 0 0 0;
   font-size: 0.95rem;
   line-height: 1.55;
   color: #333;

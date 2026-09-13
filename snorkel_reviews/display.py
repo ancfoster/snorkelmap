@@ -23,6 +23,40 @@ def stars(value):
     return [position <= filled for position in range(1, MAX_RATING + 1)]
 
 
+def thanks_for(created, has_body, had_body, earned):
+    """What to say once something has just been saved.
+
+    Four things decide the sentence. Whether this is the first time
+    they have said anything about the place, whether there are words
+    with the rating now, whether there were words with it before, and
+    what the ledger actually paid.
+
+    The middle two are what separate adding a review to a rating that
+    was already left from changing one that was already there. Telling
+    somebody they have updated a review they have only just written is
+    the sort of small wrongness that makes a site feel careless.
+
+    The points are only mentioned when some were actually earned.
+    Changing a rating that was already left earns nothing, and a line
+    reading "you have earned 0 points" is worse than no line at all.
+    """
+    if created:
+        what = "leaving a rating and review" if has_body else "leaving your rating"
+    elif has_body and not had_body:
+        what = "updating your rating and leaving a review"
+    elif has_body:
+        what = "updating your rating and review"
+    else:
+        # Covers both leaving a bare rating alone and taking the words
+        # away from one, since either way what is left is the rating.
+        what = "updating your rating"
+
+    if not earned:
+        return f"Thank you for {what}."
+    return (f"Thank you for {what}, you have earned "
+            f"{earned} point{'' if earned == 1 else 's'}.")
+
+
 def _person(review):
     """One review, ready to print."""
     username = review.created_by.get_username()
@@ -32,8 +66,10 @@ def _person(review):
         # The circle beside a review carries a letter rather than a
         # photograph, because there are no photographs of people on
         # this site and inventing one would be the first step towards
-        # there being some.
-        "initial": username[:1].upper(),
+        # there being some. Their own letter, not an upper cased one:
+        # snorkeller93 is written in lower case and the circle should
+        # not be the one place on the site that disagrees.
+        "initial": username[:1],
         "rating": review.rating,
         "stars": stars(review.rating),
         "body": review.body,

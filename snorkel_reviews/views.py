@@ -87,17 +87,26 @@ def submit(request, location_uuid):
     # editing it earns nothing more, which the award is already
     # idempotent about. Words are worth something on top, so they are
     # paid for when they appear and taken back if they are removed.
-    points.award(request.user, Contribution.Kind.RATING,
-                 location=location, review=review)
+    #
+    # Only what was written now counts towards what they are told they
+    # have earned, which is why each award is asked whether it paid
+    # rather than assumed to have.
+    earned = 0
+    _, paid = points.award(request.user, Contribution.Kind.RATING,
+                           location=location, review=review)
+    if paid:
+        earned += Contribution.POINTS[Contribution.Kind.RATING]
+
     if body:
-        points.award(request.user, Contribution.Kind.REVIEW,
-                     location=location, review=review)
+        _, paid = points.award(request.user, Contribution.Kind.REVIEW,
+                               location=location, review=review)
+        if paid:
+            earned += Contribution.POINTS[Contribution.Kind.REVIEW]
     elif had_body:
         points.withdraw(request.user, Contribution.Kind.REVIEW,
                         location=location, review=review)
 
-    thanks = ("Thank you for leaving a rating and review." if body
-              else "Thank you for leaving your rating.")
+    thanks = display.thanks_for(created, bool(body), had_body, earned)
 
     # Somebody who has an opinion about a place has usually been in the
     # water there, and the count of who has is worth more when it is
