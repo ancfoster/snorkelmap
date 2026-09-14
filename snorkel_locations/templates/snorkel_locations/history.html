@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% comment %}
+A listing's editing history.
+
+A timeline, oldest at the top, so it reads forwards: the listing is
+created, and then each thing that happened to it is added underneath.
+
+What each entry shows is what that revision changed about the one
+before it, worked out in editing.revision_changes. Prose is shown in
+full, before and after, because a history that summarises somebody's
+words is not a history of them. Chip groups show only what was added
+and what was taken away: printing forty unchanged chips either side of
+one new one hides the change rather than showing it.
+
+The button on each entry opens the listing as it stood at that moment.
+That is fetched when it is asked for rather than rendered thirty times
+into a page nobody will scroll through.
+{% endcomment %}
+
+{% block title %}{% if revision %}History of {{ revision.name }}{% else %}Editing history{% endif %}{% endblock %}
+{% block description %}Every change made to a SnorkelMap listing, and who made it.{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/listing.css' %}">
+<link rel="stylesheet" href="{% static 'css/history.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="history">
+
+  {% if location %}
+
+    <a class="history__back" href="{{ location.get_absolute_url }}">
+      <svg class="history__back-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+        <path d="M9.5 3 4.5 8l5 5" stroke="currentColor" stroke-width="1.8"
+              fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M4.8 8H13" stroke="currentColor" stroke-width="1.8"
+              stroke-linecap="round"/>
+      </svg>
+      Back to {{ revision.name }}'s listing
+    </a>
+
+    <header class="history__header">
+      <p class="history__eyebrow">Listing History For</p>
+      <h1 class="history__title">{{ revision.name }}</h1>
+      <p class="history__count">
+        {{ events|length }} entr{{ events|length|pluralize:"y,ies" }},
+        oldest first
+      </p>
+    </header>
+
+    <ol class="timeline">
+      {% for event in events %}
+        <li class="timeline__row">
+          <span class="timeline__dot{% if event.created %} timeline__dot--created{% endif %}"
+                aria-hidden="true"></span>
+
+          <article class="timeline__card">
+            {% include "snorkel_locations/_revision_head.html" with head=event %}
+
+            {% if not event.created %}
+              <h2 class="timeline__heading">Changes Made</h2>
+              {% if event.changes %}
+                <dl class="change">
+                  {% for change in event.changes %}
+                    <dt class="change__label">{{ change.label }}</dt>
+                    <dd class="change__value">
+                      {% if change.kind == "chips" %}
+                        {% if change.added %}
+                          <p class="change__side change__side--added">
+                            <span class="change__side-label">Added</span>
+                            {% for item in change.added %}
+                              <span class="change__chip change__chip--added">{{ item }}</span>
+                            {% endfor %}
+                          </p>
+                        {% endif %}
+                        {% if change.removed %}
+                          <p class="change__side change__side--removed">
+                            <span class="change__side-label">Removed</span>
+                            {% for item in change.removed %}
+                              <span class="change__chip change__chip--removed">{{ item }}</span>
+                            {% endfor %}
+                          </p>
+                        {% endif %}
+
+                      {% elif change.kind == "text" %}
+                        <div class="change__prose">
+                          <p class="change__side-label">Before</p>
+                          {% if change.before %}
+                            <p class="change__before">{{ change.before|linebreaksbr }}</p>
+                          {% else %}
+                            <p class="change__before change__empty">Nothing was written here.</p>
+                          {% endif %}
+                        </div>
+                        <div class="change__prose">
+                          <p class="change__side-label">After</p>
+                          {% if change.after %}
+                            <p class="change__after">{{ change.after|linebreaksbr }}</p>
+                          {% else %}
+                            <p class="change__after change__empty">This was cleared.</p>
+                          {% endif %}
+                        </div>
+
+                      {% else %}
+                        <p class="change__inline">
+                          {% if change.before %}
+                            <span class="change__before">{{ change.before }}</span>
+                            <img class="change__arrow" alt=""
+                                 src="{% static 'images/icons/timeline_arrow.svg' %}">
+                          {% endif %}
+                          <span class="change__after">{{ change.after }}</span>
+                        </p>
+                      {% endif %}
+                    </dd>
+                  {% endfor %}
+                </dl>
+              {% else %}
+                {% comment %}
+                A revision was written but nothing on it differs from the
+                one before. Said plainly rather than left as an empty
+                heading, which would read as a page that had failed.
+                {% endcomment %}
+                <p class="timeline__none">
+                  Nothing on the listing itself was changed by this edit.
+                </p>
+              {% endif %}
+
+              <h2 class="timeline__heading">User Change Comments</h2>
+              {% if event.comment %}
+                <p class="timeline__comment">{{ event.comment }}</p>
+              {% else %}
+                <p class="timeline__comment timeline__comment--none">
+                  No comments made about this edit.
+                </p>
+              {% endif %}
+            {% endif %}
+
+            <button class="timeline__state" type="button"
+                    data-state-increment="{{ event.increment }}"
+                    hx-get="{% url 'revision_state' %}?uuid={{ location.uuid }}&amp;increment={{ event.increment }}"
+                    hx-target="#state-modal-body"
+                    hx-swap="innerHTML">
+              View State
+            </button>
+          </article>
+        </li>
+      {% endfor %}
+    </ol>
+
+  {% else %}
+
+    <div class="history__panel">
+      <h1 class="history__panel-title">Which listing did you want?</h1>
+      <p>
+        This address needs to know which snorkelling location's history
+        you are after, and it has not been told. That usually means a
+        link was copied without the part on the end of it.
+      </p>
+      <div class="history__buttons">
+        <a class="history__button" href="{% url 'directory' %}">Browse the directory</a>
+        <a class="history__button history__button--quiet" href="{% url 'explore' %}">Open the map</a>
+      </div>
+    </div>
+
+  {% endif %}
+
+</main>
+
+{% if location %}
+  {% comment %}
+  The listing as one revision left it. One dialog, filled by whichever
+  button was pressed, rather than one per revision.
+  {% endcomment %}
+  <div class="state-modal" id="state-modal" role="dialog" aria-modal="true"
+       aria-labelledby="state-modal-heading" hidden>
+    <div class="state-modal__backdrop" data-close-state></div>
+    <div class="state-modal__panel">
+      <header class="state-modal__head">
+        {% comment %}
+        Filled by the same fetch that fills the body, swapped out of
+        band, so which revision is open is said at the top of the
+        dialog in the same words the timeline used. Empty until then:
+        naming a revision before its contents have arrived would be
+        labelling whatever is on screen underneath it.
+        {% endcomment %}
+        <div class="state-modal__heading" id="state-modal-heading"
+             aria-live="polite"></div>
+        <button class="state-modal__close" type="button" data-close-state
+                aria-label="Close">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M11.667 9.35059L21 0.0175781L23.3154 2.33301L13.9912 11.6582L13.9824 11.667L23.3154 21L21 23.3154L11.667 13.9824L11.6582 13.9912L2.33301 23.3154L0.0175781 21L9.35059 11.667L0.0166016 2.33301L2.33301 0.0166016L11.667 9.35059Z" fill="currentColor"/>
+          </svg>
+        </button>
+      </header>
+      <div class="state-modal__body" id="state-modal-body">
+        <p class="state-modal__loading">Loading&hellip;</p>
+      </div>
+    </div>
+  </div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+{% if location %}
+  <script src="{% static 'js/vendor/htmx.min.js' %}"></script>
+  <script src="{% static 'js/history.js' %}"></script>
+{% endif %}
+{% endblock %}
