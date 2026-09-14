@@ -1,0 +1,50 @@
+/* The visibility slider, shared by the create form and the listing's
+   report dialog.
+
+   It was in create.css, which is where it was first needed, with a
+   note saying the listing's dialog shared it. It could not: create.css
+   also styles the create page's chrome, including a .mobile-nav rule
+   that would follow it onto any page that loaded it. So the slider
+   lives here, and both pages load this.
+
+   Anything only one of the two needs is not here. The dialog's own
+   labels and helper lines are in visibility.css, beside the dialog.
+   ──────────────────────────────────────────────────────────────────── */
+
+.vis-scale {
+  display: flex; justify-content: space-between;
+  margin-top: 6px; font-size: 0.78rem; color: var(--sm-text-3rd-grey);
+}
+.vis-slider-labels {
+  display: flex; justify-content: space-between;
+  font-size: 0.75rem; color: var(--sm-text-3rd-grey);
+  margin-bottom: 4px;
+}
+
+/* Interactive range slider — same gradient, custom thumb */
+.vis-slider-wrap { position: relative; }
+.vis-slider-input {
+  width: 100%; -webkit-appearance: none; appearance: none;
+  height: 14px; border-radius: 7px; cursor: pointer; outline: none;
+  background: linear-gradient(to right,#cc2200,#e84d1c,#f07b13,#f5c242,#a8c940,#4db340);
+}
+.vis-slider-input::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 28px; height: 28px; border-radius: 50%;
+  background: var(--sm-primary-accent); border: 3px solid #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25); cursor: pointer;
+}
+.vis-slider-input::-moz-range-thumb {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--sm-primary-accent); border: 3px solid #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25); cursor: pointer;
+}
+
+
+/* The date field, which both the create step and the dialog use. */
+.vis-date-input {
+  padding: 10px 14px; border: 1px solid var(--sm-field-border-default);
+  border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 0.9rem;
+  color: var(--sm-field-value); background: var(--sm-field-bg); outline: none;
+  transition: border-color 0.15s;
+}
+.vis-date-input:focus { border-color: var(--sm-primary-accent); }

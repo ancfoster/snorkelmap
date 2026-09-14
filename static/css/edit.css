@@ -180,3 +180,299 @@
   .edit__title { font-size: 1.6rem; }
   .edit__button { width: 100%; }
 }
+
+
+/* ── The form ────────────────────────────────────────────────────────
+
+   Chips, fields, buttons and the difficulty slider all come from
+   create.css, which this page loads: the two forms are the same form
+   with different furniture round them, and one stylesheet for the
+   controls is what keeps them looking like it.
+
+   What is here is the furniture. The collapsible sections, the tags on
+   the alternate names, the bar at the foot, and the fullscreen map.
+   ──────────────────────────────────────────────────────────────────── */
+
+.edit-form { display: flex; flex-direction: column; gap: 16px; }
+
+/* ── A section ─────────────────────────────────────────────────── */
+
+.edit-section {
+  box-sizing: border-box;
+  background: var(--sm-card-bg);
+  border-radius: 16px;
+  box-shadow: 0 8px 22px 0 rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+.edit-section__head { margin: 0; display: flex; align-items: stretch; }
+.edit-section__head--split { gap: 12px; padding-right: 20px; align-items: center; }
+
+.edit-section__toggle {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 4px 16px;
+  text-align: left;
+  padding: 20px 24px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+}
+.edit-section__toggle:hover { background: var(--sm-field-bg); }
+.edit-section__title {
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: var(--sm-dark-text-headings);
+}
+.edit-section__summary {
+  grid-column: 1;
+  font-size: 0.88rem;
+  font-weight: 400;
+  color: var(--sm-text-3rd-grey, #666);
+}
+.edit-section__chevron {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  display: block;
+  width: 16px; height: 16px;
+  flex-shrink: 0;
+}
+.edit-section__chevron img { width: 16px; height: 16px; }
+/* Closed shows the one pointing down, open the one pointing up. Two
+   drawings rather than one rotated, because that is what they are.
+
+   Written with the parent in front of each so all four rules weigh the
+   same as the one above them. Without that, "img" outweighs the class
+   on the image and both chevrons show at once. */
+.edit-section__chevron .edit-section__chevron-down { display: block; }
+.edit-section__chevron .edit-section__chevron-up { display: none; }
+.edit-section--open .edit-section__chevron-down { display: none; }
+.edit-section--open .edit-section__chevron-up { display: block; }
+
+.edit-section__body {
+  padding: 4px 24px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.edit-section__body[hidden] { display: none; }
+.edit-section__body--open { padding-top: 24px; }
+.edit-section__action { flex-shrink: 0; }
+
+/* A section with nothing to collapse. One line to read and a button to
+   press does not need hiding behind a toggle. */
+.edit-section--plain {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.edit-section--plain .edit-section__title { margin: 0; }
+.edit-section--plain .edit-section__summary { margin: 0; display: block; }
+.edit-section--plain .form-field__helper { margin: 0; }
+.edit-section__plain-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.edit-section__plain-text { display: flex; flex-direction: column; gap: 4px; }
+
+/* ── What is about to be published ─────────────────────────────── */
+
+.change-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.change-list:empty { display: none; }
+.change-list__item {
+  position: relative;
+  padding-left: 26px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--sm-action-dark-blue-text);
+}
+/* A tick rather than a bullet: these are things that will happen, not
+   a list of options. */
+.change-list__item::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 0.45em;
+  width: 10px;
+  height: 5px;
+  border-left: 2px solid var(--sm-primary-accent);
+  border-bottom: 2px solid var(--sm-primary-accent);
+  transform: rotate(-45deg);
+}
+.change-list__empty {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--sm-text-3rd-grey, #666);
+}
+.change-list__empty[hidden] { display: none; }
+
+.edit-form__turnstile { min-height: 4px; }
+
+/* ── Alternate names ───────────────────────────────────────────── */
+
+.alt-names { display: flex; flex-wrap: wrap; gap: 8px; }
+.alt-names:empty { display: none; }
+.alt-names__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px 6px 14px;
+  border-radius: 56px;
+  background: #E7F3FA;
+  color: #2a5f75;
+  font-size: 0.83rem;
+}
+.alt-names__remove {
+  border: 0;
+  background: none;
+  cursor: pointer;
+  line-height: 1;
+  font-size: 1.1rem;
+  color: #2a5f75;
+  padding: 0 4px;
+}
+.alt-names__remove:hover { color: var(--sm-invalid); }
+.alt-names__add { display: flex; gap: 8px; align-items: flex-start; }
+.alt-names__add .form-field__input { flex: 1 1 auto; min-width: 0; }
+
+/* ── The change summary and the bar ────────────────────────────── */
+
+.edit-form__counter {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--sm-text-3rd-grey, #666);
+}
+.edit-form__counter--over { color: var(--sm-invalid); }
+
+.edit-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.edit-form__error {
+  margin: 0;
+  color: var(--sm-invalid);
+  font-size: 0.9rem;
+  text-align: right;
+}
+.edit-form__error[hidden] { display: none; }
+
+/* Two buttons create.css does not define, since nothing on that page
+   needs them. */
+.btn--ghost {
+  background: none;
+  color: var(--sm-action-dark-blue-text);
+  border: 1px solid var(--sm-field-border-default);
+}
+.btn--ghost:hover { background: var(--sm-field-bg-focus-hover); }
+.btn--danger {
+  background: var(--sm-invalid-bg);
+  color: var(--sm-invalid);
+  border: 1px solid #f3c9c4;
+}
+.btn--danger:hover:not(:disabled) {
+  background: #fbdedb;
+  border-color: var(--sm-invalid);
+}
+.btn--danger:disabled {
+  background: var(--sm-field-bg-disabled);
+  border-color: var(--sm-field-border-disabled);
+  color: var(--sm-field-value-disabled);
+  cursor: not-allowed;
+}
+
+/* ── The map, fullscreen ───────────────────────────────────────── */
+
+.marker-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  background: var(--sm-page-bg);
+  display: flex;
+  flex-direction: column;
+}
+.marker-modal[hidden] { display: none; }
+
+.marker-modal__map-cont {
+  flex: 1 1 auto;
+  position: relative;
+  min-height: 0;
+}
+.marker-modal__map-cont #sm-annotate-map-cont__map {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* The bar under it. Off white so it reads as the page rather than as
+   part of the map. Closing is the X over the map, so the only thing
+   here is undoing, and it sits in the middle. */
+.marker-modal__bar {
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  background: #FAFAFA;
+  border-top: 1px solid var(--sm-header-border);
+  padding: 14px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* The same close button the photo and location map modals use. */
+.marker-modal__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 30;
+  box-sizing: border-box;
+  padding: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 0;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--sm-primary-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+}
+.marker-modal__close:hover { background: #ffffff; }
+/* Same reason as the dialog on the history page: an svg with no width
+   attribute is a flex item with no intrinsic width, and without a
+   basis it comes out as nothing. */
+.marker-modal__close svg {
+  width: 16px; height: 16px;
+  flex: 0 0 16px;
+  display: block;
+}
+
+@media screen and (max-width: 640px) {
+  .edit-section__toggle { padding: 16px 18px; }
+  .edit-section__body { padding: 4px 18px 20px 18px; }
+  .edit-section__head--split { padding-right: 14px; flex-wrap: wrap; }
+  .edit-section--plain { padding: 20px 18px; }
+  .edit-form__actions .btn { flex: 1 1 auto; }
+  .marker-modal__bar .btn { flex: 1 1 auto; }
+}

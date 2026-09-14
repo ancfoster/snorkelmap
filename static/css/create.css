@@ -419,45 +419,11 @@
 }
 
 
-/* ── VISIBILITY SLIDER (shared with the listing's report modal) ───── */
-.vis-scale {
-  display: flex; justify-content: space-between;
-  margin-top: 6px; font-size: 0.78rem; color: var(--sm-text-3rd-grey);
-}
-.vis-slider-labels {
-  display: flex; justify-content: space-between;
-  font-size: 0.75rem; color: var(--sm-text-3rd-grey);
-  margin-bottom: 4px;
-}
+/* The visibility slider used to be here. It is in visibility-slider.css
+   now, which both this page and the listing's report dialog load: this
+   file also styles the create page's chrome, so a page that loaded it
+   for the slider got the chrome as well. */
 
-/* Interactive range slider — same gradient, custom thumb */
-.vis-slider-wrap { position: relative; }
-.vis-slider-input {
-  width: 100%; -webkit-appearance: none; appearance: none;
-  height: 14px; border-radius: 7px; cursor: pointer; outline: none;
-  background: linear-gradient(to right,#cc2200,#e84d1c,#f07b13,#f5c242,#a8c940,#4db340);
-}
-.vis-slider-input::-webkit-slider-thumb {
-  -webkit-appearance: none; width: 28px; height: 28px; border-radius: 50%;
-  background: var(--sm-primary-accent); border: 3px solid #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.25); cursor: pointer;
-}
-.vis-slider-input::-moz-range-thumb {
-  width: 28px; height: 28px; border-radius: 50%;
-  background: var(--sm-primary-accent); border: 3px solid #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.25); cursor: pointer;
-}
-
-/* Date field */
-.vis-modal__date-label  { font-size: 0.95rem; font-weight: 600; color: var(--sm-primary-accent); margin: 20px 0 4px; }
-.vis-modal__date-helper { font-size: 0.8rem; color: var(--sm-text-3rd-grey); margin: 0 0 8px; }
-.vis-date-input {
-  padding: 10px 14px; border: 1px solid var(--sm-field-border-default);
-  border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 0.9rem;
-  color: var(--sm-field-value); background: var(--sm-field-bg); outline: none;
-  transition: border-color 0.15s;
-}
-.vis-date-input:focus { border-color: var(--sm-primary-accent); }
 /* ══════════════════════════════════════════════════════════════════════
    USER TESTING ROUND 1 — additions
    Draft resume, map style toggles, None chips, example imagery,

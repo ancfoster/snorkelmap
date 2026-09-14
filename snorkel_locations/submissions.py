@@ -30,6 +30,9 @@ COMMENT_MAX = 2000
 NAME_MAX = 200
 DESCRIPTION_MAX = 10000
 MARKER_NAME_MAX = 120
+# What somebody may write about the change they have just made. Matches
+# LocationRevision.revision_comment, so the two cannot drift.
+REVISION_COMMENT_MAX = 300
 MARKER_NOTE_MAX = 500
 MAX_MARKERS = 60
 
@@ -320,4 +323,50 @@ def clean(payload):
         "facilities": clean_facilities(payload.facilities),
         "marker_data": clean_markers(payload.locationMarkerData),
         "media": clean_media(payload.media),
+    }
+
+
+def clean_revision(payload):
+    """Everything that goes onto a revision of a listing that exists.
+
+    The same cleaners as clean(), over a shorter list. What is missing
+    is missing on purpose: coordinates, because where a listing is is
+    not edited here; media, because photographs are their own thing and
+    an edit only chooses which of them is featured; and the visibility
+    report, which is filed against a listing rather than being part of
+    one.
+
+    A revision still needs a name, for the same reason a submission
+    does: everything else on the page can be empty and the listing is
+    still a listing, but a listing with no name is not one.
+    """
+    name = _text(payload.name, NAME_MAX)
+    if not name:
+        raise SubmissionError("A name is needed.", "name")
+
+    access_ids = {a[0] for a in choices.ACCESS_TYPES}
+    water_ids = set()
+    for group in choices.WATER_TYPE_GROUPS:
+        water_ids.update(chip["id"] for chip in group["chips"])
+
+    difficulty = payload.difficulty if payload.difficulty in (1, 2, 3, 4) else 1
+
+    return {
+        "name": name,
+        "alternate_names": [n for n in
+                            (_text(n, NAME_MAX) for n in payload.alternateNames)
+                            if n][:10],
+        "description": _text(payload.description, DESCRIPTION_MAX),
+        "entry_description": _text(payload.entryPointDescription, DESCRIPTION_MAX),
+        "access_type": clean_list(payload.accessType, access_ids),
+        "water_type": clean_list(payload.waterType, water_ids),
+        "difficulty": difficulty,
+        "environment_types": clean_group_map("environmentTypes",
+                                             payload.environmentTypes),
+        "marine_life": clean_group_map("marineLife", payload.marineLife),
+        "hazards": clean_group_map("hazards", payload.hazards),
+        "facilities": clean_facilities(payload.facilities),
+        "marker_data": clean_markers(payload.locationMarkerData),
+        "revision_comment": _text(payload.revisionComment,
+                                  REVISION_COMMENT_MAX),
     }

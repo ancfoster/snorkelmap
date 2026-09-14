@@ -1,0 +1,12 @@
+{% comment %}
+The chevron on a section header. Two files rather than one rotated,
+because they are two drawings; which one shows is decided by the
+section's open state in the stylesheet.
+
+Both are placeholders. Replace the two files and nothing here changes.
+{% endcomment %}
+{% load static %}
+<span class="edit-section__chevron" aria-hidden="true">
+  <img class="edit-section__chevron-down" src="{% static 'images/icons/chevron-down.svg' %}" alt="">
+  <img class="edit-section__chevron-up" src="{% static 'images/icons/chevron-up.svg' %}" alt="">
+</span>

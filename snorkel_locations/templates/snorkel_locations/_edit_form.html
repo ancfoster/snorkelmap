@@ -1,0 +1,422 @@
+{% comment %}
+The editing form.
+
+Sections rather than steps: somebody adding a location is being walked
+through something they have not done before, somebody editing one has
+come to change a particular detail and should not have to walk past
+seven screens to reach it. Every section is closed to begin with and
+opens on its own.
+
+The chips, their groups and their ids all come from choices.py, the
+same structures the create form is built from. What this page adds is
+the answers already on the listing, which arrive in one json_script
+block and are applied by edit.js.
+
+Nothing here submits on its own: the form has no action, and edit.js
+posts the payload to the revisions endpoint. It is still a <form> so
+that labels, fieldsets and the keyboard all behave.
+{% endcomment %}
+{% load static %}
+
+<form class="edit-form" id="edit-form" novalidate
+      data-location-uuid="{{ location.uuid }}"
+      data-location-url="{{ location.get_absolute_url }}">
+
+  {# ─── Basic details ─── #}
+  <section class="edit-section" id="section-basics">
+    <h2 class="edit-section__head">
+      <button class="edit-section__toggle" type="button"
+              aria-expanded="false" aria-controls="body-basics">
+        <span class="edit-section__title">Name and description</span>
+        <span class="edit-section__summary">What it is called, what it is like, and how hard it is</span>
+        {% include "snorkel_locations/_chevron.html" %}
+      </button>
+    </h2>
+    <div class="edit-section__body" id="body-basics" hidden>
+
+      <div class="form-field">
+        <label class="form-field__label" for="edit-name">Location name</label>
+        <p class="form-field__helper">Use the name local people use. If the listing has the wrong name, this is the place to put it right.</p>
+        <input type="text" id="edit-name" class="form-field__input"
+               autocomplete="off" data-field="name" maxlength="200">
+        <div class="field-error" id="err-name"></div>
+      </div>
+
+      <div class="form-field">
+        <label class="form-field__label">Alternate names <span class="form-field__optional">(Optional)</span></label>
+        <p class="form-field__helper">Other names people use for this place, which help others find it.</p>
+        <div class="alt-names" id="edit-alt-names"></div>
+        <div class="alt-names__add">
+          <input type="text" id="edit-alt-name-input" class="form-field__input"
+                 placeholder="Another name for this place" maxlength="200" autocomplete="off">
+          <button class="btn btn--secondary btn--sm" type="button" id="edit-alt-name-add">Add</button>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label class="form-field__label" for="edit-description">Description</label>
+        <p class="form-field__helper">What the place is like above and below the water, and anything worth cautioning others about.</p>
+        <textarea id="edit-description" class="form-field__textarea" rows="8"
+                  data-field="description"></textarea>
+      </div>
+
+      <div class="form-field">
+        <label class="form-field__label" for="edit-entry">Entry point description <span class="form-field__optional">(Optional)</span></label>
+        <p class="form-field__helper">How people actually get in and out of the water, and anything that changes with the tide.</p>
+        <textarea id="edit-entry" class="form-field__textarea" rows="4"
+                  data-field="entryPointDescription"></textarea>
+      </div>
+
+      <div class="form-section">
+        <h3 class="form-section__heading">Access type</h3>
+        <div class="chip-group__items">
+          {% for id, label in access_types %}
+            <button type="button" class="chip" data-id="{{ id }}" data-state-key="accessType">{{ label }}</button>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3 class="form-section__heading">Water type</h3>
+        <div id="chips-waterType">
+          {% for wgroup in water_type_groups %}
+            <div class="chip-sub-group" data-water-group="{{ wgroup.id }}">
+              <span class="chip-sub-group__label">{{ wgroup.label }}</span>
+              <div class="chip-group__items">
+                {% for chip in wgroup.chips %}
+                  <button type="button" class="chip"
+                          data-id="{{ chip.id }}"
+                          data-state-key="waterType"
+                          data-water-group="{{ wgroup.id }}">{{ chip.label }}</button>
+                {% endfor %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3 class="form-section__heading">Difficulty</h3>
+        <div class="difficulty-slider">
+          <div class="difficulty-slider__track"></div>
+          <div class="difficulty-slider__ticks">
+            {% for label in difficulty_labels %}<span class="difficulty-slider__tick"></span>{% endfor %}
+          </div>
+          <input type="range" class="difficulty-slider__input" min="1" max="{{ difficulty_labels|length }}"
+                 step="1" value="1" aria-label="Difficulty" autocomplete="off"
+                 data-field="difficulty" data-field-type="int">
+          <div class="difficulty-slider__labels">
+            {% for label in difficulty_labels %}<span class="difficulty-slider__label">{{ label }}</span>{% endfor %}
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  {# ─── Environment ─── #}
+  <section class="edit-section" id="section-environment">
+    <h2 class="edit-section__head">
+      <button class="edit-section__toggle" type="button"
+              aria-expanded="false" aria-controls="body-environment">
+        <span class="edit-section__title">The environment</span>
+        <span class="edit-section__summary">The seabed, the shore and what the water is like</span>
+        {% include "snorkel_locations/_chevron.html" %}
+      </button>
+    </h2>
+    <div class="edit-section__body" id="body-environment" hidden>
+      {% for group in environment_groups %}
+        {% include "snorkel_locations/_chip_group.html" with group=group payload_group="environmentTypes" payload_key=group.payload_key %}
+      {% endfor %}
+    </div>
+  </section>
+
+  {# ─── Marine life ─── #}
+  <section class="edit-section" id="section-marine-life">
+    <h2 class="edit-section__head">
+      <button class="edit-section__toggle" type="button"
+              aria-expanded="false" aria-controls="body-marine-life">
+        <span class="edit-section__title">Marine life</span>
+        <span class="edit-section__summary">What people have seen in the water here</span>
+        {% include "snorkel_locations/_chevron.html" %}
+      </button>
+    </h2>
+    <div class="edit-section__body" id="body-marine-life" hidden>
+      {% for group in marine_life_groups %}
+        {% include "snorkel_locations/_chip_group.html" with group=group payload_group="marineLife" payload_key=group.payload_key %}
+      {% endfor %}
+      <div class="form-field">
+        <label class="form-field__label" for="edit-marine-life-comments">Anything else <span class="form-field__optional">(Optional)</span></label>
+        <textarea id="edit-marine-life-comments" class="form-field__textarea" rows="3"
+                  data-field="marineLifeComments"></textarea>
+      </div>
+    </div>
+  </section>
+
+  {# ─── Hazards ─── #}
+  <section class="edit-section" id="section-hazards">
+    <h2 class="edit-section__head">
+      <button class="edit-section__toggle" type="button"
+              aria-expanded="false" aria-controls="body-hazards">
+        <span class="edit-section__title">Hazards</span>
+        <span class="edit-section__summary">What somebody getting in the water here should know</span>
+        {% include "snorkel_locations/_chevron.html" %}
+      </button>
+    </h2>
+    <div class="edit-section__body" id="body-hazards" hidden>
+      {% for group in hazard_groups %}
+        {% include "snorkel_locations/_chip_group.html" with group=group payload_group="hazards" payload_key=group.payload_key %}
+      {% endfor %}
+      <div class="form-field">
+        <label class="form-field__label" for="edit-hazards-comments">Anything else <span class="form-field__optional">(Optional)</span></label>
+        <textarea id="edit-hazards-comments" class="form-field__textarea" rows="3"
+                  data-field="hazardsComments"></textarea>
+      </div>
+    </div>
+  </section>
+
+  {# ─── Facilities ─── #}
+  <section class="edit-section" id="section-facilities">
+    <h2 class="edit-section__head">
+      <button class="edit-section__toggle" type="button"
+              aria-expanded="false" aria-controls="body-facilities">
+        <span class="edit-section__title">Facilities and getting there</span>
+        <span class="edit-section__summary">Parking, transport, and what is there when you arrive</span>
+        {% include "snorkel_locations/_chevron.html" %}
+      </button>
+    </h2>
+    <div class="edit-section__body" id="body-facilities" hidden>
+      {% for group in facility_groups_before %}
+        {% include "snorkel_locations/_chip_group.html" with group=group payload_group="facilities" payload_key=group.payload_key %}
+      {% endfor %}
+
+      <div class="form-field">
+        <label class="form-field__label" for="edit-getting-there">Getting there <span class="form-field__optional">(Optional)</span></label>
+        <textarea id="edit-getting-there" class="form-field__textarea form-field__textarea--compact" rows="3"
+                  data-field="gettingThereComments"></textarea>
+      </div>
+
+      <div class="form-section">
+        <h3 class="form-section__heading">Parking</h3>
+        <div class="chip-group__items" id="chips-parkingAvailable">
+          {% for id, label in parking_availability %}
+            <button type="button" class="chip" data-parking-available="{{ id }}">{{ label }}</button>
+          {% endfor %}
+        </div>
+        <div class="chip-group__items">
+          {% for id, label in parking_types %}
+            <button type="button" class="chip" data-id="{{ id }}" data-state-key="facParking">{{ label }}</button>
+          {% endfor %}
+        </div>
+        <textarea class="form-field__textarea form-field__textarea--compact" rows="2"
+                  placeholder="Add parking details..." data-field="facParkingComments"></textarea>
+      </div>
+
+      <div class="form-section">
+        <h3 class="form-section__heading">Public transport</h3>
+        <div class="chip-group__items">
+          {% for id, label in transport_types %}
+            <button type="button" class="chip" data-id="{{ id }}" data-state-key="facTransport">{{ label }}</button>
+          {% endfor %}
+          <button type="button" class="chip chip--none" data-id="none" data-state-key="facTransport">None</button>
+        </div>
+        <textarea class="form-field__textarea form-field__textarea--compact" rows="2"
+                  placeholder="Describe nearby public transport options..." data-field="facTransportDescription"></textarea>
+      </div>
+
+      {% for group in facility_groups_after %}
+        {% include "snorkel_locations/_chip_group.html" with group=group payload_group="facilities" payload_key=group.payload_key %}
+      {% endfor %}
+
+      <div class="form-field">
+        <label class="form-field__label" for="edit-fac-other">Anything else <span class="form-field__optional">(Optional)</span></label>
+        <textarea id="edit-fac-other" class="form-field__textarea" rows="3"
+                  data-field="facOther"></textarea>
+      </div>
+    </div>
+  </section>
+
+  {# ─── The map ─── #}
+  {% comment %}
+  Not a collapsible section: there is one line to read and one button to
+  press, and putting those behind a toggle only hides them.
+  {% endcomment %}
+  <section class="edit-section edit-section--plain" id="section-map">
+    <div class="edit-section__plain-head">
+      <div class="edit-section__plain-text">
+        <h2 class="edit-section__title">Map markers</h2>
+        <p class="edit-section__summary" id="marker-count-line">
+          <span id="marker-count">0</span> markers on the map at the moment
+        </p>
+      </div>
+      <button class="btn btn--secondary edit-section__action" type="button" id="open-marker-map">
+        Open the map
+      </button>
+    </div>
+    <p class="form-field__helper">
+      Markers show people what is where: the steps in, the safest exit,
+      the car park, a hazard to keep clear of. Open the map, drop the
+      markers you want, and add a note to any of them.
+    </p>
+  </section>
+
+  {# ─── What is being changed ─── #}
+  <section class="edit-section edit-section--plain" id="section-changed">
+    <h2 class="edit-section__title">Changed</h2>
+
+    {% comment %}
+    Written by edit.js from the difference between the listing as it
+    arrived and the listing as it stands. Somebody who has been through
+    six sections should be able to see what they are about to publish
+    without reading all six again.
+    {% endcomment %}
+    <ul class="change-list" id="change-list"></ul>
+    <p class="change-list__empty" id="change-list-empty">
+      Nothing has been changed yet. Anything you change will be listed
+      here before you publish it.
+    </p>
+
+    <div class="form-field">
+      <label class="form-field__label" for="edit-summary">
+        Comment on your changes? <span class="form-field__optional">(Optional)</span>
+      </label>
+      <p class="form-field__helper">
+        The list above says what you changed. This is for why: what you
+        saw, when you were last there, where the information came from.
+        It is shown beside your edit in the listing's history. For
+        example: "The car park started charging in April, and the steps
+        at the north end have been out since the storm."
+      </p>
+      <textarea id="edit-summary" class="form-field__textarea form-field__textarea--compact"
+                rows="3" maxlength="{{ revision_comment_max }}"
+                data-field="revisionComment"></textarea>
+      <p class="edit-form__counter" id="summary-counter" aria-live="polite">0/{{ revision_comment_max }}</p>
+    </div>
+
+    {% if turnstile_enabled %}
+      {% comment %}
+      The same challenge the login and signup forms use, and the same
+      keys. This form is posted by script rather than by the browser, so
+      the token is read out of the widget's own hidden input and sent
+      with the payload.
+      {% endcomment %}
+      <div class="edit-form__turnstile">
+        <div class="cf-turnstile" id="edit-turnstile"
+             data-sitekey="{{ turnstile_sitekey }}"
+             data-appearance="interaction-only"
+             data-action="edit-listing"></div>
+      </div>
+    {% endif %}
+
+    <div class="edit-form__actions">
+      <a class="btn btn--ghost" href="{{ location.get_absolute_url }}">Cancel</a>
+      <button class="btn btn--dark" type="submit" id="edit-save">Publish changes</button>
+    </div>
+    <p class="edit-form__error" id="edit-error" role="alert" hidden></p>
+  </section>
+
+</form>
+
+{# ─── The marker map, fullscreen ─── #}
+<div class="marker-modal" id="marker-modal" role="dialog" aria-modal="true"
+     aria-label="Map markers" hidden>
+  <div class="sm-annotate-map-cont marker-modal__map-cont">
+    <div class="note-overlay hidden">
+      <div class="note-overlay__dialog" role="dialog" aria-modal="true" aria-labelledby="note-overlay-title">
+        <h2 class="note-overlay__title" id="note-overlay-title"></h2>
+        <textarea class="note-overlay__textarea" maxlength="550" rows="6"
+                  placeholder="Add a note &mdash; charges, opening hours, conditions&hellip;"></textarea>
+        <span class="note-overlay__counter">0 / 550</span>
+        <div class="note-overlay__actions">
+          <button type="button" class="note-overlay__btn note-overlay__btn--cancel">Cancel</button>
+          <button type="button" class="note-overlay__btn note-overlay__btn--confirm">Confirm</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="sm-annotate-map-cont__map"></div>
+
+    {% comment %}
+    Closing is where closing is everywhere else on the site: an X in the
+    top right, over the thing being closed.
+    {% endcomment %}
+    <button class="marker-modal__close" id="marker-close" type="button"
+            aria-label="Close the map">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M11.667 9.35059L21 0.0175781L23.3154 2.33301L13.9912 11.6582L13.9824 11.667L23.3154 21L21 23.3154L11.667 13.9824L11.6582 13.9912L2.33301 23.3154L0.0175781 21L9.35059 11.667L0.0166016 2.33301L2.33301 0.0166016L11.667 9.35059Z" fill="currentColor"/>
+      </svg>
+    </button>
+
+    <div class="map-style-toggle map-style-toggle--annotate" id="annotate-style-toggle">
+      <button class="map-style-toggle__btn map-style-toggle__btn--active" type="button" data-style="satellite">Satellite</button>
+      <button class="map-style-toggle__btn" type="button" data-style="terrain">Terrain</button>
+    </div>
+
+    <div class="sm-annotate-map__toolbar">
+      <div class="sm-annotate-map__marker-drawer marker-drawer hidden">
+        <div class="marker-drawer__list">
+          {% for category in marker_library %}
+            <div class="marker-drawer__category">
+              <span class="marker-drawer__category-title">{{ category.category }}</span>
+              <div class="marker-drawer__grid">
+                {% for id, name in category.markers %}
+                  <div class="marker-drawer__item" data-marker-id="{{ id }}" data-marker-name="{{ name }}">
+                    <img class="marker-drawer__icon" src="{% static 'images/sm-map-icons/' %}{{ id }}.png" alt="">
+                    <span class="marker-drawer__label">{{ name }}</span>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <button class="btn btn--dark sm-annotate-map-toolbar__btn sm-annotate-map-toolbar__btn--add-marker"
+              type="button" aria-label="Add marker to location map">
+        <svg width="25" height="32" viewBox="0 0 25 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M11.2579 18.9379H13.742V13.8878H18.7103V11.3627H13.742V6.31263H11.2579V11.3627H6.28975V13.8878H11.2579V18.9379ZM12.5 32C8.33223 28.3291 5.20695 24.9129 3.12417 21.7512C1.04139 18.5893 0 15.6865 0 13.0427C0 9.15809 1.23612 6.01313 3.70835 3.60788C6.18086 1.20263 9.11141 0 12.5 0C15.8886 0 18.8191 1.20263 21.2916 3.60788C23.7639 6.01313 25 9.15809 25 13.0427C25 15.6865 23.9586 18.5893 21.8758 21.7512C19.793 24.9129 16.6678 28.3291 12.5 32Z" fill="currentColor"/>
+        </svg>
+        <span>Add Map Marker</span>
+      </button>
+    </div>
+  </div>
+
+  {% comment %}
+  The bar under the map. Cancelling puts the markers back as they were
+  when the page loaded, so it is inert until something has actually
+  moved, and it stays live afterwards even if the map has been closed
+  and opened again in between.
+  {% endcomment %}
+  <div class="marker-modal__bar">
+    <button class="btn btn--danger" type="button" id="marker-cancel" disabled>
+      Discard Changes
+    </button>
+  </div>
+</div>
+
+{{ edit_original|json_script:"edit-original" }}
+{{ coordinates|json_script:"edit-coordinates" }}
+{{ mapbox_token|json_script:"mapbox-token" }}
+{{ marker_icon_base|json_script:"marker-icon-base" }}
+
+{% comment %}
+What the page becomes once the edit has been published. Kept in the
+page rather than built by script so that the words are Django's and are
+escaped, and so that it reads the same as the end of the create flow,
+which is the last thing most people editing will have seen.
+{% endcomment %}
+<div class="create-thankyou" id="edit-thankyou" hidden>
+  <h1 class="create-thankyou__heading">Thank you!</h1>
+  <p class="create-thankyou__body">
+    Your update was successful. Thank you for keeping
+    {{ revision.name }} up to date for everybody else who snorkels here.
+  </p>
+  <a class="btn btn--dark btn--full" href="{{ location.get_absolute_url }}">
+    View {{ revision.name }}
+  </a>
+  <div class="create-thankyou__points" id="edit-thankyou-points" hidden>
+    <p class="create-thankyou__points-value" id="edit-thankyou-points-value"></p>
+    <p class="create-thankyou__points-label">
+      You have just received contribution points for this edit.
+    </p>
+  </div>
+</div>

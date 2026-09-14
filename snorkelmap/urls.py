@@ -15,5 +15,6 @@ urlpatterns = [
     path("", include('saved_locations.urls')),
     path("", include('locations_snorkelled.urls')),
     path("", include('snorkel_reviews.urls')),
+    path("", include('snorkel_visibility.urls')),
     path('api/v1/', api_v1.urls)
 ]

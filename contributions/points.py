@@ -29,7 +29,8 @@ def recalculate(user):
     return total
 
 
-def award(user, kind, *, location=None, review=None, revision=None):
+def award(user, kind, *, location=None, review=None, revision=None,
+          visibility_report=None):
     """Record a contribution, and bring the person's total up to date.
 
     Returns the row and whether it was written now, in that order, the
@@ -45,13 +46,15 @@ def award(user, kind, *, location=None, review=None, revision=None):
         location=location,
         review=review,
         revision=revision,
+        visibility_report=visibility_report,
         defaults={"points": Contribution.POINTS[kind]},
     )
     recalculate(user)
     return contribution, created
 
 
-def withdraw(user, kind, *, location=None, review=None, revision=None):
+def withdraw(user, kind, *, location=None, review=None, revision=None,
+             visibility_report=None):
     """Take back a contribution that no longer exists.
 
     For the cases where the thing itself survives and the contribution
@@ -62,6 +65,6 @@ def withdraw(user, kind, *, location=None, review=None, revision=None):
     """
     Contribution.objects.filter(
         user=user, kind=kind, location=location, review=review,
-        revision=revision,
+        revision=revision, visibility_report=visibility_report,
     ).delete()
     recalculate(user)

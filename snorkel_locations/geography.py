@@ -191,3 +191,25 @@ def directory_tree(locations):
     if ocean["count"]:
         countries.append(ocean)
     return countries
+
+
+def marker_for(feature):
+    """One stored map marker, ready to read.
+
+    The stored feature is GeoJSON, so the useful parts are buried two
+    levels down and the coordinates are the wrong way round for a human
+    reading them. Flattened here rather than picked apart in a template,
+    and here rather than in views.py because the history page reads the
+    same features back out of an older revision.
+    """
+    properties = feature.get("properties") or {}
+    coordinates = (feature.get("geometry") or {}).get("coordinates") or []
+    marker_id = properties.get("markerId", "")
+    return {
+        "id": marker_id,
+        "icon": f"images/sm-map-icons/{marker_id}.png" if marker_id else "",
+        "name": properties.get("name") or marker_id,
+        "note": properties.get("note", ""),
+        "latitude": coordinates[1] if len(coordinates) > 1 else None,
+        "longitude": coordinates[0] if coordinates else None,
+    }

@@ -70,6 +70,50 @@ class SubmissionIn(Schema):
     media: list[MediaIn] = []
 
 
+class RevisionIn(Schema):
+    """One person's edit of a listing that already exists.
+
+    Deliberately not SubmissionIn with fields removed. What can be
+    edited is a shorter list than what can be submitted: where a
+    listing is cannot be changed here, photographs are handled on their
+    own, and a visibility report is a thing somebody files rather than
+    a property of the listing. Saying that in the schema is what stops
+    any of them arriving by accident.
+    """
+    name: str
+    alternateNames: list[str] = []
+    description: str = ""
+    entryPointDescription: str = ""
+    accessType: list[str] = []
+    waterType: list[str] = []
+    difficulty: int = 1
+
+    environmentTypes: dict[str, Any] = {}
+    marineLife: dict[str, Any] = {}
+    hazards: dict[str, Any] = {}
+    facilities: dict[str, Any] = {}
+    locationMarkerData: dict[str, Any] = {}
+
+    # What they say they changed and why. Optional, and shown beside
+    # the revision in the listing's history.
+    revisionComment: str = ""
+
+    # The Turnstile token. Carried in the payload because this form is
+    # posted by script rather than by the browser, so nothing else would
+    # bring it along.
+    turnstileToken: str = ""
+
+
+class RevisionOut(Schema):
+    locationUuid: UUID
+    increment: int
+    url: str
+    # What this edit earned, so the thank you can say so. Zero when the
+    # ledger had already paid for this revision, which happens when a
+    # request is replayed.
+    points: int = 0
+
+
 class UploadOut(Schema):
     """One signed slot. Either fields (POST) or headers (PUT) is filled."""
     clientId: str

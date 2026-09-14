@@ -7,7 +7,7 @@ One snorkelling location.
 Layout, cards and modals follow the static prototype. What is not here
 is what has nothing behind it yet, so that nothing on the page is a
 promise the site cannot keep: no tides, no weather, no conditions grid,
-no visibility reports, no discussion, no rating and no editing history.
+no discussion.
 Each of those arrives with the model that backs it.
 
 Every value is prepared by views.listing_context, so this file is loops
@@ -21,6 +21,12 @@ when a section is empty.
 {% block extra_css %}
 <link href="https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.css" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'css/listing.css' %}">
+{% comment %}
+The slider is shared with the create form, so it has a file of its own
+that both pages load rather than one page loading the other's.
+{% endcomment %}
+<link rel="stylesheet" href="{% static 'css/visibility-slider.css' %}">
+<link rel="stylesheet" href="{% static 'css/visibility.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -365,6 +371,13 @@ when a section is empty.
     </div>
   {% endif %}
 
+  {% comment %}
+  Below the listing itself and above the reviews: how far you could see
+  is a fact about the water on a day, which belongs with the place,
+  while a review is somebody's opinion of it.
+  {% endcomment %}
+  {% include "snorkel_locations/_visibility.html" %}
+
   {% include "snorkel_locations/_reviews.html" %}
 
 </main>
@@ -509,4 +522,5 @@ block properly, which string interpolation into JS does not.
 <script src="https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.js"></script>
 <script src="{% static 'js/vendor/htmx.min.js' %}" defer></script>
 <script src="{% static 'js/listing.js' %}" defer></script>
+<script src="{% static 'js/visibility.js' %}" defer></script>
 {% endblock %}

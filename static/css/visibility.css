@@ -1,0 +1,478 @@
+/* The visibility section of a listing, and its three dialogs.
+
+   The card is the listing page's own, so only what is inside it is
+   decided here. It spans the full width of the card rather than the
+   half the prototype used: the bar is the one thing on the page that
+   reads better the longer it is, because the distance between 2m and
+   5m is the whole point of it.
+
+   The slider inside the report dialog is in visibility-slider.css,
+   shared with the create form rather than copied, which is why that
+   file is loaded alongside this one.
+   ──────────────────────────────────────────────────────────────────── */
+
+.visibility { display: flex; flex-direction: column; gap: 0; }
+
+/* ── The bar ───────────────────────────────────────────────────────── */
+
+.visibility__scale { margin: 6px 0 18px 0; }
+
+.visibility__bar {
+  position: relative;
+  height: 22px;
+  border-radius: 11px;
+  background: linear-gradient(to right,
+    #cc2200, #e84d1c, #f07b13, #f5c242, #a8c940, #4db340);
+}
+
+/* Nothing reported. The scale is still the scale, so it stays legible
+   rather than disappearing, but it is plainly not describing anything:
+   drained of colour and dimmed, with no marker on it. */
+.visibility__scale--empty .visibility__bar {
+  filter: saturate(0.12);
+  opacity: 0.45;
+}
+
+.visibility__marker {
+  position: absolute;
+  top: 50%;
+  width: 44px;
+  height: 44px;
+  /* Its own width back off its left, so the middle of the dot sits on
+     the figure rather than its leading edge. */
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: #f5b722;
+  border: 4px solid #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.22);
+  box-sizing: border-box;
+}
+
+.visibility__ticks {
+  margin: 10px 0 0 0;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+/* ── What the figure is called ─────────────────────────────────────── */
+
+.visibility__band {
+  margin: 0 0 10px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.05rem;
+  color: #333;
+}
+.visibility__dot,
+.vis-row__dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.visibility__summary {
+  margin: 0 0 14px 0;
+  font-size: 1.05rem;
+  line-height: 1.5;
+  color: #333;
+}
+.visibility__summary--none { color: var(--sm-text-3rd-grey, #666); }
+
+.visibility__count {
+  margin: 0 0 14px 0;
+  font-size: 0.9rem;
+  color: var(--sm-text-3rd-grey, #666);
+}
+/* The figure and the word it counts, picked out so the number is
+   readable without reading the sentence. */
+.visibility__count-strong {
+  color: var(--sm-body-hyperlink);
+  font-weight: 600;
+}
+
+.visibility__thanks {
+  margin: 0 0 14px 0;
+  font-size: 0.95rem;
+  color: var(--sm-action-dark-blue-text);
+}
+
+/* ── The two buttons ───────────────────────────────────────────────── */
+
+.visibility__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.visibility__btn {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 22px;
+  border-radius: 100vw;
+  border: 1.5px solid var(--sm-primary-accent);
+  background: none;
+  color: var(--sm-body-hyperlink);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in;
+}
+.visibility__btn:visited { color: var(--sm-body-hyperlink); }
+.visibility__btn:hover { background: var(--sm-action-light-blue); }
+
+/* An svg with no width attribute is a flex item with no intrinsic
+   width, which resolves to nothing at all unless the basis says
+   otherwise. Without this the buttons carry an invisible icon. */
+.visibility__btn-icon {
+  width: 18px; height: 18px;
+  flex: 0 0 18px;
+  display: block;
+}
+
+.visibility__btn--primary {
+  background: var(--sm-action-light-blue);
+  border-color: var(--sm-action-light-blue);
+  color: var(--sm-action-dark-blue-text);
+}
+.visibility__btn--primary:hover {
+  background: var(--sm-hover-blue);
+  border-color: var(--sm-hover-blue);
+}
+.visibility__btn--quiet {
+  border-color: var(--sm-field-border-default);
+  color: #333;
+}
+.visibility__btn--danger {
+  border-color: var(--sm-invalid);
+  background: var(--sm-invalid);
+  color: #fff;
+}
+.visibility__btn--danger:hover { filter: brightness(0.93); }
+
+/* ── Your own reports ──────────────────────────────────────────────── */
+
+.visibility__mine-title {
+  margin: 26px 0 12px 0;
+  font-size: 1.35rem;
+  font-weight: 400;
+  color: var(--sm-dark-text-headings);
+}
+
+.visibility__mine {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.vis-row__head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.vis-row__date {
+  font-size: 1.05rem;
+  color: #333;
+  /* Fixed so the metres beside them line up down the column rather
+     than jumping about with the width of the date. */
+  min-width: 110px;
+}
+.vis-row__metres { font-size: 1.05rem; color: #333; min-width: 48px; }
+.vis-row__band { font-size: 1.05rem; color: #333; }
+
+/* Pushed to the far end of the row, as in the prototype. */
+.vis-row__delete {
+  box-sizing: border-box;
+  margin-left: auto;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--sm-field-bg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in;
+}
+.vis-row__delete:hover { background: var(--sm-field-bg-focus-hover); }
+.vis-row__delete img { width: 20px; height: 20px; display: block; }
+
+.vis-row__comment {
+  margin: 6px 0 0 0;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: #333;
+  overflow-wrap: anywhere;
+}
+
+/* ── The dialogs ───────────────────────────────────────────────────── */
+
+.vis-modal,
+.vis-confirm {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.vis-modal[hidden],
+.vis-confirm[hidden] { display: none; }
+
+.vis-modal__backdrop,
+.vis-confirm__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 80, 105, 0.45);
+  backdrop-filter: blur(3px);
+}
+
+.vis-modal__panel {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 640px;
+  max-height: 100%;
+  background: var(--sm-page-bg);
+  border-radius: 16px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.vis-modal__head {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px;
+  background: var(--sm-card-bg);
+  border-bottom: 1px solid var(--sm-field-border-default);
+}
+.vis-modal__eyebrow {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--sm-text-3rd-grey, #666);
+}
+.vis-modal__title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: var(--sm-dark-text-headings);
+}
+.vis-modal__close {
+  box-sizing: border-box;
+  padding: 0;
+  margin-left: auto;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 0;
+  background: var(--sm-field-bg);
+  color: var(--sm-primary-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.vis-modal__close:hover { background: var(--sm-field-bg-focus-hover); }
+.vis-modal__close svg {
+  width: 14px; height: 14px;
+  flex: 0 0 14px;
+  display: block;
+}
+
+.vis-modal__body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 20px 24px 24px 24px;
+  margin: 0;
+}
+
+/* The dialog's own labels for the date and comment fields. These were
+   written into create.css under these names before the dialog existed;
+   they belong with the dialog. */
+.vis-modal__date-label {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--sm-primary-accent);
+  margin: 20px 0 4px;
+}
+.vis-modal__date-helper {
+  font-size: 0.8rem;
+  color: var(--sm-text-3rd-grey, #666);
+  margin: 0 0 8px;
+}
+
+.vis-modal__hint {
+  margin: 0 0 14px 0;
+  font-size: 0.95rem;
+  color: var(--sm-text-3rd-grey, #666);
+}
+
+.vis-modal__errors {
+  margin: 0 0 14px 0;
+  padding: 12px 16px 12px 34px;
+  border-radius: 10px;
+  background: var(--sm-invalid-bg);
+  color: var(--sm-invalid);
+  font-size: 0.9rem;
+}
+
+.vis-modal__textarea {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--sm-field-border-default);
+  border-radius: 10px;
+  background: var(--sm-field-bg);
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--sm-field-value);
+  resize: vertical;
+  outline: none;
+}
+.vis-modal__textarea:focus { border-color: var(--sm-primary-accent); }
+
+.vis-modal__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+/* ── Everybody's reports ───────────────────────────────────────────── */
+
+.vis-reports {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.vis-report { display: flex; gap: 14px; align-items: flex-start; }
+
+/* A letter, not a photograph. */
+.vis-report__avatar {
+  box-sizing: border-box;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--sm-primary-accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.vis-report__text { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.vis-report__author { font-size: 1rem; font-weight: 600; color: #333; }
+.vis-report__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 0.9rem;
+  color: var(--sm-text-3rd-grey, #666);
+}
+.vis-report__sep { color: var(--sm-field-border-default); }
+.vis-report__comment {
+  margin: 2px 0 0 0;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: #333;
+  overflow-wrap: anywhere;
+}
+
+/* ── Are you sure ──────────────────────────────────────────────────── */
+
+.vis-confirm { z-index: 1250; }
+.vis-confirm__box {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 460px;
+  background: var(--sm-card-bg);
+  border-radius: 16px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.vis-confirm__title {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 400;
+  color: var(--sm-dark-text-headings);
+}
+.vis-confirm__text {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #333;
+}
+.vis-confirm__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+@media screen and (max-width: 640px) {
+  .visibility__marker { width: 34px; height: 34px; border-width: 3px; }
+  .visibility__bar { height: 18px; border-radius: 9px; }
+  .visibility__ticks { font-size: 0.78rem; }
+  .visibility__summary { font-size: 0.98rem; }
+  .visibility__btn { width: 100%; }
+  .visibility__mine-title { font-size: 1.15rem; }
+  /* Stacked, the delete button has no far end to be pushed to, so it
+     goes back to sitting after what it deletes. */
+  .vis-row__delete { margin-left: 0; width: 40px; height: 40px; }
+  .vis-row__date { min-width: 0; }
+  .vis-modal { padding: 0; }
+  .vis-modal__panel {
+    max-width: none;
+    border-radius: 0;
+    height: 100%;
+    max-height: 100%;
+  }
+  .vis-modal__body { padding: 16px; }
+  .vis-confirm__box { padding: 22px 20px; }
+  .vis-confirm__buttons .visibility__btn,
+  .vis-modal__buttons .visibility__btn { width: 100%; }
+  .vis-confirm__buttons form,
+  .vis-modal__buttons form { width: 100%; }
+}

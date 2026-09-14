@@ -10,6 +10,7 @@ from .choices import create_page_context
 from locations_snorkelled.models import Snorkelled
 from saved_locations.models import SavedLocation
 from snorkel_reviews import display as reviews_display
+from snorkel_visibility import display as visibility_display
 from .models import LocationMedia, SnorkelLocation
 
 
@@ -26,13 +27,6 @@ def create(request):
 
 
 # ── Reading a listing back ───────────────────────────────────────────
-
-def _flat_water_types():
-    """Water types come grouped for the form; flatten them for lookup."""
-    return [(chip["id"], chip["label"])
-            for group in choices.WATER_TYPE_GROUPS
-            for chip in group["chips"]]
-
 
 def _media_for(location, category):
     """Verified photographs only.
@@ -67,27 +61,6 @@ def has_snorkelled(user, location):
         user=user, location=location).exists()
 
 
-def _marker(feature):
-    """One map marker, ready to read.
-
-    The stored feature is GeoJSON, so the useful parts are buried two
-    levels down and the coordinates are the wrong way round for a human
-    reading them. Flattened here rather than picked apart in the
-    template.
-    """
-    properties = feature.get("properties") or {}
-    coordinates = (feature.get("geometry") or {}).get("coordinates") or []
-    marker_id = properties.get("markerId", "")
-    return {
-        "id": marker_id,
-        "icon": f"images/sm-map-icons/{marker_id}.png" if marker_id else "",
-        "name": properties.get("name") or marker_id,
-        "note": properties.get("note", ""),
-        "latitude": coordinates[1] if len(coordinates) > 1 else None,
-        "longitude": coordinates[0] if coordinates else None,
-    }
-
-
 def listing_context(request, location):
     """Everything the listing template needs, prepared in Python.
 
@@ -117,7 +90,8 @@ def listing_context(request, location):
         "access_types": choices.labels_for(
             choices.ACCESS_TYPES, revision.access_type if revision else []),
         "water_types": choices.labels_for(
-            _flat_water_types(), revision.water_type if revision else []),
+            choices.flat_water_types(),
+            revision.water_type if revision else []),
         "difficulty": revision.get_difficulty_display() if revision else "",
 
         "environment": choices.describe_group_map(
@@ -183,7 +157,7 @@ def listing_context(request, location):
         # the create page uses.
         "mapbox_token": settings.MAPBOX_TOKEN,
 
-        "markers": [_marker(feature) for feature in
+        "markers": [geography.marker_for(feature) for feature in
                     ((revision.marker_data or {}).get("features") or []
                      if revision else [])],
 
@@ -205,6 +179,11 @@ def listing_context(request, location):
     # that app prepares it. The same builder runs again when the block
     # is swapped, which is what keeps the two renderings identical.
     context.update(reviews_display.reviews_context(request, location))
+
+    # And the same again for visibility, for the same reason: the block
+    # is drawn from this app's templates because that is what the page
+    # looks like, and filled by the app that owns the reports.
+    context.update(visibility_display.visibility_context(request, location))
     return context
 
 
@@ -291,15 +270,7 @@ def location_by_uuid(request):
 # ── The directory ──────────────────────────────────────────
 
 def directory(request):
-    """An A-Z of every country that has a published listing.
-
-    One query, then grouping in Python. That is cheaper than a query
-    per country and it keeps the template to three plain loops.
-
-    The ordering is done by the database, so the countries come out A-Z
-    and the regions and listings within them follow suit. The grouping
-    itself lives in geography.directory_tree(), which only reads
-    attributes and so can be checked without a database.
+    """A-Z of every country that has a published listing.
     """
     rows = (
         SnorkelLocation.objects

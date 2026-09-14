@@ -11,13 +11,24 @@ needs an account, what editing here means at all, that they have not
 said which listing, that there is no such listing, or that this one has
 been closed to editing.
 
-The form itself is the fifth. It is not here yet.
+The form itself is the fifth, and lives in _edit_form.html so that this
+file stays a list of five things to say rather than one of them buried
+in four hundred lines of the other.
 {% endcomment %}
 
 {% block title %}{% if revision %}Edit {{ revision.name }}{% else %}Edit a listing{% endif %}{% endblock %}
 {% block description %}SnorkelMap listings are written and kept up to date by the people who snorkel them.{% endblock %}
 
 {% block extra_css %}
+{% if state == "editing" %}
+  {% comment %}
+  Only loaded where the form actually is. The four explanation states
+  need none of it, and neither needs a Mapbox stylesheet.
+  {% endcomment %}
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.css" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/create.css' %}">
+  <link rel="stylesheet" href="{% static 'css/marker_map.css' %}">
+{% endif %}
 <link rel="stylesheet" href="{% static 'css/edit.css' %}">
 {% endblock %}
 
@@ -56,14 +67,7 @@ The form itself is the fifth. It is not here yet.
       </p>
     </div>
 
-    {% comment %}
-    The form arrives next. Left as a plain note rather than a disabled
-    imitation of it, because a page that pretends to be able to do
-    something it cannot is worse than one that says so.
-    {% endcomment %}
-    <div class="edit__placeholder">
-      <p>The editing form is being built and will appear here.</p>
-    </div>
+    {% include "snorkel_locations/_edit_form.html" %}
 
   {% elif state == "locked" %}
 
@@ -197,4 +201,20 @@ The form itself is the fifth. It is not here yet.
   {% endif %}
 
 </main>
+{% endblock %}
+
+{% block extra_js %}
+{% if state == "editing" %}
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.js"></script>
+  {% comment %}
+  edit.js first: marker_map.js reads MAPBOX_TOKEN, MARKER_ICON_BASE and
+  state.coordinates out of the surrounding scope, which is what the
+  create page gives it and what edit.js gives it here.
+  {% endcomment %}
+  <script src="{% static 'js/edit.js' %}"></script>
+  <script src="{% static 'js/marker_map.js' %}"></script>
+  {% if turnstile_enabled %}
+    <script src="{{ turnstile_api_url }}" async defer></script>
+  {% endif %}
+{% endif %}
 {% endblock %}

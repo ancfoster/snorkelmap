@@ -1,0 +1,334 @@
+{% comment %}
+The visibility block, in whichever of its states applies.
+
+It lives here, with the page it is part of, rather than in
+snorkel_visibility: what the listing looks like is the listing's
+business. What is in it is not. snorkel_visibility.display builds every
+value, and its two endpoints render this same file when the block is
+swapped, so the block drawn with the page and the block returned after
+a submission cannot drift apart.
+
+The whole section is replaced on every exchange, which is what lets the
+bar, the count and somebody's own reports all change together without
+any of them being updated by hand. The dialogs are inside it for the
+same reason the reviews confirmation is: a swap replaces them with
+closed ones, so nothing has to remember to close anything.
+
+Two states decide nearly everything. With no reports the bar is washed
+out and carries no marker, because a marker would be pointing at a
+figure nobody has given, and there is nothing to open the reports
+dialog for. With reports it is painted, marked, and counted.
+{% endcomment %}
+{% load static %}
+<section class="listing__card visibility" id="visibility">
+  <h2>Visibility</h2>
+
+  {% comment %}
+  The bar. Washed out rather than hidden when there is nothing to show,
+  so the scale is still legible as the thing reports will be measured
+  against, and so the section does not change shape when the first one
+  arrives.
+  {% endcomment %}
+  <div class="visibility__scale{% if not has_reports %} visibility__scale--empty{% endif %}">
+    <div class="visibility__bar">
+      {% if has_reports %}
+        <span class="visibility__marker"
+              style="left: {{ average_position }}%"
+              role="img"
+              aria-label="Average visibility {{ average_visibility }} metres"></span>
+      {% endif %}
+    </div>
+    <p class="visibility__ticks" aria-hidden="true">
+      {% for label in scale_labels %}<span>{{ label }}</span>{% endfor %}
+    </p>
+  </div>
+
+  {% if has_reports %}
+    <p class="visibility__band">
+      <span class="visibility__dot" style="background: {{ average_colour }}"
+            aria-hidden="true"></span>
+      <span class="visibility__band-label">{{ average_category }}</span>
+    </p>
+    <p class="visibility__summary">
+      The majority of users say this location has
+      {{ average_visibility }} metres of visibility.
+    </p>
+    <p class="visibility__count">
+      <span class="visibility__count-strong">{{ number_of_reports }}
+        visibility</span>
+      report{{ number_of_reports|pluralize }}
+      ha{{ number_of_reports|pluralize:"s,ve" }} been submitted.
+    </p>
+  {% else %}
+    <p class="visibility__summary visibility__summary--none">
+      No visibility reports have been submitted for this location
+    </p>
+  {% endif %}
+
+  {% if thanks %}
+    <p class="visibility__thanks" role="status">{{ thanks }}</p>
+  {% endif %}
+
+  <div class="visibility__actions">
+    {% comment %}
+    Signed out, the button is a link to the sign in page carrying the
+    listing as where to come back to. A link rather than a button that
+    redirects, so it reads as somewhere to go and can be opened in
+    another tab like any other link.
+    {% endcomment %}
+    {% if user.is_authenticated %}
+      <button class="visibility__btn" type="button" data-open-vis-submit>
+        <svg class="visibility__btn-icon" viewBox="0 0 20 20" aria-hidden="true"
+             focusable="false">
+          <path d="M1.7 10S4.6 4.6 10 4.6 18.3 10 18.3 10 15.4 15.4 10 15.4 1.7 10 1.7 10Z"
+                fill="none" stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="10" cy="10" r="2.3" fill="none" stroke="currentColor"
+                  stroke-width="1.5"/>
+        </svg>
+        Submit Visibility Report
+      </button>
+    {% else %}
+      <a class="visibility__btn"
+         href="{% url 'sm_login' %}?next={{ location.get_absolute_url|urlencode }}">
+        <svg class="visibility__btn-icon" viewBox="0 0 20 20" aria-hidden="true"
+             focusable="false">
+          <path d="M1.7 10S4.6 4.6 10 4.6 18.3 10 18.3 10 15.4 15.4 10 15.4 1.7 10 1.7 10Z"
+                fill="none" stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="10" cy="10" r="2.3" fill="none" stroke="currentColor"
+                  stroke-width="1.5"/>
+        </svg>
+        Submit Visibility Report
+      </a>
+    {% endif %}
+
+    {% comment %}
+    Nothing to view means no button. A dialog that opens on an empty
+    list is a dead end dressed up as an action.
+    {% endcomment %}
+    {% if has_reports %}
+      <button class="visibility__btn" type="button" data-open-vis-reports>
+        <svg class="visibility__btn-icon" viewBox="0 0 20 20" aria-hidden="true"
+             focusable="false">
+          <path d="M7 13 13 7M7.8 6.6H13.4V12.2" fill="none" stroke="currentColor"
+                stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        View Reports
+      </button>
+    {% endif %}
+  </div>
+
+  {% if my_reports %}
+    <h3 class="visibility__mine-title">
+      Your visibility reports for {{ location_name }}
+    </h3>
+    <ul class="visibility__mine">
+      {% for report in my_reports %}
+        <li class="vis-row">
+          <div class="vis-row__head">
+            <time class="vis-row__date"
+                  datetime="{{ report.observed_at|date:'Y-m-d' }}">{{ report.observed_at|date:"d/m/Y" }}</time>
+            <span class="vis-row__metres">{{ report.visibility }} m</span>
+            <span class="vis-row__dot" style="background: {{ report.colour }}"
+                  aria-hidden="true"></span>
+            <span class="vis-row__band">{{ report.category }}</span>
+            <button class="vis-row__delete" type="button"
+                    data-delete-report="{{ report.id }}"
+                    data-delete-date="{{ report.observed_at|date:'j F Y' }}"
+                    aria-label="Delete your report from {{ report.observed_at|date:'j F Y' }}">
+              <img src="{% static 'images/icons/delete.svg' %}" alt="">
+            </button>
+          </div>
+          {% if report.comment %}
+            <p class="vis-row__comment">{{ report.comment|linebreaksbr }}</p>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  {% comment %} ── Filing one ──────────────────────────────────────── {% endcomment %}
+  {% if user.is_authenticated %}
+    <div class="vis-modal" id="vis-submit-modal" role="dialog" aria-modal="true"
+         aria-labelledby="vis-submit-title"
+         {% if not visibility_form.errors %}hidden{% endif %}>
+      <div class="vis-modal__backdrop" data-close-vis></div>
+      <div class="vis-modal__panel">
+        <header class="vis-modal__head">
+          <h3 class="vis-modal__title" id="vis-submit-title">
+            Submit a visibility report
+          </h3>
+          <button class="vis-modal__close" type="button" data-close-vis
+                  aria-label="Close">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M11.667 9.35059L21 0.0175781L23.3154 2.33301L13.9912 11.6582L13.9824 11.667L23.3154 21L21 23.3154L11.667 13.9824L11.6582 13.9912L2.33301 23.3154L0.0175781 21L9.35059 11.667L0.0166016 2.33301L2.33301 0.0166016L11.667 9.35059Z" fill="currentColor"/>
+            </svg>
+          </button>
+        </header>
+
+        <form class="vis-modal__body" id="vis-submit-form"
+              method="post"
+              action="{% url 'submit_visibility' location.uuid %}"
+              hx-post="{% url 'submit_visibility' location.uuid %}"
+              hx-target="#visibility"
+              hx-swap="outerHTML"
+              hx-disabled-elt="find button[type=submit]">
+          {% csrf_token %}
+
+          {% if visibility_form.errors %}
+            <ul class="vis-modal__errors" role="alert">
+              {% for field, messages in visibility_form.errors.items %}
+                {% for message in messages %}<li>{{ message }}</li>{% endfor %}
+              {% endfor %}
+            </ul>
+          {% endif %}
+
+          <p class="vis-modal__hint" id="vis-hint" aria-live="polite"></p>
+
+          {% comment %}
+          The same slider, labels and scale the create form uses, from
+          the same constants. Somebody who has filed a report while
+          adding a location should meet the thing they already know.
+          {% endcomment %}
+          <p class="vis-slider-labels" aria-hidden="true">
+            {% for label in category_labels %}<span>{{ label }}</span>{% endfor %}
+          </p>
+          <div class="vis-slider-wrap">
+            <input type="range" id="vis-slider" class="vis-slider-input"
+                   name="visibility" min="0" max="12" step="0.5"
+                   value="{{ values.visibility|default:'0' }}"
+                   autocomplete="off" aria-label="Visibility in metres">
+          </div>
+          <p class="vis-scale" aria-hidden="true">
+            {% for label in scale_labels %}<span>{{ label }}</span>{% endfor %}
+          </p>
+
+          <label class="vis-modal__date-label" for="vis-date">
+            Date you snorkelled here
+          </label>
+          <p class="vis-modal__date-helper">
+            Reports can be for any date within the last {{ max_age_days }} days,
+            and you can file one report per day.
+          </p>
+          <input type="date" id="vis-date" class="vis-date-input"
+                 name="observed_at" value="{{ values.observed_at }}"
+                 autocomplete="off" required>
+
+          <label class="vis-modal__date-label" for="vis-comment">
+            Optional comments
+          </label>
+          <p class="vis-modal__date-helper">
+            e.g. "Visibility poor because of runoff from the river" or
+            "Flat calm, some current along the shore, but clear."
+          </p>
+          <textarea class="vis-modal__textarea" id="vis-comment" name="comment"
+                    rows="3" maxlength="500"
+                    placeholder="Add a comment about the conditions...">{{ values.comment }}</textarea>
+
+          <div class="vis-modal__buttons">
+            <button class="visibility__btn visibility__btn--quiet" type="button"
+                    data-close-vis>Cancel</button>
+            <button class="visibility__btn visibility__btn--primary" type="submit">
+              Submit report
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  {% endif %}
+
+  {% comment %} ── Everybody's reports ─────────────────────────────── {% endcomment %}
+  {% if has_reports %}
+    <div class="vis-modal" id="vis-reports-modal" role="dialog" aria-modal="true"
+         aria-labelledby="vis-reports-title" hidden>
+      <div class="vis-modal__backdrop" data-close-vis></div>
+      <div class="vis-modal__panel">
+        <header class="vis-modal__head">
+          <div>
+            <p class="vis-modal__eyebrow">{{ location_name }}</p>
+            <h3 class="vis-modal__title" id="vis-reports-title">
+              Visibility reports
+            </h3>
+          </div>
+          <button class="vis-modal__close" type="button" data-close-vis
+                  aria-label="Close">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M11.667 9.35059L21 0.0175781L23.3154 2.33301L13.9912 11.6582L13.9824 11.667L23.3154 21L21 23.3154L11.667 13.9824L11.6582 13.9912L2.33301 23.3154L0.0175781 21L9.35059 11.667L0.0166016 2.33301L2.33301 0.0166016L11.667 9.35059Z" fill="currentColor"/>
+            </svg>
+          </button>
+        </header>
+        <div class="vis-modal__body">
+          <ul class="vis-reports">
+            {% for report in all_reports %}
+              <li class="vis-report">
+                {% comment %}
+                A letter in a circle rather than a photograph, for the
+                same reason a review carries one: there are no
+                photographs of people on this site, and inventing one
+                would be the first step towards there being some.
+                {% endcomment %}
+                <span class="vis-report__avatar" aria-hidden="true">{% if report.initial %}{{ report.initial }}{% else %}?{% endif %}</span>
+                <div class="vis-report__text">
+                  <span class="vis-report__author">
+                    {% if report.who_known %}{{ report.username }}{% else %}A deleted account{% endif %}
+                  </span>
+                  <div class="vis-report__meta">
+                    <time datetime="{{ report.observed_at|date:'Y-m-d' }}">{{ report.observed_at|date:"d/m/Y" }}</time>
+                    <span class="vis-report__sep" aria-hidden="true">|</span>
+                    <span class="vis-report__metres">{{ report.visibility }} m</span>
+                    <span class="vis-row__dot" style="background: {{ report.colour }}"
+                          aria-hidden="true"></span>
+                    <span class="vis-report__band">{{ report.category }}</span>
+                  </div>
+                  {% if report.comment %}
+                    <p class="vis-report__comment">{{ report.comment|linebreaksbr }}</p>
+                  {% endif %}
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {% comment %} ── Taking one back ─────────────────────────────────── {% endcomment %}
+  {% if my_reports %}
+    {% comment %}
+    One dialog for all of them, with the form's address filled in by
+    listing.js from whichever button was pressed. One per report would
+    put a dialog into the page for every row of a list that grows every
+    time somebody goes snorkelling.
+    {% endcomment %}
+    <div class="vis-confirm" id="vis-delete-modal" role="dialog" aria-modal="true"
+         aria-labelledby="vis-delete-title" hidden>
+      <div class="vis-confirm__backdrop" data-close-vis-delete></div>
+      <div class="vis-confirm__box">
+        <h3 class="vis-confirm__title" id="vis-delete-title">
+          Are you sure you wish to delete?
+        </h3>
+        <p class="vis-confirm__text">
+          Your visibility report<span id="vis-delete-date"></span> will be
+          removed, and the points you earned for it with it. This cannot be
+          undone.
+        </p>
+        <div class="vis-confirm__buttons">
+          <button class="visibility__btn visibility__btn--quiet" type="button"
+                  data-close-vis-delete>Cancel</button>
+          <form id="vis-delete-form"
+                method="post"
+                data-action-template="{% url 'delete_visibility' location.uuid 0 %}"
+                hx-target="#visibility"
+                hx-swap="outerHTML"
+                hx-disabled-elt="find button">
+            {% csrf_token %}
+            <button class="visibility__btn visibility__btn--danger" type="submit">
+              Delete
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</section>

@@ -1,0 +1,194 @@
+{% comment %}
+One revision, as the listing stood when it was written.
+
+Only what belongs to the revision. No photographs, no rating, no
+reviews, no visibility report, no count of who has snorkelled there:
+all of those are about the listing now rather than about how it was
+written then, and showing today's rating beside a two year old revision
+would be inventing a past that did not happen.
+
+The cards are the listing page's own, drawn from the same partials, so
+a revision reads the way the listing reads.
+{% endcomment %}
+{% comment %}
+The heading goes out of band into the dialog's own header, so one fetch
+fills both halves: the same badge, date and sentence the timeline entry
+carries, drawn from the same partial rather than written again here.
+{% endcomment %}
+{% if not revision %}
+
+  <div id="state-modal-heading" hx-swap-oob="innerHTML"></div>
+
+  <p class="state-modal__missing">
+    That version of the listing could not be found.
+  </p>
+
+{% else %}
+
+  <div id="state-modal-heading" hx-swap-oob="innerHTML">
+    {% include "snorkel_locations/_revision_head.html" with head=head %}
+  </div>
+
+  <div class="revision-state">
+
+    <div class="listing__card">
+      <h2>{{ revision.name }}</h2>
+      {% if revision.alternate_names %}
+        <p class="listing__alt-names">
+          Also known as {{ revision.alternate_names|join:", " }}
+        </p>
+      {% endif %}
+
+      <div class="listing__card__columns">
+        <div class="listing__card-col">
+          <p class="listing__labels">Difficulty</p>
+          <div class="listing__chips">
+            <span class="listing__chiplet">{{ difficulty }}</span>
+          </div>
+        </div>
+        {% if access_types %}
+          <div class="listing__card-col">
+            <p class="listing__labels">Access</p>
+            <div class="listing__chips">
+              {% for label in access_types %}
+                <span class="listing__chiplet">{{ label }}</span>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+        {% if water_types %}
+          <div class="listing__card-col">
+            <p class="listing__labels">Water</p>
+            <div class="listing__chips">
+              {% for label in water_types %}
+                <span class="listing__chiplet">{{ label }}</span>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+
+      {% if revision.description %}
+        <div class="listing__section-comments">
+          <p class="listing__card__comments-heading">Description</p>
+          <p>{{ revision.description|linebreaksbr }}</p>
+        </div>
+      {% endif %}
+      {% if revision.entry_description %}
+        <div class="listing__section-comments">
+          <p class="listing__card__comments-heading">Entry point</p>
+          <p>{{ revision.entry_description|linebreaksbr }}</p>
+        </div>
+      {% endif %}
+    </div>
+
+    {% if environment %}
+      <div class="listing__card">
+        <h2>The Environment</h2>
+        <div class="listing__card__columns">
+          {% for group in environment %}
+            {% include "snorkel_locations/_chip_list.html" %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="listing__card">
+      <h2>Getting There</h2>
+      <div class="listing__card__columns">
+        {% if parking_available %}
+          <div class="listing__card-col">
+            <p class="listing__labels">Parking</p>
+            <div class="listing__chips">
+              <span class="listing__chiplet">{{ parking_available }}</span>
+              {% for label in parking_types %}
+                <span class="listing__chiplet">{{ label }}</span>
+              {% endfor %}
+            </div>
+            {% if parking_comments %}
+              <p class="listing__col-comments">{{ parking_comments }}</p>
+            {% endif %}
+          </div>
+        {% endif %}
+        {% if transport_types or transport_description %}
+          <div class="listing__card-col">
+            <p class="listing__labels">Public transport</p>
+            <div class="listing__chips">
+              {% for label in transport_types %}
+                <span class="listing__chiplet">{{ label }}</span>
+              {% endfor %}
+            </div>
+            {% if transport_description %}
+              <p class="listing__col-comments">{{ transport_description }}</p>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+      {% include "snorkel_locations/_section_comments.html" with text=getting_there_comments %}
+    </div>
+
+    <div class="listing__card">
+      <h2>Facilities</h2>
+      {% if facilities %}
+        <div class="listing__card__columns">
+          {% for group in facilities %}
+            {% include "snorkel_locations/_chip_list.html" %}
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="listing__col-comments listing__col-comments--empty">
+          Nothing had been added about the facilities here.
+        </p>
+      {% endif %}
+      {% include "snorkel_locations/_section_comments.html" with text=facilities_other %}
+    </div>
+
+    {% if marine_life or marine_life_comments %}
+      <div class="listing__card">
+        <h2>Types of Marine Life which have been Seen Here</h2>
+        <div class="listing__card__columns">
+          {% for group in marine_life %}
+            {% include "snorkel_locations/_chip_list.html" %}
+          {% endfor %}
+        </div>
+        {% include "snorkel_locations/_section_comments.html" with text=marine_life_comments %}
+      </div>
+    {% endif %}
+
+    {% if hazards or hazards_comments %}
+      <div class="listing__card">
+        <h2>Hazards</h2>
+        <div class="listing__card__columns">
+          {% for group in hazards %}
+            {% include "snorkel_locations/_chip_list.html" %}
+          {% endfor %}
+        </div>
+        {% include "snorkel_locations/_section_comments.html" with text=hazards_comments %}
+      </div>
+    {% endif %}
+
+    {% if markers %}
+      <div class="listing__card">
+        <h2>Map Markers</h2>
+        {% comment %}
+        Listed rather than drawn on a map: what a marker said and where
+        it was are the parts worth keeping, and a second Mapbox map
+        inside a dialog inside a history page is a lot of machinery for
+        a picture nobody asked for.
+        {% endcomment %}
+        <ul class="revision-state__markers">
+          {% for marker in markers %}
+            <li class="revision-state__marker">
+              <span class="revision-state__marker-name">{{ marker.name }}</span>
+              {% if marker.note %}
+                <span class="revision-state__marker-note">{{ marker.note }}</span>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+  </div>
+
+{% endif %}

@@ -1,0 +1,39 @@
+{% comment %}
+The top of one entry: what kind of event it was, when, and who did it.
+
+Drawn in two places from this one file. On the timeline it heads the
+card; in the dialog it heads the listing as that revision left it, so
+somebody who has scrolled a long revision can still see which one they
+opened. Two copies of this markup would drift apart the first time
+either was touched, which is the whole reason it is a partial.
+
+Takes `head`: created, at, who, who_known, and is_current.
+{% endcomment %}
+<p class="timeline__badges">
+  <span class="timeline__badge{% if head.created %} timeline__badge--created{% endif %}">
+    {% if head.created %}Listing Created{% else %}Listing Updated{% endif %}
+  </span>
+  {% if head.is_current %}
+    <span class="timeline__badge timeline__badge--current">Current</span>
+  {% endif %}
+</p>
+
+<p class="timeline__when">
+  <time datetime="{{ head.at|date:'c' }}">
+    {{ head.at|date:"j F Y" }}
+  </time>
+  <span class="timeline__time">{{ head.at|date:"H:i" }}</span>
+</p>
+
+<p class="timeline__who">
+  {% if head.created %}
+    The listing was originally created by
+  {% else %}
+    The listing was updated by
+  {% endif %}
+  {% if head.who_known %}
+    <strong>{{ head.who }}</strong>.
+  {% else %}
+    an account that has since been deleted.
+  {% endif %}
+</p>

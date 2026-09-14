@@ -176,6 +176,21 @@
             border-radius: 0 0 4px 4px;
         }
 
+        /* Mapbox positions a marker by translating it from the top left
+           of the map, which only works while the element is absolutely
+           positioned: that is what .mapboxgl-marker sets, and what the
+           `position: relative` above takes back whenever this file is
+           loaded after mapbox-gl.css. Relative, the translate runs from
+           wherever the element happens to land in normal flow, so the
+           marker sits away from its coordinate by whatever that offset
+           is, and the offset is a fixed number of pixels, which means
+           the marker slides across the map as it is zoomed.
+
+           The create page loads the two stylesheets the other way round
+           and so never saw it. Written with both classes here so the
+           answer does not depend on the order at all. */
+        .mapboxgl-marker.map-marker { position: absolute; }
+
             .map-marker--editable {
             outline-offset: 2px;
             outline: 1.5px solid #2caae9;

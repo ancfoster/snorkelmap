@@ -530,6 +530,18 @@ STEPS = [
 ]
 
 
+def flat_water_types():
+    """Water types come grouped for the form; flat for looking one up.
+
+    Here rather than beside whichever page needed it first, because
+    both the listing and the history read stored ids back into labels
+    and neither should be carrying its own copy of the mapping.
+    """
+    return [(chip["id"], chip["label"])
+            for group in WATER_TYPE_GROUPS
+            for chip in group["chips"]]
+
+
 def all_groups():
     """Every chip group, for validating a submitted payload in one pass."""
     return (ENVIRONMENT_GROUPS + MARINE_LIFE_GROUPS

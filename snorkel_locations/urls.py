@@ -15,6 +15,8 @@ urlpatterns = [
     # file, which would otherwise swallow them.
     path("edit/", editing.edit, name="edit_location"),
     path("history/", editing.history, name="location_history"),
+    # One revision, as it stood, for the dialog on the history page.
+    path("history/state/", editing.revision_state, name="revision_state"),
 
     # An A-Z of every country with a published listing, then its
     # regions, then the listings themselves.

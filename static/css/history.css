@@ -1,0 +1,433 @@
+/* A listing's editing history.
+
+   The timeline down the left, the cards beside it, and the dialog that
+   shows the listing as one revision left it. The cards inside that
+   dialog are the listing page's own, which is why listing.css is loaded
+   alongside this.
+   ──────────────────────────────────────────────────────────────────── */
+
+.history {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px 16px 64px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.history__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-start;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--sm-body-hyperlink);
+  text-decoration: none;
+  padding: 8px 14px 8px 4px;
+  border-radius: 100vw;
+}
+.history__back:visited { color: var(--sm-body-hyperlink); }
+.history__back:hover { background: var(--sm-action-light-blue); }
+.history__back-icon { width: 18px; height: 18px; display: block; flex-shrink: 0; }
+
+.history__header { text-align: center; display: flex; flex-direction: column; gap: 4px; }
+.history__eyebrow {
+  margin: 0;
+  font-size: 1rem;
+  color: #333;
+}
+.history__title {
+  margin: 0;
+  font-size: 2.2rem;
+  font-weight: 500;
+  color: #333;
+}
+.history__count {
+  margin: 4px 0 0 0;
+  font-size: 0.85rem;
+  color: var(--sm-text-3rd-grey, #666);
+}
+
+/* ── The timeline ──────────────────────────────────────────────── */
+
+.timeline {
+  list-style: none;
+  margin: 12px 0 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.timeline__row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+/* The line runs from this entry's dot down to the next one's. Drawn on
+   the row rather than behind the whole list so the last entry does not
+   trail a line into nothing. */
+.timeline__row::before {
+  content: "";
+  position: absolute;
+  left: 11px;
+  top: 26px;
+  bottom: -24px;
+  width: 2px;
+  background: #d5dee3;
+}
+.timeline__row:last-child::before { display: none; }
+
+.timeline__dot {
+  width: 14px;
+  height: 14px;
+  margin: 12px 0 0 5px;
+  border-radius: 50%;
+  background: var(--sm-primary-accent);
+  position: relative;
+  z-index: 1;
+}
+.timeline__dot--created { background: #35c48f; }
+
+.timeline__card {
+  background: var(--sm-card-bg);
+  border-radius: 16px;
+  box-shadow: 0 8px 22px 0 rgba(0, 0, 0, 0.07);
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.timeline__badges { margin: 0 0 4px 0; display: flex; gap: 8px; flex-wrap: wrap; }
+.timeline__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 14px;
+  border-radius: 100vw;
+  font-size: 0.85rem;
+  font-weight: 500;
+  background: #E7F3FA;
+  color: #2a5f75;
+}
+/* Creation is the one entry that is not a change, so it is the one
+   entry that is not blue. */
+.timeline__badge--created { background: #bff0dc; color: #14624a; }
+.timeline__badge--current {
+  background: none;
+  border: 1px solid var(--sm-field-border-default);
+  color: var(--sm-text-3rd-grey, #666);
+}
+
+.timeline__when {
+  margin: 0;
+  font-size: 1.05rem;
+  color: #333;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.timeline__time { color: var(--sm-text-3rd-grey, #666); }
+
+.timeline__who {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--sm-text-3rd-grey, #666);
+}
+.timeline__who strong { font-weight: 600; color: #333; }
+
+.timeline__heading {
+  margin: 14px 0 2px 0;
+  font-size: 1.15rem;
+  font-weight: 400;
+  color: var(--sm-dark-text-headings);
+}
+
+.timeline__comment {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: #333;
+  overflow-wrap: anywhere;
+}
+.timeline__comment--none,
+.timeline__none {
+  margin: 0;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--sm-text-3rd-grey, #666);
+}
+
+.timeline__state {
+  align-self: flex-start;
+  margin-top: 16px;
+  padding: 9px 22px;
+  border-radius: 100vw;
+  border: 1.5px solid var(--sm-action-light-blue);
+  background: var(--sm-action-light-blue);
+  color: var(--sm-action-dark-blue-text);
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in, border-color 0.15s ease-in;
+}
+.timeline__state:hover {
+  background: var(--sm-hover-blue);
+  border-color: var(--sm-hover-blue);
+}
+
+/* ── One change ────────────────────────────────────────────────── */
+
+.change { margin: 0; display: flex; flex-direction: column; gap: 14px; }
+.change__label {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+}
+.change__value {
+  margin: 4px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.change__side { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.change__side-label {
+  margin: 0;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--sm-text-3rd-grey, #666);
+}
+
+.change__chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 56px;
+  font-size: 0.83rem;
+}
+/* Added and removed carry their own colour as well as their own word,
+   so the difference survives being read quickly. */
+.change__chip--added { background: #dff5ea; color: #14624a; }
+.change__chip--removed {
+  background: var(--sm-invalid-bg);
+  color: var(--sm-invalid);
+  text-decoration: line-through;
+}
+
+.change__prose { display: flex; flex-direction: column; gap: 4px; }
+.change__inline { margin: 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+/* Artwork, so only its size is decided here. */
+.change__arrow {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  display: block;
+  object-fit: contain;
+}
+
+.change__before,
+.change__after {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+.change__before { color: var(--sm-text-3rd-grey, #666); }
+.change__after { color: #333; }
+.change__empty { font-style: italic; }
+
+/* ── The listing as it stood ───────────────────────────────────── */
+
+.state-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.state-modal[hidden] { display: none; }
+.state-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 80, 105, 0.45);
+  backdrop-filter: blur(3px);
+}
+.state-modal__panel {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 900px;
+  max-height: 100%;
+  background: var(--sm-page-bg);
+  border-radius: 16px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.state-modal__head {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px;
+  background: var(--sm-card-bg);
+  border-bottom: 1px solid var(--sm-field-border-default);
+}
+/* The same badge, date and sentence the timeline entry carries, so the
+   dialog says which revision is open in the words it was opened by.
+   The timeline's own rules do the work; this only holds the block
+   together and keeps it from crowding the close button. It is empty
+   until the fetch lands, so it must take no room of its own when it
+   has nothing in it. */
+.state-modal__heading {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.state-modal__heading:empty { display: none; }
+.state-modal__close {
+  box-sizing: border-box;
+  padding: 0;
+  /* Pushed right by itself rather than by space-between, because
+     before the fetch lands it is the only thing in the header. */
+  margin-left: auto;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 0;
+  background: var(--sm-field-bg);
+  color: var(--sm-primary-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.state-modal__close:hover { background: var(--sm-field-bg-focus-hover); }
+/* An svg with no width attribute is a flex item with no intrinsic
+   width, which resolves to nothing at all unless the basis says
+   otherwise. Without this the button is an empty circle. */
+.state-modal__close svg {
+  width: 14px; height: 14px;
+  flex: 0 0 14px;
+  display: block;
+}
+
+.state-modal__body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 20px;
+}
+.state-modal__loading,
+.state-modal__missing {
+  margin: 0;
+  padding: 40px 0;
+  text-align: center;
+  color: var(--sm-text-3rd-grey, #666);
+}
+
+.revision-state { display: flex; flex-direction: column; gap: 16px; }
+
+/* On the listing this line is tucked up under the h1 with a negative
+   margin. Here it is inside a card, where it needs to sit under the
+   name and leave room for what follows. */
+.revision-state .listing__alt-names { margin: -8px 0 8px 0; }
+
+.revision-state__markers {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.revision-state__marker { display: flex; flex-direction: column; gap: 2px; }
+.revision-state__marker-name { font-size: 0.95rem; font-weight: 500; color: #333; }
+.revision-state__marker-note {
+  font-size: 0.9rem;
+  color: var(--sm-text-3rd-grey, #666);
+  line-height: 1.5;
+}
+
+/* ── When there is no listing to show a history of ─────────────── */
+
+.history__panel {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 640px;
+  margin: 24px auto 0 auto;
+  background: var(--sm-card-bg);
+  border-radius: 16px;
+  box-shadow: 0 8px 22px 0 rgba(0, 0, 0, 0.08);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.history__panel-title {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 400;
+  color: var(--sm-dark-text-headings);
+}
+.history__panel p {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: #333;
+}
+.history__buttons { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
+.history__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 24px;
+  border-radius: 100vw;
+  border: 1.5px solid var(--sm-action-light-blue);
+  background: var(--sm-action-light-blue);
+  color: var(--sm-action-dark-blue-text);
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1;
+  text-decoration: none;
+}
+.history__button:visited { color: var(--sm-action-dark-blue-text); }
+.history__button:hover { background: var(--sm-hover-blue); border-color: var(--sm-hover-blue); }
+.history__button--quiet {
+  background: none;
+  border-color: var(--sm-field-border-default);
+}
+.history__button--quiet:hover {
+  background: var(--sm-field-bg-focus-hover);
+  border-color: var(--sm-primary-accent);
+}
+
+@media screen and (max-width: 640px) {
+  .history__title { font-size: 1.7rem; }
+  .timeline__row { grid-template-columns: 18px 1fr; gap: 12px; }
+  .timeline__row::before { left: 8px; }
+  .timeline__dot { width: 12px; height: 12px; margin-left: 3px; }
+  .timeline__card { padding: 18px; }
+  .state-modal { padding: 0; }
+  .state-modal__panel { max-width: none; border-radius: 0; max-height: 100%; height: 100%; }
+  .state-modal__body { padding: 14px; }
+  .history__panel { padding: 24px 20px; }
+  .history__button { width: 100%; }
+}

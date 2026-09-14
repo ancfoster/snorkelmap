@@ -29,6 +29,7 @@ class Contribution(models.Model):
         LOCATION_EDIT = "location-edit", "Location edited"
         RATING = "rating", "Rating left"
         REVIEW = "review", "Review left"
+        VISIBILITY_REPORT = "visibility-report", "Visibility report filed"
 
     # What each kind is worth. Read once, when the row is written, and
     # copied onto it: changing a figure here changes what the next
@@ -38,6 +39,7 @@ class Contribution(models.Model):
         Kind.LOCATION_EDIT: 10,
         Kind.RATING: 5,
         Kind.REVIEW: 10,
+        Kind.VISIBILITY_REPORT: 5,
     }
 
     user = models.ForeignKey(
@@ -45,7 +47,7 @@ class Contribution(models.Model):
         on_delete=models.CASCADE,
         related_name="contributions",
     )
-    kind = models.CharField(max_length=20, choices=Kind.choices)
+    kind = models.CharField(max_length=24, choices=Kind.choices)
     # The value at the time it was earned, not looked up when it is
     # read. Without this, raising what a review is worth would quietly
     # re-price every review ever left.
@@ -79,6 +81,16 @@ class Contribution(models.Model):
         related_name="contributions",
         null=True, blank=True,
     )
+    # Set on a visibility row. Reports are paid per report rather than
+    # per location, because somebody who snorkels the same bay every
+    # Saturday is telling us something new each time. CASCADE, so a
+    # deleted report takes its points with it.
+    visibility_report = models.ForeignKey(
+        "snorkel_visibility.VisibilityReport",
+        on_delete=models.CASCADE,
+        related_name="contributions",
+        null=True, blank=True,
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -108,6 +120,13 @@ class Contribution(models.Model):
                 fields=["user", "revision"],
                 condition=models.Q(kind="location-edit"),
                 name="unique_contribution_per_revision",
+            ),
+            # And one per visibility report, which the report table
+            # already limits to one per person per day.
+            models.UniqueConstraint(
+                fields=["user", "visibility_report"],
+                condition=models.Q(kind="visibility-report"),
+                name="unique_contribution_per_visibility_report",
             ),
         ]
         indexes = [
