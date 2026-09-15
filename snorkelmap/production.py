@@ -7,7 +7,7 @@ STORAGES = {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
     "staticfiles": {
-        "BACKEND": "snorkelmap.storage_backends.NonStrictS3ManifestStaticStorage",
+        "BACKEND": "storages.backends.s3.S3ManifestStaticStorage",
         "OPTIONS": {
             "bucket_name": os.environ['R2_BUCKET_NAME'],
             "endpoint_url": os.environ['R2_ENDPOINT_URL'],
