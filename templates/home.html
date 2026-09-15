@@ -3,7 +3,120 @@
 {% block description %}Snorkel Map is a community powered snorkelling guide, a place where people can discover new places to snorkel and anyone can contribute.{% endblock %}
 {% load static %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
 {% block content %}
+
+<main>
+
+  <!-- ── HERO ───────────────────────────────────────────────────────── -->
+  <section class="home-hero">
+    <div class="home-hero__inner">
+
+
+      <div class="home-hero__text">
+        <h1 class="home-hero__h1">Global, community powered snorkelling guide</h1>
+        <p class="home-hero__tagline">Charity-owned, community-driven and forever free.</p>
+        <p class="home-hero__body">SnorkelMap is the community encyclopaedia for our oceans and seas. A place where people can discover new places to snorkel and anyone can contribute their snorkelling experiences.</p>
+
+        <a href="{% url 'explore' %}" class="btn btn--primary home-hero__cta">
+          <img src="{% static 'images/icons/compass.svg' %}" alt=""> Start Exploring
+        </a>
+      </div>
+
+      <div class="home-hero__img-wrap">
+        <img
+          src="{% static 'images/snorkel-pre-launch.jpeg' %}"
+          alt="Snorkeller exploring an underwater reef"
+          class="home-hero__img">
+      </div>
+
+    </div>
+  </section>
+
+  <section class="home-how">
+    <div class="home-inner">
+      <h2 class="home-section__heading">How it works</h2>
+      <div class="home-how__grid">
+
+        <div class="home-how__card">
+          <img src="{% static 'images/how-discover.jpg' %}" alt="Discovering snorkel locations on the map" class="home-how__img">
+          <div class="home-how__body">
+            <h3 class="home-how__title">Discover</h3>
+            <p class="home-how__desc">Browse the community map to find snorkel loations across the globe</p>
+          </div>
+        </div>
+
+
+        <div class="home-how__card">
+          <img src="{% static 'images/how-explore.jpg' %}" alt="Exploring a snorkel location in detail" class="home-how__img">
+          <div class="home-how__body">
+            <h3 class="home-how__title">Explore</h3>
+            <p class="home-how__desc">Dive i from fellow snorkellers for every location.</p>
+          </div>
+        </div>
+
+        <div class="home-how__card">
+          <img src="{% static 'images/how-contribute.jpg' %}" alt="Contributing a new snorkel location" class="home-how__img">
+          <div class="home-how__body">
+            <h3 class="home-how__title">Contribute</h3>
+            <p class="home-how__desc">Help the community and add snorkel locations to the map.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── VALUES ───────────────────────────────────────────────────────── -->
+  <section class="home-values">
+    <div class="home-inner">
+      <h2 class="home-section__heading">Why SnorkelMap</h2>
+      <div class="home-values__grid">
+
+        <!-- Drop /assets/images/val-charity.jpg in to populate -->
+        <div>
+          <h3 class="home-value__title">Charity Owned</h3>
+          <p class="home-value__desc">SnorkelMap is run by <a href="https://www.snorkellingsociety.org" class="home-value__link">The Snorkelling Society</a>, a registered charity. People over profit.</p>
+        </div>
+
+
+        <div>
+          <h3 class="home-value__title">Community Powered</h3>
+          <p class="home-value__desc">The passionate snorkelling community is what powers SnorkelMap — every contribution matters.</p>
+        </div>
+
+        <!-- Drop /assets/images/val-free.jpg in to populate -->
+        <div>
+          <h3 class="home-value__title">Forever Free</h3>
+          <p class="home-value__desc">Our vision is that snorkelling knowledge should be free and accessible to everyone, always.</p>
+        </div>
+
+        <!-- Drop /assets/images/val-adfree.jpg in to populate -->
+        <div>
+          <h3 class="home-value__title">Ad Free</h3>
+          <p class="home-value__desc">We will never sell your data or monetise SnorkelMap with advertising.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <section class="home-cta">
+    <div class="home-inner">
+      <h2 class="home-cta__heading">Ready to start exploring?</h2>
+      <p class="home-cta__sub">Join snorkellers around the world discovering and sharing the ocean's best kept secrets.</p>
+      <div class="home-cta__btns">
+        <a href="{% url 'explore' %}" class="btn btn--primary">Start Exploring</a>
+        <a href="{% url 'create' %}" class="btn btn--ghost">Add a Location</a>
+      </div>
+    </div>
+  </section>
+
+</main>
 
 {% endblock %}
 {% block extra_js %}
