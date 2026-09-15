@@ -1,48 +1,18 @@
-/* ══════════════════════════════════════════════════════════════════════
-   CHOOSING WHICH LOCATIONS THE PANE SHOWS
-
-   The browser holds every published location, so working out what is
-   on screen is arithmetic rather than a request. What it cannot do is
-   show all of them: a pane is twenty cards on a desktop and twelve on
-   a phone, and a busy stretch of coast can have hundreds in view.
-
-   Taking the twenty nearest the middle of the screen would be simpler,
-   and wrong: pan over a marina and the pane fills with one bay while
-   everything else on screen goes unmentioned. So the viewport is cut
-   into six cells, and each cell that has anything in it is represented
-   in proportion to how much it has, with a floor of one so a single
-   location alone in a corner still appears.
-
-   Within a cell the picks are the ones nearest that cell's centre.
-   That matters more than it sounds: it makes the result a function of
-   where the map is, so nudging it a few pixels returns almost the same
-   list. Anything random here would reshuffle the pane on every frame
-   of a drag and read as broken.
-
-   No Mapbox and no DOM in this file, so it can be run and checked
-   outside a browser.
-   ══════════════════════════════════════════════════════════════════ */
+// explore sample - picks which locations the pane lists
 (function (global) {
   'use strict';
 
   var CELLS_ACROSS_LANDSCAPE = 3;
   var CELLS_DOWN_LANDSCAPE = 2;
 
-  /* Longitude degrees get narrower towards the poles, so comparing raw
-     degrees would stretch distances east to west near the equator and
-     squash them near Scotland. One cosine fixes it well enough for
-     ordering, which is all this is for: nothing here needs a real
-     distance, only a consistent one. */
+  // scale - longitude narrows towards the poles, so correct for it
   function distanceSq(aLng, aLat, bLng, bLat, cosLat) {
     var dx = (aLng - bLng) * cosLat;
     var dy = aLat - bLat;
     return dx * dx + dy * dy;
   }
 
-  /* Mapbox reports a viewport spanning the antimeridian with its west
-     edge greater than its east. Shifting the east edge and everything
-     west of the seam into a continuous range makes the rest of the
-     arithmetic ordinary. */
+  // antimeridian - mapbox reports west greater than east, so shift
   function normalise(bounds) {
     var west = bounds.west;
     var east = bounds.east;
@@ -63,14 +33,7 @@
         && item.lat >= box.south && item.lat <= box.north;
   }
 
-  /* Largest remainder, with two corrections that matter in practice.
-
-     Every non-empty cell is given one first, so a cell holding a single
-     location is never rounded out of existence. And a cell can be
-     allocated more than it holds when the shares are lumpy, so the
-     excess is handed back and offered to the cells that still have
-     room, repeatedly, until either the budget is spent or nothing can
-     take any more. */
+  // largest remainder - share the places out across the grid cells
   function allocate(counts, budget) {
     var cells = counts.length;
     var share = new Array(cells);
@@ -78,9 +41,7 @@
 
     for (i = 0; i < cells; i++) share[i] = 0;
 
-    /* More cells with something in them than places in the pane. Only
-       reachable with a very small limit, but it must not hand out more
-       than the budget, so the fullest cells win. */
+    // more cells than places - only with a very small limit
     if (cells > budget) {
       var order = [];
       for (i = 0; i < cells; i++) order.push(i);
@@ -132,9 +93,7 @@
     return share;
   }
 
-  /* items: [{ uuid, lng, lat, ... }]
-     bounds: { west, south, east, north }
-     options: { limit, landscape } */
+  // sample - takes items and bounds, returns what the pane shows
   function sampleViewport(items, bounds, options) {
     options = options || {};
     var limit = Math.max(1, options.limit || 20);
@@ -209,7 +168,7 @@
 
   global.SMSample = {
     sampleViewport: sampleViewport,
-    // Exported for the test suite.
+    // exported for the test suite
     _allocate: allocate,
     _normalise: normalise,
     _inside: inside,

@@ -1,18 +1,10 @@
-/* ═══════════════════════════════════════════════════════════════════
-   SnorkelMap — create.css
-   Styles for the location creation flow only. Loaded through
-   {% block extra_css %} on the create template, so pages that never
-   show the form do not carry it.
-   ═══════════════════════════════════════════════════════════════════ */
+/* snorkelmap - create.css styles for the location creation flow only */
 
-/* The hidden attribute is applied by the UA stylesheet at the lowest
-   possible specificity, so any class here that sets display wins over
-   it and the element stays on screen. Every el.hidden = true in
-   create.js depends on this rule. */
+/* hidden - the ua rule is weak, so restate it here */
 [hidden] { display: none !important; }
 
 
-/* ── BUTTONS ─────────────────────────────────────────────────────── */
+/* buttons */
 .btn {
   display: inline-flex; padding: 12px 24px;
   justify-content: center; align-items: center; gap: 8px;
@@ -41,12 +33,12 @@
   80%     { transform: translateX(4px); }
 }
 
-/* ── STEP DISPLAY ──────────────────────────────────────────────── */
+/* step display */
 .create-step         { display: none; min-height: calc(100dvh - 72px); box-sizing: border-box; }
 .create-step--active { display: block; }
 .create-step--map.create-step--active { display: flex; flex-direction: column; height: calc(100dvh - 72px); min-height: 0; overflow: hidden; }
 
-/* ── INTRO ─────────────────────────────────────────────────────── */
+/* intro */
 .create-intro { max-width: 768px; margin: 0 auto; padding: 32px 20px 48px; display: flex; flex-direction: column; }
 .create-intro__title   { font-size: 1.6rem; font-weight: 500; color: var(--sm-dark-text-headings); margin: 0 0 24px; line-height: 1.25; }
 .create-intro__section { margin-bottom: 20px; }
@@ -57,7 +49,7 @@
 .create-intro__check   { display: flex; align-items: center; gap: 10px; margin: 24px 0 20px; font-size: 0.9rem; color: var(--sm-text-3rd-grey); cursor: pointer; }
 .create-intro__check input[type="checkbox"] { width: 18px; height: 18px; flex-shrink: 0; cursor: pointer; accent-color: var(--sm-primary-accent); }
 
-/* ── STEP HEADER (sticky, replaces old step-nav) ──────────────── */
+/* step header (sticky, replaces old step-nav) */
 .step-header {
   position: sticky; top: 72px; z-index: 10;
   background: var(--sm-header-bg);
@@ -73,18 +65,18 @@
   color: var(--sm-dark-text-headings); margin: 0;
 }
 
-/* ── DONUT PROGRESS ────────────────────────────────────────────── */
+/* donut progress */
 .step-donut-wrap { display: flex; align-items: center; }
 .step-donut      { width: 44px; height: 44px; }
 .step-donut__bg  { stroke: #e8eff4; }
 .step-donut__ring { stroke: var(--sm-primary-accent); stroke-linecap: round; transition: stroke-dasharray 0.4s ease; }
 .step-donut__text { font-size: 9px; font-family: 'Inter', sans-serif; font-weight: 600; fill: var(--sm-dark-text-headings); }
 
-/* ── STEP CONTENT ──────────────────────────────────────────────── */
+/* step content */
 .step-content    { max-width: 768px; margin: 0 auto; padding: 20px 16px 24px; }
 .step-subheading { font-size: 0.875rem; color: var(--sm-text-3rd-grey); margin: 0 0 24px; line-height: 1.5; }
 
-/* ── STEP BAR (fixed bottom navigation — mobile full-width, desktop floating card) ── */
+/* step bar - bottom navigation, full width on mobile */
 .step-bar {
   position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
   display: flex; justify-content: center;
@@ -119,21 +111,21 @@
   height: calc(72px + env(safe-area-inset-bottom, 0px));
 }
 
-/* ── FIELD ERRORS (inline) ─────────────────────────────────────── */
+/* field errors (inline) */
 .field-error {
   display: none; margin-top: 6px; padding: 7px 10px;
   background: #fff1f0; border: 1px solid #ffb3b0; border-radius: 6px;
   font-size: 0.8rem; color: #c0392b; line-height: 1.4;
 }
 
-/* ── LOCATION META BREADCRUMB ──────────────────────────────────── */
+/* location meta breadcrumb */
 .location-meta-breadcrumb {
   background: var(--sm-field-bg-focus-hover); border: 1px solid var(--sm-field-border-default);
   border-radius: 8px; padding: 8px 14px; margin-bottom: 20px;
   font-size: 0.82rem; color: var(--sm-primary-accent); font-weight: 500; letter-spacing: 0.02em;
 }
 
-/* ── FORM FIELDS ───────────────────────────────────────────────── */
+/* form fields */
 .form-field { margin-bottom: 24px; }
 .form-field__label    { display: block; font-weight: 500; font-size: 0.875rem; color: var(--sm-text-3rd-grey); margin-bottom: 6px; }
 .form-field__required { color: #c0392b; }
@@ -148,14 +140,14 @@
 .form-field__add-row { display: flex; gap: 8px; align-items: flex-start; }
 .form-field__add-row .form-field__input { flex: 1; }
 
-/* ── FORM SECTIONS ─────────────────────────────────────────────── */
+/* form sections */
 .form-section { margin-bottom: 24px; }
 .form-section > button { margin-top: 16px;}
 .form-section:last-child { margin-top: 16px;}
 .form-section__heading { font-size: 1rem; font-weight: 600; color: var(--sm-text-3rd-grey); margin: 0 0 4px; }
 .form-section__helper  { font-size: 0.8rem; color: #7a8b94; margin: 0 0 10px; }
 
-/* ── CHIPS ─────────────────────────────────────────────────────── */
+/* chips */
 .chip-group__items { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 .chip {
   display: inline-flex; align-items: center; padding: 7px 14px;
@@ -179,18 +171,18 @@
 .chip-sub-group { margin-bottom: 14px; }
 .chip-sub-group__label { display: block; font-size: 0.85rem; font-weight: 500; color: #7a8b94; margin-bottom: 6px; }
 
-/* ── TAGS ──────────────────────────────────────────────────────── */
+/* tags */
 .tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 .tag { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: var(--sm-action-light-blue); color: var(--sm-action-dark-blue-text); border-radius: 100vw; font-size: 0.8rem; }
 .tag__remove { background: none; border: none; padding: 0; color: inherit; cursor: pointer; display: flex; align-items: center; width: 14px; height: 14px; }
 .tag__remove svg { width: 10px; height: 10px; }
 .tag__remove:hover { opacity: 0.6; }
 
-/* ── MAP LAYOUT ────────────────────────────────────────────────── */
+/* map layout */
 .map-wrap { flex: 1; position: relative; min-height: 0; overflow: hidden; }
 .map-wrap__map { width: 100%; height: 100%; }
 
-/* ── CROSSHAIR ─────────────────────────────────────────────────── */
+/* crosshair */
 .map-wrap__crosshair {
   position: absolute; top: 50%; left: 50%;
   transform: translate(-50%, -50%);
@@ -203,7 +195,7 @@
 .crosshair--warning { color: #f39c12; }
 .crosshair--ok      { color: #27ae60; }
 
-/* ── SEARCH ────────────────────────────────────────────────────── */
+/* search */
 .map-wrap__search { position: absolute; top: 12px; left: 12px; right: 12px; z-index: 10; }
 .map-search__input { width: 100%; padding: 10px 16px; border-radius: 10px; border: 2px solid rgba(255,255,255,0.9); background: rgba(255,255,255,0.97); font-family: 'Inter', sans-serif; font-size: 0.9rem; box-shadow: 0 2px 12px rgba(0,0,0,0.15); box-sizing: border-box; color: var(--sm-text-3rd-grey); }
 .map-search__input:focus { outline: none; border-color: var(--sm-primary-accent); }
@@ -215,7 +207,7 @@
 .map-search__result-place { font-size: 0.78rem; color: #9aabb4; }
 .map-search__loading, .map-search__no-results { padding: 12px 14px; font-size: 0.85rem; color: #9aabb4; }
 
-/* ── ZOOM GATE ─────────────────────────────────────────────────── */
+/* zoom gate */
 :root { --zoom-threshold-pct: 80%; }
 .zoom-gate { position: absolute; bottom: 12px; left: 12px; right: 12px; z-index: 8; background: rgba(255,255,255,0.9); border-radius: 10px; padding: 10px 14px 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.12); }
 .zoom-gate__bar-wrap { position: relative; margin-bottom: 6px; }
@@ -234,7 +226,7 @@
 .zoom-gate__label-amber { color: #b7770d; font-weight: 500; flex: 0 0 var(--zoom-threshold-pct); }
 .zoom-gate__label-green { color: #1a6b3c; font-weight: 600; text-align: right; flex: 1; }
 
-/* ── MAP PANEL ─────────────────────────────────────────────────── */
+/* map panel */
 .map-panel {
   background: #fff; padding: 14px 16px 20px;
   border-bottom: 1px solid var(--sm-header-border);
@@ -246,7 +238,7 @@
 .map-placeholder    { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #dde8ee; gap: 10px; color: #4a6872; font-size: 0.9rem; text-align: center; padding: 20px; box-sizing: border-box; }
 .map-placeholder code { background: rgba(0,0,0,0.08); padding: 2px 6px; border-radius: 4px; font-size: 0.78rem; }
 
-/* ── DROP ZONE ─────────────────────────────────────────────────── */
+/* drop zone */
 .drop-zone { border: 2px dashed var(--sm-field-border-default); border-radius: 12px; padding: 24px 16px; text-align: center; background: var(--sm-field-bg); cursor: pointer; transition: 0.15s all; position: relative; }
 .drop-zone:hover, .drop-zone--dragover { border-color: var(--sm-primary-accent); background: var(--sm-field-bg-focus-hover); }
 .drop-zone__inner { pointer-events: none; }
@@ -255,7 +247,7 @@
 .drop-zone__link  { color: var(--sm-primary-accent); font-weight: 500; }
 .drop-zone__input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
 
-/* ── PHOTO CARDS ───────────────────────────────────────────────── */
+/* photo cards */
 .photo-grid { display: flex; flex-direction: column; gap: 16px; margin-bottom: 16px; }
 .photo-item { border: 1px solid var(--sm-field-border-default); border-radius: 12px; overflow: hidden; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
 .photo-item__img-wrap { position: relative; padding: 10px 10px 0; }
@@ -268,26 +260,20 @@
 .photo-item__desc    { width: 100%; padding: 8px 12px; border: 1px solid var(--sm-field-border-default); border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 0.875rem; color: var(--sm-field-value); box-sizing: border-box; background: var(--sm-field-bg); }
 .photo-item__desc:focus { outline: none; border-color: var(--sm-primary-accent); background: var(--sm-field-bg-focus-hover); }
 
-/* ── Media validation ─────────────────────────────────────────────── */
+/* media validation */
 
 .drop-zone__hint { font-size: 0.78rem; color: #9aabb4; margin: 6px 0 0; }
 .drop-zone--busy { opacity: 0.6; pointer-events: none; }
 
-/* Files the gate turned away. Stated as a fact about the file rather
-   than as an error the person made, and shown next to the drop zone
-   they came from so it is obvious which section they belong to. */
+/* files the gate turned away */
 .media-rejects { list-style: none; margin: 0 0 16px; padding: 0; }
 
-/* Said on the thank you screen when the listing saved but a photo did
-   not. Deliberately not styled as an error: nothing the person did
-   went wrong and nothing needs resubmitting. */
+/* photo warning - the listing saved but an image did not */
 .create-thankyou__notice { background: #fdf4ee; border: 1px solid #f0d9c8; border-radius: 10px; padding: 12px 16px; margin: 0 0 20px; }
 .create-thankyou__notice-text { font-size: 0.875rem; line-height: 1.5; color: #8a4b2a; margin: 0; }
 .media-rejects__item { font-size: 0.82rem; line-height: 1.45; color: #8a4b2a; background: #fdf4ee; border: 1px solid #f0d9c8; border-radius: 8px; padding: 9px 12px; margin-top: 8px; }
 
-/* Shown in place of a thumbnail for a HEIC on a browser with no HEIC
-   decoder. Deliberately calm: the photo is fine and fully validated,
-   it just cannot be drawn here yet. */
+/* heic placeholder - stands in when the browser cannot decode it */
 .photo-item__placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 4px; height: 180px; border-radius: 8px; background: var(--sm-field-bg); border: 1px dashed var(--sm-field-border-default); padding: 12px; box-sizing: border-box; }
 .photo-item__placeholder svg { width: 32px; height: 32px; color: #9aabb4; }
 .photo-item__placeholder-name { font-size: 0.82rem; color: var(--sm-field-value); margin: 4px 0 0; word-break: break-all; }
@@ -295,7 +281,7 @@
 
 .photo-item__meta { font-size: 0.72rem; color: #9aabb4; margin: 0 0 10px; }
 
-/* ── THANK YOU ─────────────────────────────────────────────────── */
+/* thank you */
 .create-thankyou { max-width: 480px; margin: 0 auto; padding: 48px 20px 60px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px; }
 .create-thankyou__heading { font-size: 1.8rem; font-weight: 600; color: var(--sm-dark-text-headings); margin: 0; }
 .create-thankyou__body    { font-size: 0.9rem; color: var(--sm-text-3rd-grey); line-height: 1.6; margin: 0; }
@@ -306,7 +292,7 @@
 .create-thankyou__points-value { font-size: 2rem; font-weight: 700; color: var(--sm-dark-text-headings); margin: 0 0 4px; }
 .create-thankyou__points-label { font-size: 0.875rem; color: var(--sm-text-3rd-grey); margin: 0; }
 
-/* ── MODAL ─────────────────────────────────────────────────────── */
+/* modal */
 .sm-modal { display: none; position: fixed; inset: 0; z-index: 1000; align-items: center; justify-content: center; padding: 16px; }
 .sm-modal--visible { display: flex; }
 .sm-modal__overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.45); }
@@ -321,7 +307,7 @@
 .sm-modal__body ul { margin: 0; padding-left: 18px; }
 .sm-modal__body li { margin-bottom: 8px; }
 
-/* ── RESPONSIVE ────────────────────────────────────────────────── */
+/* responsive */
 @media screen and (min-width: 600px) {
   .step-content, .create-intro { padding-left: 24px; padding-right: 24px; }
   .step-header__inner { padding-left: 24px; padding-right: 24px; }
@@ -374,7 +360,7 @@
       height: auto;
       object-fit: contain;
   }
-/* ── DIFFICULTY SLIDER ─────────────────────────────────────────────── */
+/* difficulty slider */
 .difficulty-slider { margin-top: 12px; position: relative; }
 #difficulty-slider-wrap { margin-top: 24px; }
 .difficulty-slider__track {
@@ -412,31 +398,24 @@
 .difficulty-slider__label:nth-child(3)  { left: 66%; transform: translateX(-50%); }
 .difficulty-slider__label:last-of-type  { right: 0; }
 
-/* ── FACILITY SUBSECTION HEADING ───────────────────────────────────── */
+/* facility subsection heading */
 .form-subsection__heading {
   font-size: 0.9rem; font-weight: 600; color: var(--sm-text-3rd-grey);
   margin: 16px 0 8px;
 }
 
 
-/* The visibility slider used to be here. It is in visibility-slider.css
-   now, which both this page and the listing's report dialog load: this
-   file also styles the create page's chrome, so a page that loaded it
-   for the slider got the chrome as well. */
+/* the visibility slider used to be here */
 
-/* ══════════════════════════════════════════════════════════════════════
-   USER TESTING ROUND 1 — additions
-   Draft resume, map style toggles, None chips, example imagery,
-   alternate-name modal, annotation map help, visibility comments.
-   ══════════════════════════════════════════════════════════════════════ */
+/* user testing round 1 - draft resume, style toggles, none chips */
 
-/* ── DRAFT RESUME SCREEN ─────────────────────────────────────────── */
+/* draft resume screen */
 .create-intro--resume            { padding-top: 48px; }
 .create-intro--resume .create-intro__body { font-size: 1rem; margin: 0 0 28px; }
 .create-intro__actions           { display: flex; flex-direction: column; gap: 12px; }
 
 
-/* ── MAP STYLE TOGGLE (terrain / satellite) ──────────────────────── */
+/* map style toggle (terrain / satellite) */
 .map-style-toggle {
   position: absolute;
   top: 64px;
@@ -454,12 +433,7 @@
 }
 .map-style-toggle--annotate { top: 16px; }
 
-/* On the "where is it" map the toggle used to sit under the search
-   box, directly on top of the results list, which made the first few
-   suggestions unreadable and unclickable. It belongs at the bottom
-   instead, clear of the search and stacked just above the zoom gate.
-   The offset is the gate's own height (46px) plus its 12px inset and a
-   12px gap. */
+/* style toggle - moved clear of the search box */
 .map-style-toggle--finder { top: auto; bottom: 70px; }
 
 .map-style-toggle__btn {
@@ -482,7 +456,7 @@
   background: var(--sm-field-bg-focus-hover);
 }
 
-/* ── ANNOTATION MAP: HELP BUTTON (sits above the zoom controls) ──── */
+/* annotation map: help button (sits above the zoom controls) */
 .sm-annotate-map__help {
   position: absolute;
   right: 10px;
@@ -505,9 +479,7 @@
 .sm-annotate-map__help:hover { background: #fff; color: var(--sm-primary-accent); }
 .sm-annotate-map__help svg   { width: 24px; height: 24px; }
 
-/* ── ANNOTATION MAP: ADD MARKER BUTTON ───────────────────────────
-   Matches the primary buttons used on the other steps rather than the
-   old square tile. */
+/* add marker - matches the primary buttons on the other steps */
 .sm-annotate-map__toolbar .sm-annotate-map-toolbar__btn--add-marker {
   height: auto;
   width: auto;
@@ -526,9 +498,7 @@
 .sm-annotate-map__toolbar .sm-annotate-map-toolbar__btn--add-marker svg   { height: 20px; color: #fff; }
 .sm-annotate-map__toolbar .sm-annotate-map-toolbar__btn--add-marker span  { color: #fff; }
 
-/* ── CHIPS: NONE + MUTED STATES ──────────────────────────────────
-   A muted chip is de-emphasised, never disabled. Clicking one switches
-   water group, or clears None, rather than doing nothing at all. */
+/* muted chips - de-emphasised but still clickable */
 .chip--muted {
   opacity: 0.55;
   background: var(--sm-field-bg-disabled);
@@ -552,7 +522,7 @@
 }
 .chip-sub-group--muted .chip-sub-group__label { opacity: 0.55; }
 
-/* ── EXAMPLE IMAGERY IN MODALS ───────────────────────────────────── */
+/* example imagery in modals */
 .example-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -576,7 +546,7 @@
   line-height: 1.35;
 }
 
-/* ── MODAL EXTRAS ────────────────────────────────────────────────── */
+/* modal extras */
 .sm-modal__box--narrow { max-width: 420px; }
 .sm-modal__footer {
   display: flex;
@@ -585,7 +555,7 @@
 }
 
 
-/* ── VISIBILITY REPORT COMMENT BOX ───────────────────────────────── */
+/* visibility report comment box */
 .vis-comment-input {
   width: 100%;
   box-sizing: border-box;
@@ -602,9 +572,7 @@
 .vis-comment-input:focus { outline: none; border-color: var(--sm-primary-accent); }
 
 
-/* ══════════════════════════════════════════════════════════════════════
-   USER TESTING ROUND 1b — visibility report on step 2
-   ══════════════════════════════════════════════════════════════════════ */
+/* user testing round 1b - visibility report on step 2 */
 
 .vis-report-form {
   border: 1px solid var(--sm-field-border-default);
@@ -613,9 +581,7 @@
   background: var(--sm-field-bg);
 }
 
-/* Untouched is the encouraged resting state, but it must still look like a
-   control you can use. Nothing is dimmed except the thumb, which stays
-   neutral until it represents an actual answer. */
+/* untouched - a resting state that still reads as usable */
 .vis-report-form--untouched .vis-report-form__details { display: none; }
 
 .vis-report-form__hint {
@@ -628,10 +594,7 @@
   color: var(--sm-text-3rd-grey);
 }
 
-/* Until a report exists, only the track itself is washed out. The stops
-   mirror the live gradient mixed 75% with white, so the scale still reads
-   left to right but clearly holds no answer yet. Doing this with `filter`
-   or `opacity` would drag the thumb and labels down with it. */
+/* until a report exists, only the track itself is washed out */
 .vis-report-form--untouched .vis-slider-input {
   background: linear-gradient(to right,#f2c8bf,#f9d3c6,#fbdec4,#fcf0d0,#e9f2cf,#d3eccf);
 }
@@ -651,12 +614,7 @@
 
 .form-field__label--spaced { margin-top: 18px; }
 
-/* ══════════════════════════════════════════════════════════════════════
-   PUBLISH STEP
-   Shown while the submission is in flight. There is deliberately no
-   navigation out of here: the history guard and the unload prompt both
-   engage on entry, so the only way on is success or the failure panel.
-   ══════════════════════════════════════════════════════════════════════ */
+/* publish step shown while the submission is in flight */
 
 .create-publish {
   max-width: 560px;
@@ -694,8 +652,7 @@
 }
 .publish-progress__item:last-child { border-bottom: none; }
 
-/* The marker doubles as the state: hollow while waiting, spinning while
-   working, filled on success, red on failure. */
+/* progress marker - hollow, spinning or filled by state */
 .publish-progress__marker {
   width: 20px; height: 20px;
   border-radius: 50%;

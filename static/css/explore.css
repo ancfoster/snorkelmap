@@ -1,16 +1,9 @@
-/* The bar above a full bleed map. Dropping the centred column lets
-   space-between do the work: logo against the left edge, navigation
-   against the right, with only the bar's own padding as a gutter. */
+/* the bar above a full bleed map */
 .navbar__container--wide {
   max-width: none;
 }
 
-/* The map page: a list down the side and the map beside it, becoming a
-   map with a sheet over it on a phone.
-
-   Layout and card styling follow the static prototype. What is new
-   here is the sheet, the hint at the foot of the list, and the round
-   close button on the card. */
+/* explore - a list beside the map, a sheet over it on a phone */
 
 .explore-layout {
   display: flex;
@@ -18,7 +11,7 @@
   overflow: hidden;
 }
 
-/* ── The list ──────────────────────────────────────────────────────── */
+/* the list */
 
 .explore-sidebar {
   width: 420px;
@@ -39,8 +32,7 @@
   min-height: 0;
 }
 
-/* The drag handle belongs to the sheet, so it is not drawn on a wide
-   screen where the list is simply a column. */
+/* drag handle - only drawn when the list is a sheet */
 .explore-sheet__handle { display: none; }
 
 .explore-sidebar__empty {
@@ -68,7 +60,7 @@
   object-fit: cover;
   border-radius: 12px;
   display: block;
-  /* Shown while the photograph loads, so the list does not jump. */
+  /* shown while the photograph loads, so the list does not jump */
   background: var(--sm-field-bg);
 }
 .explore-list-item__name {
@@ -83,7 +75,7 @@
   margin: 0;
 }
 
-/* Shown only when the pane had to leave locations out. */
+/* shown only when the pane had to leave locations out */
 .explore-hint {
   margin: 4px 0 0;
   padding: 12px 14px;
@@ -95,7 +87,7 @@
   border-radius: 8px;
 }
 
-/* ── The map ───────────────────────────────────────────────────────── */
+/* the map */
 
 .explore-map-wrap {
   flex: 1;
@@ -107,7 +99,7 @@
 }
 #explore-map { width: 100%; height: 100%; }
 
-/* ── The card over a pin ───────────────────────────────────────────── */
+/* the card over a pin */
 
 .mapboxgl-popup.explore-popup .mapboxgl-popup-tip { display: none; }
 .mapboxgl-popup.explore-popup .mapboxgl-popup-content {
@@ -118,10 +110,7 @@
   width: 240px;
 }
 
-/* Round, on brand, and sitting on the photograph rather than beside
-   it. The cross is a stand in: drop close.svg into
-   static/images/icons/ and swap the two commented lines below for it,
-   then remove the font-size and line-height rules. */
+/* save button - sits on the photograph rather than beside it */
 .mapboxgl-popup.explore-popup .mapboxgl-popup-close-button {
   position: absolute;
   top: 8px;
@@ -192,13 +181,8 @@
   border: 0;
 }
 
-/* ── On a phone ────────────────────────────────────────────────────── */
-/*
-   The map fills the screen and the list becomes a sheet over it,
-   peeking at the foot so it is discoverable without hiding the map.
-   Three positions rather than free dragging, so letting go always
-   lands somewhere deliberate.
-*/
+/* on a phone */
+/* narrow - the map fills the screen and the list becomes a sheet */
 @media screen and (max-width: 900px) {
   .explore-layout {
     display: block;
@@ -254,8 +238,7 @@
     padding: 4px 16px 24px;
   }
 
-  /* At its shortest the sheet shows the first card's top edge, which
-     is what says there is a list here to pull up. */
+  /* peek - the first card's top edge shows there is more */
   .explore-sidebar--peek .explore-sidebar__scroll {
     overflow: hidden;
   }

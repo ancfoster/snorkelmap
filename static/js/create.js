@@ -1,19 +1,6 @@
-/* ═══════════════════════════════════════════════════════════════════
-   SnorkelMap — create.js
+// create - the flow for adding a new listing
 
-   The create flow is rendered by Django. Every option, label and example
-   block already exists in the DOM before this file runs, so nothing here
-   holds a second copy of that data:
-
-     • chips     carry data-id + data-state-key, grouped by data-group-key
-     • text      carries data-field, naming its own state key
-     • examples  live as hidden markup in the examples partial
-     • config    (token, icon base, step count) arrives via json_script
-
-   Adding an option is therefore a choices.py edit alone.
-   ═══════════════════════════════════════════════════════════════════ */
-
-// ── CONFIG FROM THE TEMPLATE ───────────────────────────────────────
+// config - values handed over from the template
 function readJSONScript(id, fallback) {
   const el = document.getElementById(id);
   if (!el) return fallback;
@@ -40,19 +27,15 @@ const MAP_STYLES = {
   satellite: 'mapbox://styles/mapbox/satellite-streets-v12',
 };
 
-// IndexedDB — photo storage for drafts.
-// Version 2 stores the File itself rather than a base64 data URL.
-// IndexedDB can hold a Blob directly, so this drops about a third of
-// the bytes, keeps the original file intact for the upload, and means
-// a HEIC can be held in a draft on a browser that cannot display it.
+// indexeddb - stores the file itself, not a data url
 const DB_NAME     = 'SnorkelMapDB';
 const DB_VERSION  = 2;
 const PHOTO_STORE = 'photos';
 
-// localStorage keys
+// localstorage keys
 const DRAFT_KEY = 'snorkelmap_draft';
 
-// Screens either side of the numbered steps
+// screens - the ones either side of the numbered steps
 const STEP_RESUME   = -1;
 const STEP_INTRO    = 0;
 const STEP_MEDIA    = 3;
@@ -67,7 +50,7 @@ function generateUUID() {
   });
 }
 
-const SESSION_TOKEN = generateUUID();  // Mapbox Search Box session
+const SESSION_TOKEN = generateUUID();  // mapbox search box session
 let   SUBMISSION_ID = generateUUID();  // ties this draft's photos to this submission
 
 function csrfToken() {
@@ -75,12 +58,10 @@ function csrfToken() {
   return meta ? meta.content : '';
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// STATE, DERIVED FROM THE RENDERED PAGE
-// ══════════════════════════════════════════════════════════════════════
+// state - read from the page django rendered
 let SET_KEYS = [];     // chip groups
 let TEXT_KEYS = [];    // text and value fields
-const GROUPS = new Map();   // stateKey → { noneId, singleSelect, payload… }
+const GROUPS = new Map();   // group behaviour by state key
 
 const state = {
   currentStep: STEP_INTRO,
@@ -108,7 +89,7 @@ function initStateFromDOM() {
     if (key in state) return;
     state[key] = el.dataset.fieldType === 'int' ? parseInt(el.value, 10) || 1 : '';
   });
-  // Driven by its own chips rather than an input, so it has no [data-field]
+  // difficulty - driven by chips, so it has no data-field
   if (!TEXT_KEYS.includes('parkingAvailable')) TEXT_KEYS.push('parkingAvailable');
 
   document.querySelectorAll('[data-group-key]').forEach(el => {
@@ -131,11 +112,9 @@ let mapInitialised = false;
 let searchDebounceTimer = null;
 let mapStyleCurrent = 'terrain';
 
-// ══════════════════════════════════════════════════════════════════════
-// INIT
-// ══════════════════════════════════════════════════════════════════════
+// init - wire everything up
 document.addEventListener('DOMContentLoaded', () => {
-  // The whole flow is behind a login gate; nothing to wire up without it
+  // login - the whole flow is behind a gate
   if (!document.getElementById('step-0')) return;
 
   document.documentElement.style.setProperty('--zoom-threshold-pct', `${ZOOM_THRESHOLD_PCT}%`);
@@ -166,9 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// ══════════════════════════════════════════════════════════════════════
-// DONUT PROGRESS RINGS
-// ══════════════════════════════════════════════════════════════════════
+// progress rings - the donuts on each step
 function renderAllDonuts() {
   for (let i = 1; i <= STEP_TOTAL; i++) {
     const el = document.getElementById(`donut-step-${i}`);
@@ -188,9 +165,7 @@ function makeDonuts(stepNum) {
     </svg>`;
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// NAVIGATION + BROWSER HISTORY
-// ══════════════════════════════════════════════════════════════════════
+// navigation - moving between steps and browser history
 function stepElementId(n) {
   if (n === STEP_RESUME)   return 'step-resume';
   if (n === STEP_PUBLISH)  return 'step-publish';
@@ -227,11 +202,10 @@ function pushStepHistory(n, replace) {
   try {
     if (replace) history.replaceState(data, '', url);
     else         history.pushState(data, '', url);
-  } catch (e) { /* history blocked — navigation still works */ }
+  } catch (e) { /* history blocked, navigation still works */ }
 }
 
-// Once publishing starts there is nothing behind us worth returning to,
-// so back is absorbed rather than allowed to unwind the form.
+// publishing - absorb back rather than unwinding the form
 let navigationLocked = false;
 let publishInFlight  = false;
 
@@ -248,7 +222,7 @@ function bindHistory() {
 
 function bindUnloadGuards() {
   window.addEventListener('beforeunload', e => {
-    // Leaving mid-publish would abandon a submission already under way
+    // leaving - a submission is already under way
     if (publishInFlight) {
       e.preventDefault();
       e.returnValue = '';
@@ -285,11 +259,7 @@ function bindStepButtons() {
   });
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// DRAFT PERSISTENCE
-// Written from step 2 onward once the location has a name. Photo bytes
-// live in IndexedDB; localStorage holds only references.
-// ══════════════════════════════════════════════════════════════════════
+// draft - saved from step two once the location has a name
 let draftSaveTimer = null;
 
 function scheduleDraftSave() {
@@ -362,7 +332,7 @@ async function discardDraft(draft) {
   }
 }
 
-// ── RESUME SCREEN ───────────────────────────────────────────────────
+// resume - offer to pick a saved draft back up
 let pendingDraft = null;
 
 function showResumeScreen(draft) {
@@ -443,7 +413,7 @@ async function applyDraft(draft) {
   pendingDraft = null;
 
   const resumeTo = Math.min(Math.max(draft.currentStep || 2, 2), STEP_LOCMAP);
-  // Seed the history so back walks the form rather than leaving the page
+  // seed - so back walks the form rather than leaving the page
   pushStepHistory(1, true);
   for (let i = 2; i < resumeTo; i++) pushStepHistory(i, false);
   goToStep(resumeTo);
@@ -481,9 +451,7 @@ function repopulateFormFromState() {
   }
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// VALIDATION
-// ══════════════════════════════════════════════════════════════════════
+// validation - what each step needs before moving on
 function showFieldError(id, msg) {
   const el = document.getElementById(id);
   if (!el) return;
@@ -563,12 +531,10 @@ function validateStep(step) {
     return true;
   }
 
-  return true; // steps 6, 7, 8 are optional
+  return true; // optional - steps six, seven and eight
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// INTRO
-// ══════════════════════════════════════════════════════════════════════
+// intro - the screen before step one
 function bindIntroStep() {
   const checkbox = document.getElementById('intro-checkbox');
   const startBtn = document.getElementById('intro-start');
@@ -577,9 +543,7 @@ function bindIntroStep() {
   startBtn.addEventListener('click', () => { if (checkbox.checked) goToStep(1); });
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// STEP 1 — FIND LOCATION MAP
-// ══════════════════════════════════════════════════════════════════════
+// step one - find the location on the map
 function initMap() {
   if (!MAPBOX_TOKEN || typeof mapboxgl === 'undefined') {
     const container = document.getElementById('mapbox-map');
@@ -734,9 +698,7 @@ async function reverseGeocode(lng, lat) {
   try {
     const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?types=country,region,place&access_token=${MAPBOX_TOKEN}&language=en`;
     const f   = (await (await fetch(url)).json()).features || [];
-    // For display on step 2 only. The server does its own lookup for
-    // anything that gets stored, so nothing here decides where the
-    // listing ends up or what its URL is.
+    // display only - the server resolves the geography it stores
     state.locationMeta.country = f.find(x => x.place_type.includes('country'))?.text || '';
     state.locationMeta.region  = f.find(x => x.place_type.includes('region'))?.text  || '';
     state.locationMeta.town    = f.find(x => x.place_type.includes('place'))?.text   || '';
@@ -745,9 +707,7 @@ async function reverseGeocode(lng, lat) {
   } catch (e) { console.warn('Geocode failed:', e); }
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// CHIPS — bound to markup Django already rendered
-// ══════════════════════════════════════════════════════════════════════
+// chips - bound to markup django already rendered
 function bindChips() {
   document.querySelectorAll('.chip[data-state-key]').forEach(btn => {
     btn.addEventListener('click', () => toggleChip(btn));
@@ -770,8 +730,7 @@ function toggleChip(btn) {
   } else if (set.has(id)) {
     set.delete(id);
   } else {
-    // Water type: choosing from the other group replaces the answer rather
-    // than being blocked, so a wrong first tap is never a dead end.
+    // water type - picking from the other group replaces the answer
     if (btn.dataset.waterGroup) {
       const active = activeWaterGroup();
       if (active && active !== btn.dataset.waterGroup) set.clear();
@@ -793,8 +752,7 @@ function activeWaterGroup() {
   return active ? active.dataset.waterGroup : null;
 }
 
-// The inactive group is dimmed, not disabled: tapping one of its chips
-// switches groups instead of doing nothing.
+// dimmed - the inactive group is still clickable
 function refreshWaterTypeLock() {
   const active = activeWaterGroup();
   document.querySelectorAll('#chips-waterType .chip').forEach(btn => {
@@ -805,8 +763,7 @@ function refreshWaterTypeLock() {
   });
 }
 
-// Same rule for None: the real options stay clickable and picking one
-// simply clears None.
+// none - picking a real option simply clears it
 function refreshGroupLock(group) {
   if (!group || !group.noneId) return;
   const noneOn = state[group.key].has(group.noneId);
@@ -821,9 +778,7 @@ function refreshAllGroupLocks() {
   refreshWaterTypeLock();
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// TEXT FIELDS + DIFFICULTY
-// ══════════════════════════════════════════════════════════════════════
+// text - fields and difficulty
 function bindTextFields() {
   document.querySelectorAll('[data-field]').forEach(el => {
     if (el.id === 'vis-create-slider' || el.dataset.fieldType === 'int') return; // bound separately
@@ -846,9 +801,7 @@ function bindDifficultySlider() {
   });
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// VISIBILITY REPORT (optional, step 2)
-// ══════════════════════════════════════════════════════════════════════
+// visibility report - optional, on step two
 function visibilityIsSet() {
   return state.visibilityValue !== '' && state.visibilityValue !== null
       && state.visibilityValue !== undefined;
@@ -862,8 +815,7 @@ function bindVisibilityReport() {
   const comment = document.getElementById('vis-create-comment');
   const clear   = document.getElementById('vis-create-clear');
 
-  // Browsers restore range values on reload, which would leave the thumb
-  // parked mid-track while the state says no report was filed.
+  // slider - browsers restore range values, so set it from state
   slider.value = state.visibilityValue || 0;
 
   slider.addEventListener('input', e => {
@@ -923,9 +875,7 @@ function validateVisibilityDate(dateVal) {
   return null;
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// ALTERNATE NAMES
-// ══════════════════════════════════════════════════════════════════════
+// alternate names - add and remove extra names
 function bindAltNameModal() {
   const openBtn = document.getElementById('alt-name-open');
   const modal   = document.getElementById('alt-name-modal');
@@ -991,9 +941,7 @@ function renderAlternateNames() {
   });
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// PARKING — Yes reveals the type chips, None hides them
-// ══════════════════════════════════════════════════════════════════════
+// parking - yes reveals the type chips, none hides them
 function bindParking() {
   const wrap = document.getElementById('parking-available-chips');
   if (!wrap) return;
@@ -1022,9 +970,7 @@ function syncParkingUI() {
   });
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// STEP 3 — UPLOAD MEDIA
-// ══════════════════════════════════════════════════════════════════════
+// step three - upload media
 function initFileUploads() {
   document.querySelectorAll('[data-media-key]').forEach(section => {
     const key  = section.dataset.mediaKey;
@@ -1042,10 +988,7 @@ function initFileUploads() {
     zone.addEventListener('drop', e => {
       e.preventDefault();
       zone.classList.remove('drop-zone--dragover');
-      // No filtering on file.type here. A HEIC dragged out of Finder
-      // often arrives with an empty type, and a file picked from a
-      // share sheet can too. What the file actually is gets decided by
-      // its leading bytes in SMMedia.validateFile.
+      // file type - heic often arrives with an empty type, so do not filter
       handleFiles(Array.from(e.dataTransfer.files), key);
     });
   });
@@ -1060,15 +1003,7 @@ function photoGridFor(type) {
   return section ? section.querySelector('.photo-grid') : null;
 }
 
-/* One entry in the media manifest sent with the publish request.
-
-   Everything here is a claim by the browser, and the server treats it
-   as one. The file's real type and size are pinned by the presigned
-   upload policy, and its real dimensions are read back from the stored
-   object afterwards. The capture date and position cannot be checked
-   at all: a determined person can edit their own EXIF, and that is an
-   acceptable trade for being able to date a photo and offer to drop
-   the pin where it was taken. */
+// manifest entry - what the browser claims about one photo
 function mediaManifestEntry(photo, section) {
   return {
     clientId: photo.id,
@@ -1103,10 +1038,7 @@ function showRejects(type, messages) {
   list.hidden = messages.length === 0;
 }
 
-/* Files are validated one at a time rather than in parallel. Reading
-   EXIF out of a dozen 8MB photos at once on a phone is a good way to
-   make the tab unresponsive, and the tiles appearing one by one reads
-   as progress rather than as a stall. */
+// one at a time - reading exif from a dozen photos at once stalls a phone
 async function handleFiles(files, type) {
   if (!files.length) return;
   const limits   = SMMedia.rules().limits;
@@ -1165,8 +1097,7 @@ function setDropZoneBusy(type, busy) {
   if (zone) zone.classList.toggle('drop-zone--busy', busy);
 }
 
-/* Object URLs are held on the photo record and revoked when the tile
-   goes away, so re-rendering the grid does not leak one per render. */
+// object urls - held on the record and revoked with the tile
 function previewUrlFor(photo) {
   if (!photo.previewable) return null;
   if (!photo.objectUrl) photo.objectUrl = URL.createObjectURL(photo.file);
@@ -1226,9 +1157,7 @@ function renderPhotoGrid(type) {
       img.src = url;
       img.hidden = false;
     } else {
-      // HEIC on a browser with no HEIC decoder. The file is valid and
-      // fully checked; only the thumbnail has to wait for Cloudflare
-      // to render it after the upload.
+      // heic - no decoder here, so the thumbnail waits for cloudflare
       placeholder.querySelector('.photo-item__placeholder-name').textContent = photo.name;
       placeholder.querySelector('.photo-item__placeholder-note').textContent =
         SMMedia.rules().messages.no_preview;
@@ -1258,18 +1187,13 @@ async function removePhoto(id, type) {
   scheduleDraftSave();
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// INDEXEDDB — PHOTO STORAGE
-// ══════════════════════════════════════════════════════════════════════
+// indexeddb - photo storage for drafts
 function openPhotoDB() {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
     request.onupgradeneeded = e => {
       const db = e.target.result;
-      // Records written by version 1 held a data URL and none of the
-      // dimension or capture metadata, so there is nothing worth
-      // migrating. The draft's photo references simply find no match
-      // on restore and are dropped.
+      // version one - old records held data urls, nothing worth migrating
       if (db.objectStoreNames.contains(PHOTO_STORE)) {
         db.deleteObjectStore(PHOTO_STORE);
       }
@@ -1336,11 +1260,7 @@ async function deletePhotosForSubmission(submissionId) {
   await Promise.all(records.map(r => deletePhotoFromIndexedDB(r.id)));
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// PAYLOAD
-// Nesting is driven by data-payload-group / data-payload-key on each
-// group, so the shape is a template concern rather than a JS one.
-// ══════════════════════════════════════════════════════════════════════
+// payload - nesting comes from data-payload-group and data-payload-key
 function getStateJSON() {
   const payload = {
     submissionId: SUBMISSION_ID,
@@ -1378,10 +1298,7 @@ function getStateJSON() {
           comment: state.visibilityComment || '',
         }
       : null,
-    // The media manifest. The bytes do not travel with this request:
-    // the server answers it with one presigned upload per entry, and
-    // the browser then puts each file into R2 directly. clientId is
-    // what ties a presigned slot back to the file held in state.
+    // media - the manifest only, the bytes follow on presigned urls
     media: [
       ...state.aboveWaterPhotos.map(p => mediaManifestEntry(p, 'aboveWater')),
       ...state.underwaterPhotos.map(p => mediaManifestEntry(p, 'underwater')),
@@ -1397,8 +1314,7 @@ function getStateJSON() {
     const commentKey = `${group.key}Comments`;
     const target = payload[group.payloadGroup];
     if (!target) return;
-    // A group with a comment box reports { selected, comments }; one
-    // without is just the list of ids.
+    // group shape - with a comment box or a bare list of ids
     target[group.payloadKey] = TEXT_KEYS.includes(commentKey)
       ? { selected, comments: state[commentKey] || '' }
       : selected;
@@ -1407,13 +1323,7 @@ function getStateJSON() {
   return payload;
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// PUBLISH
-//
-// Front end only for now. runPublish() walks the progress list and then
-// lands on the thank-you screen; swapping the simulated stages for real
-// requests is the only change needed to make this live.
-// ══════════════════════════════════════════════════════════════════════
+// publish - walks the progress list and posts the submission
 const PUBLISH_STAGES = ['validate', 'location', 'media', 'finalise'];
 
 function bindPublish() {
@@ -1421,8 +1331,7 @@ function bindPublish() {
   if (!publishBtn) return;
 
   publishBtn.addEventListener('click', () => {
-    // Everything required lives on earlier steps, so re-check before
-    // committing the user to a screen they cannot back out of.
+    // recheck - earlier steps, before a screen they cannot back out of
     if (!validateStep(2))          { goToStep(2); return; }
     if (!validateStep(STEP_MEDIA)) { goToStep(STEP_MEDIA); return; }
     startPublish();
@@ -1433,7 +1342,7 @@ function bindPublish() {
 
   const back = document.getElementById('publish-back');
   if (back) back.addEventListener('click', () => {
-    // Only reachable after a failure, so the guards come off
+    // after failure - the guards come off
     publishInFlight = false;
     navigationLocked = false;
     goToStep(STEP_LOCMAP);
@@ -1476,7 +1385,7 @@ function setStage(stage, status, detail) {
 }
 
 function publishFailed(message) {
-  publishInFlight = false;          // the unload prompt is no longer warranted
+  publishInFlight = false;          // unload - no longer warranted
   const err = document.getElementById('publish-error');
   const txt = document.getElementById('publish-error-text');
   const status = document.getElementById('publish-status-line');
@@ -1488,16 +1397,10 @@ function publishFailed(message) {
 const SUBMISSION_ENDPOINT = '/api/v1/locations/submissions';
 const CONFIRM_ENDPOINT = uuid => `/api/v1/locations/media/${uuid}/confirm`;
 const UPLOAD_ATTEMPTS = 3;
-// 408 timeout, 429 too many requests, and the server side failures that
-// can reasonably differ on a second attempt. Everything else, 501 very
-// much included, means the answer will be the same next time.
+// retry - only on answers that can differ a second time
 const RETRYABLE_STATUSES = new Set([408, 429, 500, 502, 503, 504, 507]);
 
-/* The submission is sent once and the photos follow. The submission id
-   travels with it, so if the connection drops and the person taps
-   retry, the server recognises the id, returns the location it already
-   made and signs fresh slots for whatever has not arrived. Nothing is
-   duplicated and nothing is lost. */
+// submission - sent once, the id makes a retry safe
 let publishedUrl = null;
 
 async function runPublish() {
@@ -1530,7 +1433,7 @@ async function runPublish() {
     publishedUrl = result.url || null;
     setStage('location', 'done', 'Saved');
 
-    // ── Photos ──────────────────────────────────────────────────────
+    // photos
     const uploads = result.uploads || [];
     let outcome = null;
     let refused = 0;
@@ -1548,8 +1451,7 @@ async function runPublish() {
         done += 1;
         setStage('media', 'active', `${done} of ${uploads.length}`);
 
-        // Tell the server to look at it now, rather than waiting for
-        // the bucket to mention it.
+        // verify - tell the server to look now rather than waiting
         const checked = await confirmUpload(slot);
         if (checked) {
           outcome = checked;
@@ -1562,8 +1464,7 @@ async function runPublish() {
     }
 
     setStage('finalise', 'active');
-    // published comes from the server having actually looked at the
-    // photograph, not from the browser assuming it worked.
+    // published - the server looked at the photograph, the browser did not
     setStage('finalise', 'done',
       outcome && outcome.published ? 'Published' : 'Checks running');
 
@@ -1571,9 +1472,7 @@ async function runPublish() {
   } catch (e) {
     console.error('Publish failed:', e);
 
-    // If the listing was created, there is nothing to resubmit and
-    // offering a retry only invites a duplicate. The listing is the
-    // useful place to be: the photo can be added to it directly.
+    // created - nothing to resubmit, so send them to the listing
     if (publishedUrl) {
       setStage('media', 'failed');
       finishPublish(publishedUrl, e instanceof PublishError ? e.message : '');
@@ -1587,16 +1486,7 @@ async function runPublish() {
 
 class PublishError extends Error {}
 
-/* Ask the server to verify one upload straight away.
-
-   The server does not take the browser's word for anything: it reads
-   the object back out of the store and checks it there. This only
-   changes when that happens, so that the listing goes live while the
-   person is still watching rather than a few seconds later.
-
-   Never fatal. If this call fails the photo is still in the bucket and
-   the bucket's own notification will get to it, so the publish carries
-   on rather than reporting a problem that is not one. */
+// verify one - the server reads the object back out of the bucket
 async function confirmUpload(slot) {
   try {
     const response = await fetch(CONFIRM_ENDPOINT(slot.mediaUuid), {
@@ -1616,12 +1506,7 @@ function allPhotos() {
   return [...state.aboveWaterPhotos, ...state.underwaterPhotos];
 }
 
-/* One file into R2, straight from the browser.
-
-   Two shapes because the signature can be either. A presigned POST
-   carries a size condition the bucket enforces, which is why it is
-   preferred; a presigned PUT is the fallback and has the size checked
-   on the server once the object has landed. */
+// upload - one file into r2, straight from the browser
 async function uploadPhoto(slot, photo) {
   let lastError = null;
 
@@ -1641,10 +1526,7 @@ async function uploadPhoto(slot, photo) {
         response = await fetch(slot.url, { method: 'POST', body: form });
       }
       if (response.ok) return;
-      // Only genuinely transient answers are worth repeating. A
-      // refused signature will be refused again, and so will a method
-      // the store does not implement: R2 answers POST Object with 501,
-      // and retrying that three times only makes the wait longer.
+      // transient - a refused signature will be refused again
       if (!RETRYABLE_STATUSES.has(response.status)) {
         throw new PublishError(
           `${photo.name} was refused by the photo store (${response.status}).`);
@@ -1667,9 +1549,7 @@ function finishPublish(listingUrl, problem) {
   const nameDisplay = document.getElementById('thankyou-location-name');
   if (nameDisplay) nameDisplay.textContent = state.name || 'Your Location';
 
-  // The canonical path, as the server built it from the geography it
-  // resolved. If it is missing for any reason the button is hidden
-  // rather than left pointing nowhere.
+  // path - as the server built it, hide the button if missing
   const viewBtn = document.getElementById('view-location-btn');
   if (viewBtn) {
     if (listingUrl) {
@@ -1680,8 +1560,7 @@ function finishPublish(listingUrl, problem) {
     }
   }
 
-  // Said plainly, and without suggesting anything needs doing again.
-  // The location is saved; only a photograph is missing from it.
+  // missing photo - the location is saved, say so plainly
   const notice = document.getElementById('thankyou-notice');
   const noticeText = document.getElementById('thankyou-notice-text');
   if (notice && noticeText) {
@@ -1694,14 +1573,11 @@ function finishPublish(listingUrl, problem) {
     }
   }
 
-  // navigationLocked stays on: the form behind this no longer represents
-  // anything the user can usefully return to.
+  // locked - the form behind this is not worth returning to
   goToStep(STEP_THANKYOU);
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// MODAL — content comes from the examples partial
-// ══════════════════════════════════════════════════════════════════════
+// modal - content comes from the examples partial
 function bindModal() {
   const overlay = document.getElementById('modal-overlay');
   const close   = document.getElementById('modal-close');

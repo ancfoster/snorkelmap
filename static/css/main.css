@@ -1,67 +1,67 @@
-/* Fonts */
+/* fonts */
 @font-face {
-  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-display: swap;
   font-family: 'Inter';
   font-style: normal;
   font-weight: 200;
-  src: url('../fonts/inter-v20-latin-200.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  src: url('../fonts/inter-v20-latin-200.woff2') format('woff2'); /* chrome 36+, opera 23+, firefox 39+, safari 12+, ios 10+ */
 }
 /* inter-300 - latin */
 @font-face {
-  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-display: swap;
   font-family: 'Inter';
   font-style: normal;
   font-weight: 300;
-  src: url('../fonts/inter-v20-latin-300.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  src: url('../fonts/inter-v20-latin-300.woff2') format('woff2'); /* chrome 36+, opera 23+, firefox 39+, safari 12+, ios 10+ */
 }
 /* inter-300italic - latin */
 @font-face {
-  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-display: swap;
   font-family: 'Inter';
   font-style: italic;
   font-weight: 300;
-  src: url('../fonts/inter-v20-latin-300italic.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  src: url('../fonts/inter-v20-latin-300italic.woff2') format('woff2'); /* chrome 36+, opera 23+, firefox 39+, safari 12+, ios 10+ */
 }
 /* inter-regular - latin */
 @font-face {
-  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-display: swap;
   font-family: 'Inter';
   font-style: normal;
   font-weight: 400;
-  src: url('../fonts/inter-v20-latin-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  src: url('../fonts/inter-v20-latin-regular.woff2') format('woff2'); /* chrome 36+, opera 23+, firefox 39+, safari 12+, ios 10+ */
 }
 /* inter-italic - latin */
 @font-face {
-  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-display: swap;
   font-family: 'Inter';
   font-style: italic;
   font-weight: 400;
-  src: url('../fonts/inter-v20-latin-italic.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  src: url('../fonts/inter-v20-latin-italic.woff2') format('woff2'); /* chrome 36+, opera 23+, firefox 39+, safari 12+, ios 10+ */
 }
 /* inter-500 - latin */
 @font-face {
-  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-display: swap;
   font-family: 'Inter';
   font-style: normal;
   font-weight: 500;
-  src: url('../fonts/inter-v20-latin-500.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  src: url('../fonts/inter-v20-latin-500.woff2') format('woff2'); /* chrome 36+, opera 23+, firefox 39+, safari 12+, ios 10+ */
 }
 /* inter-600 - latin */
 @font-face {
-  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-display: swap;
   font-family: 'Inter';
   font-style: normal;
   font-weight: 600;
-  src: url('../fonts/inter-v20-latin-600.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  src: url('../fonts/inter-v20-latin-600.woff2') format('woff2'); /* chrome 36+, opera 23+, firefox 39+, safari 12+, ios 10+ */
 }
 
-/* Colour Variables */
+/* colour variables */
 :root {
   --sm-page-bg: #F5F8FA;
   --sm-card-bg: #FEFEFE;
   --sm-primary-accent: #0096CD;
 
-  /* Form colours */
+  /* form colours */
   --sm-field-bg: #F9FBFC;
   --sm-field-bg-focus-hover: #EFF7FD;
   --sm-field-bg-disabled: #E7E8E9;
@@ -71,17 +71,17 @@
   --sm-field-value: #145069;
   --sm-field-value-disabled: #5E6466;
 
-  /* Header Colours */
+  /* header colours */
   --sm-header-bg: #FAFAFA;
   --sm-header-border: #E0DEDE;
 
-  /* Text colours */
+  /* text colours */
   --sm-dark-text-headings: #2A7A9B;
   --sm-text-3rd-grey: #484848;
   --sm-body-hyperlink: #2980A3;
   --sm-bpdy-hyperlink-hover: #06577a;
 
-  /* Action Colours */
+  /* action colours */
   --sm-action-clear-bg-blue-txt: #2980A3;
   --sm-action-clear-bg-blue-txt-hover: #06577a;
   --sm-action-light-blue: #D4F2FF;
@@ -92,14 +92,14 @@
   --sm-disabled: #c5c5c5;
   --sm-white: #fff;
 
-  /* Validation Colours */
+  /* validation colours */
   --sm-invalid-bg: #fff1f0;
   --sm-invalid: #c0392b;
   --sm-invalid-border: #E62107;
 
 }
 
-/* Universal styles */
+/* universal styles */
 .hidden {
   display: none;
 }
@@ -111,12 +111,7 @@ body {
     font-family: 'Inter', sans-serif;
 }
 
-/* Form controls are the one thing that does not inherit font-family:
-   browsers substitute a platform default for them, so every button and
-   field on the site was in the system font while everything around it
-   was Inter. Set on the elements rather than on a class, so it reaches
-   anything rendered later, htmx swaps included, without the new markup
-   having to remember to ask. */
+/* form controls - the one thing that does not inherit the font */
 button,
 input,
 select,
@@ -171,7 +166,7 @@ button, input[type=submit] {
 }
   .checkbox__input {
     position: absolute;
-    inset: 0;        
+    inset: 0;
     width: 100%;
     height: 100%;
     margin: 0;
@@ -192,7 +187,7 @@ button, input[type=submit] {
     transition: background-color .15s, border-color .15s;
   }
   .checkbox__check {
-    width: 33%;                       
+    width: 33%;
     height: auto;
     opacity: 0;
     transition: opacity .15s;
@@ -211,11 +206,11 @@ button, input[type=submit] {
   .checkbox__input:disabled ~ .checkbox__indicator {
     background: #C5C5C5;
     border-color: #616C70;
-    color: #616C70;                  
+    color: #616C70;
   }
 
 
-/* Navigation Styles */
+/* navigation styles */
 .navbar {
     height: 72px;
     width: 100%;
@@ -262,7 +257,7 @@ button, input[type=submit] {
           padding: 0;
       }
 
-      /* LINKS */
+      /* links */
       .desktop-navigation__link {
           color: var(--sm-action-clear-bg-blue-txt);
           text-decoration: none;
@@ -280,7 +275,7 @@ button, input[type=submit] {
           text-decoration: none;
       }
 
-      /* HERO LINK */
+      /* hero link */
       .desktop-navigation__link--hero {
           border-radius: 40px;
           color: var(--sm-action-dark-blue-text);
@@ -294,7 +289,7 @@ button, input[type=submit] {
           color: var(--sm-white);
       }
 
-      /* ICONS */
+      /* icons */
       .desktop-navigation__icon,
       .mobile-nav__icon {
           height: 20px;
@@ -309,14 +304,14 @@ button, input[type=submit] {
           background-color: currentColor;
       }
 
-      /* OFFSET */
+      /* offset */
       .offset {
           height: 72px;
           width: 100%;
           min-height: 72px;
       }
 
-      /* MOBILE NAV BLOCK */
+      /* mobile nav block */
       .mobile-nav {
           z-index: 95;
           position: fixed;
@@ -369,13 +364,7 @@ button, input[type=submit] {
           }
 
 
-      /*!
-    * Hamburgers
-    * @description Tasty CSS-animated hamburgers
-    * @author Jonathan Suh @jonsuh
-    * @site https://jonsuh.com/hamburgers
-    * @link https://github.com/jonsuh/hamburgers
-    */
+      /* ! */
     button.hamburger, input[type=submit].hamburger {
       all: unset; /* resets all inherited styles */
       cursor: pointer;
@@ -429,9 +418,7 @@ button, input[type=submit] {
         top: -10px; }
       .hamburger-inner::after {
         bottom: -10px; }
-    /*
-      * Collapse
-      */
+    /* * collapse */
     .hamburger--collapse .hamburger-inner {
       top: auto;
       bottom: 0;
@@ -457,9 +444,7 @@ button, input[type=submit] {
         transform: rotate(-90deg);
         transition: top 0.1s 0.16s cubic-bezier(0.33333, 0, 0.66667, 0.33333), transform 0.13s 0.25s cubic-bezier(0.215, 0.61, 0.355, 1); }
 
-    /*
-      * Collapse Reverse
-      */
+    /* * collapse reverse */
     .hamburger--collapse-r .hamburger-inner {
       top: auto;
       bottom: 0;
@@ -506,7 +491,7 @@ button, input[type=submit] {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
-/* Login Screen */
+/* login screen */
 .login-flex {
     width: 100%;
     box-sizing: border-box;
@@ -549,7 +534,7 @@ button, input[type=submit] {
         overflow-y: auto;
         scrollbar-width: thin;
         scrollbar-color: rgba(0, 0, 0, 0.25) transparent;
-      } 
+      }
         .login-flex__form-cont form::-webkit-scrollbar {
           width: 12px;
         }
@@ -613,7 +598,7 @@ button, input[type=submit] {
         color: var(--sm-text-3rd-grey);
     }
 
-/* Signup Screen */
+/* signup screen */
 .sm-signup__username-feedback--available, .sm-signup__username-feedback--taken {
   font-size: 0.75rem;
   font-weight: 400;
@@ -693,7 +678,7 @@ input[type="password"] {
   input[type="password"]:focus,
   textarea:focus {
       background: var(--sm-field-bg-focus-hover);
-      color: var(--sm-field-value);      
+      color: var(--sm-field-value);
       border-color: var(--sm-field-value);
       outline: none;
   }
@@ -713,7 +698,7 @@ input[type="password"] {
   }
 
 
-/* Temp home page styles */
+/* temp home page styles */
 .home-cont {
   height: 100dvh;
   width: 100%;
@@ -773,9 +758,7 @@ input[type="password"] {
     }
   }
 
-/* The pages in the account area that are read rather than filled in:
-   verify your email, password reset sent, and so on. Same card as the
-   login form, without a form in it. */
+/* account pages - the ones that are read rather than filled in */
 .login-flex__message {
   margin: 0;
   color: var(--sm-text-3rd-grey);
@@ -798,7 +781,7 @@ input[type="password"] {
   line-height: 1.5;
   text-align: center;
 }
-/* An anchor, so the global button rule does not reach it. */
+/* an anchor, so the global button rule does not reach it */
 .login-flex__button {
   box-sizing: border-box;
   display: inline-flex;
@@ -819,10 +802,7 @@ input[type="password"] {
 .login-flex__button:hover {
   background-color: var(--sm-hover-blue);
 }
-/* A form in this card that is only a button. The shared form rule ends
-   in a rule that separates fields from the links under them, which on a
-   page with no fields reads as a stray line, and lays its contents out
-   in a row, which leaves a lone button stranded on the left. */
+/* a form in this card that is only a button */
 .login-flex__form--action-only {
   justify-content: center;
   padding-bottom: 0 !important;
@@ -832,8 +812,7 @@ input[type="password"] {
   width: 100%;
 }
 
-/* A way back that should not compete with the thing the page is asking
-   the person to do. */
+/* back link - quiet, so it does not compete with the action */
 .login-flex__quiet-link {
   font-size: 0.9rem;
   color: var(--sm-body-hyperlink);
@@ -854,4 +833,4 @@ input[type="password"] {
   border-radius: 8px;
 }
 
-/* Create-flow styles live in create.css, loaded on that page only. */
+/* create-flow styles live in create.css, loaded on that page only */

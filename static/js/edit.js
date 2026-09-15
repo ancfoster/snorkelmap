@@ -1,22 +1,4 @@
-/* ═══════════════════════════════════════════════════════════════════
-   SnorkelMap — edit.js
-
-   Editing a listing that already exists.
-
-   Two objects, and the whole file is organised around them. ORIGINAL is
-   the listing exactly as the server rendered it, frozen; WORKING is what
-   the person is proposing. Nothing ever writes to ORIGINAL, so "has
-   anything changed" and "put it back as it was" are both answerable at
-   any moment without asking the server again.
-
-   The map is not ours. marker_map.js does the markers, the drawer and
-   the note overlay, and reads MAPBOX_TOKEN, MARKER_ICON_BASE and
-   state.coordinates out of the surrounding scope: on the create page
-   create.js provides those, and here this file does. Its live feature
-   collection is window.locationMarkerMapData, and it calls
-   window.smScheduleDraftSave on every change, which is how the cancel
-   button knows to come alive.
-   ═══════════════════════════════════════════════════════════════════ */
+// edit - the editing form for a listing that already exists
 
 function readJSONScript(id, fallback) {
   const el = document.getElementById(id);
@@ -25,7 +7,7 @@ function readJSONScript(id, fallback) {
   catch (error) { return fallback; }
 }
 
-// marker_map.js reads all three of these by name.
+// globals - marker_map.js reads all three of these by name
 const MAPBOX_TOKEN     = readJSONScript('mapbox-token', null);
 const MARKER_ICON_BASE = readJSONScript('marker-icon-base', '/static/images/sm-map-icons/');
 const state = { coordinates: readJSONScript('edit-coordinates', null) };
@@ -35,11 +17,7 @@ const WORKING  = clone(ORIGINAL);
 
 const SUMMARY_MAX = 300;
 
-// A JSON round trip rather than structuredClone, and not as a matter
-// of taste: marker_map.js hangs a refreshIcon function off every
-// feature it draws, and structuredClone throws on a function. This
-// drops them, which is exactly what is wanted, since what goes to the
-// server is JSON anyway.
+// clone - json round trip, structuredClone chokes on the icon functions
 function clone(value) {
   return value === undefined ? value : JSON.parse(JSON.stringify(value));
 }
@@ -56,9 +34,9 @@ function same(a, b) {
   return JSON.stringify(a) === JSON.stringify(b);
 }
 
-// ── What is on the page ─────────────────────────────────────────────
+// page state - what is on the form and how each group behaves
 
-const GROUPS = new Map();   // state key → how that group behaves
+const GROUPS = new Map();   // groups - state key to behaviour
 
 function readGroups() {
   document.querySelectorAll('[data-group-key]').forEach(el => {
@@ -78,7 +56,7 @@ function listFor(key) {
   return WORKING[key];
 }
 
-// ── Putting the listing into the form ───────────────────────────────
+// fill - put the current listing into the form
 
 function fillForm() {
   document.querySelectorAll('[data-field]').forEach(el => {
@@ -102,7 +80,7 @@ function fillForm() {
   refreshMarkerCount();
 }
 
-// ── Chips ───────────────────────────────────────────────────────────
+// chips - selecting and clearing chip options
 
 function bindChips() {
   document.addEventListener('click', event => {
@@ -127,9 +105,7 @@ function toggleChip(chip) {
   } else if (chosen.includes(id)) {
     chosen = chosen.filter(other => other !== id);
   } else {
-    // Water type: picking from the other group replaces the answer
-    // rather than being refused, so a wrong first tap is never a dead
-    // end. Same behaviour as the create form.
+    // water type - picking from the other group replaces the answer
     if (chip.dataset.waterGroup) {
       const active = document.querySelector('#chips-waterType .chip--active');
       if (active && active.dataset.waterGroup !== chip.dataset.waterGroup) {
@@ -156,7 +132,7 @@ function chooseParking(chip) {
   refreshSaveState();
 }
 
-// ── Text, numbers and the counter ───────────────────────────────────
+// text - inputs, numbers and the character counter
 
 function bindFields() {
   document.addEventListener('input', event => {
@@ -178,7 +154,7 @@ function refreshSummaryCounter() {
   counter.classList.toggle('edit-form__counter--over', box.value.length > SUMMARY_MAX);
 }
 
-// ── Alternate names ─────────────────────────────────────────────────
+// alternate names - add and remove extra names
 
 function renderAltNames() {
   const list = document.getElementById('edit-alt-names');
@@ -189,8 +165,7 @@ function renderAltNames() {
     const tag = document.createElement('span');
     tag.className = 'alt-names__tag';
 
-    // textContent rather than innerHTML: this is somebody else's text
-    // and it is going back into the page.
+    // name text - textContent, this is somebody else's words
     const label = document.createElement('span');
     label.textContent = name;
 
@@ -227,12 +202,12 @@ function bindAltNames() {
 
   add.addEventListener('click', commit);
   input.addEventListener('keydown', event => {
-    // Otherwise the form submits, which is not what adding a name means.
+    // enter - add the name rather than submitting the form
     if (event.key === 'Enter') { event.preventDefault(); commit(); }
   });
 }
 
-// ── Sections ────────────────────────────────────────────────────────
+// sections - collapse and expand
 
 function bindSections() {
   document.querySelectorAll('.edit-section__toggle').forEach(toggle => {
@@ -247,16 +222,13 @@ function bindSections() {
   });
 }
 
-// ── The map ─────────────────────────────────────────────────────────
+// map - the marker map in its modal
 
 let markersTouched = false;
-// Putting the markers back is done by adding each one again, and
-// marker_map.js reports every one of those as a change. It is not one,
-// so it is not counted as one.
+// restore guard - putting markers back is not an edit
 let restoringMarkers = false;
 
-// marker_map.js calls this on every change it makes: a marker added,
-// moved, deleted, or its note edited. It is the only signal needed.
+// draft changed - marker_map.js calls this on every map change
 window.smScheduleDraftSave = function () {
   if (!restoringMarkers) markersTouched = true;
   WORKING.markerData = clone(window.locationMarkerMapData);
@@ -290,9 +262,7 @@ function markersDiffer() {
 function refreshMarkerButtons() {
   const cancel = document.getElementById('marker-cancel');
   if (!cancel) return;
-  // Live from the first change onwards, and stays live across the modal
-  // being closed and opened again: what it undoes is everything back to
-  // how the page loaded, not back to how this visit to the map started.
+  // discard - undo every map change back to the stored state
   cancel.disabled = !markersDiffer();
 }
 
@@ -303,9 +273,7 @@ function openMarkerModal() {
   document.body.style.overflow = 'hidden';
 
   if (typeof initAnnotationMap === 'function') {
-    // The container has only just been given a size, so the map is
-    // built after the browser has laid it out rather than into a box
-    // that is still zero by zero.
+    // build - wait for layout so the map is not made into a zero size box
     requestAnimationFrame(() => {
       initAnnotationMap();
       if (!markersTouched) restoreMarkers(WORKING.markerData);
@@ -326,10 +294,7 @@ function closeMarkerModal() {
 
 function restoreMarkers(data) {
   restoringMarkers = true;
-  // The markers on the map are plain elements that marker_map.js made,
-  // so taking them out of the page takes them off the map. The feature
-  // collection is then emptied and rebuilt through marker_map.js's own
-  // restore path, which is what wires each new marker up again.
+  // clear markers - remove the elements and empty the collection
   document.querySelectorAll('#sm-annotate-map-cont__map .map-marker')
     .forEach(el => el.remove());
   if (window.locationMarkerMapData) {
@@ -364,17 +329,16 @@ function bindMarkerModal() {
   document.addEventListener('keydown', event => {
     if (event.key !== 'Escape') return;
     const modal = document.getElementById('marker-modal');
-    // The note overlay is on top of the map and closes first.
+    // note overlay - sits above the map so it closes first
     const note = document.querySelector('.note-overlay');
     if (note && !note.classList.contains('hidden')) return;
     if (modal && !modal.hidden) closeMarkerModal();
   });
 }
 
-// ── Has anything changed ────────────────────────────────────────────
+// changed - whether anything differs from the stored revision
 
-// The change summary is about the edit rather than part of it, so
-// writing one on its own is not a change to the listing.
+// summary - the comment is about the edit, not part of it
 function changed() {
   return Object.keys(ORIGINAL).some(key => !same(WORKING[key], ORIGINAL[key]));
 }
@@ -386,11 +350,9 @@ function refreshSaveState() {
   save.disabled = !changed();
 }
 
-// ── What is about to be published ───────────────────────────────────
+// change list - what will be published, in plain words
 
-// The fields that are one thing each, and what to call them in a
-// sentence. Everything else is a chip group, and takes its name from
-// the heading above it on the page, so the two cannot disagree.
+// labels - single value fields and what to call them
 const FIELD_LABELS = {
   name: 'the location name',
   description: 'the description',
@@ -419,9 +381,7 @@ function plural(count, word) {
   return `${count} ${word}${count === 1 ? '' : 's'}`;
 }
 
-// Added, removed, or both. Phrased without counts, because "changed the
-// access type" is what somebody wants to read and "added 1 option to
-// the access type" is not.
+// chips changed - added, removed or both, without counts
 function describeList(label, before, after) {
   const added = after.some(value => !before.includes(value));
   const removed = before.some(value => !after.includes(value));
@@ -456,7 +416,7 @@ function describe(key) {
   const before = ORIGINAL[key];
   const after = WORKING[key];
 
-  if (key === 'revisionComment') return null;   // about the edit, not the listing
+  if (key === 'revisionComment') return null;   // comment - about the edit, not the listing
   if (key === 'markerData') return describeMarkers(before, after);
   if (key === 'alternateNames') {
     return describeAlternateNames(before || [], after || []);
@@ -465,7 +425,7 @@ function describe(key) {
     return `Changed the difficulty to ${difficultyLabel(after)}`;
   }
 
-  // A chip group's comment box, named after the group it sits under.
+  // group comment - named after the group it sits under
   if (key.endsWith('Comments') && !(key in FIELD_LABELS)) {
     const label = groupLabel(key.slice(0, -'Comments'.length));
     return label ? `Updated the notes on ${label}` : null;
@@ -506,7 +466,7 @@ function renderChanges() {
   if (empty) empty.hidden = lines.length > 0;
 }
 
-// ── Saving ──────────────────────────────────────────────────────────
+// saving - build the payload and post it
 
 function csrfToken() {
   const meta = document.querySelector('meta[name="csrf-token"]');
@@ -553,10 +513,7 @@ function buildPayload() {
     if (!target) return;
     const selected = WORKING[group.key] || [];
     const commentKey = `${group.key}Comments`;
-    // A group with a comment box reports { selected, comments }; one
-    // without is the list of ids on its own. Whether it has one is
-    // decided by whether a box for it exists, which is how the create
-    // form decides it too.
+    // group shape - with a comment box or a bare list of ids
     target[group.payloadKey] = (commentKey in WORKING)
       ? { selected, comments: WORKING[commentKey] || '' }
       : selected;
@@ -572,9 +529,7 @@ function showError(message) {
   box.hidden = !message;
 }
 
-// The token Turnstile writes into its own hidden input. Sent with the
-// payload because this form is posted by script rather than by the
-// browser, so nothing else would carry it.
+// turnstile - the token from the hidden input, sent with the payload
 function turnstileToken() {
   const input = document.querySelector('#edit-form input[name="cf-turnstile-response"]');
   return input ? input.value : '';
@@ -582,15 +537,12 @@ function turnstileToken() {
 
 function resetTurnstile() {
   if (window.turnstile && typeof window.turnstile.reset === 'function') {
-    try { window.turnstile.reset('#edit-turnstile'); } catch (error) { /* gone */ }
+    try { window.turnstile.reset('#edit-turnstile'); } catch (error) { }
   }
 }
 
 function showThankYou(body) {
-  // Nothing on the page is about editing any more, so none of it stays.
-  // Removed rather than hidden: the map is a fixed overlay and the form
-  // still holds a page's worth of controls that nobody should be able
-  // to tab into behind the thank you.
+  // thank you - replace the page, the map overlay cannot stay
   ['edit-form', 'marker-modal'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.remove();
@@ -628,8 +580,7 @@ function bindSave() {
       return;
     }
 
-    // Only asked for when the challenge is actually on the page: with
-    // it switched off in settings there is nothing to complete.
+    // challenge - only wait for it when it is actually on the page
     const challenge = document.getElementById('edit-turnstile');
     if (challenge && !turnstileToken()) {
       showError('Please complete the check below, then publish again.');
@@ -644,8 +595,7 @@ function bindSave() {
     const restore = () => {
       save.disabled = false;
       save.textContent = 'Publish changes';
-      // A token is good for one submission, so a failed attempt needs a
-      // fresh one before the next.
+      // reset - a token is good for one submission
       resetTurnstile();
     };
 
@@ -670,8 +620,7 @@ function bindSave() {
         return;
       }
 
-      // Saved. The guard comes down before anything else, because from
-      // here on there is nothing unsaved to guard.
+      // published - drop the unsaved guard before anything else
       leaving = true;
       showThankYou(body);
     } catch (error) {
@@ -681,11 +630,7 @@ function bindSave() {
   });
 }
 
-// Set once the edit has been published, or while navigating away on
-// purpose. Checked by the guard below, which is why it exists at all:
-// the guard is an addEventListener, so clearing window.onbeforeunload
-// does nothing to it, which is how publishing ended up asking whether
-// the person meant to leave.
+// leaving - set when navigating away on purpose
 let leaving = false;
 
 function bindLeaveGuard() {
@@ -696,7 +641,7 @@ function bindLeaveGuard() {
   });
 }
 
-// ── Start ───────────────────────────────────────────────────────────
+// start - wire everything up
 
 document.addEventListener('DOMContentLoaded', () => {
   if (!document.getElementById('edit-form')) return;

@@ -1,19 +1,8 @@
-/* The visibility section of a listing, and its three dialogs.
-
-   The card is the listing page's own, so only what is inside it is
-   decided here. It spans the full width of the card rather than the
-   half the prototype used: the bar is the one thing on the page that
-   reads better the longer it is, because the distance between 2m and
-   5m is the whole point of it.
-
-   The slider inside the report dialog is in visibility-slider.css,
-   shared with the create form rather than copied, which is why that
-   file is loaded alongside this one.
-   ──────────────────────────────────────────────────────────────────── */
+/* visibility - the section on a listing and its three dialogs */
 
 .visibility { display: flex; flex-direction: column; gap: 0; }
 
-/* ── The bar ───────────────────────────────────────────────────────── */
+/* the bar */
 
 .visibility__scale { margin: 6px 0 18px 0; }
 
@@ -25,9 +14,7 @@
     #cc2200, #e84d1c, #f07b13, #f5c242, #a8c940, #4db340);
 }
 
-/* Nothing reported. The scale is still the scale, so it stays legible
-   rather than disappearing, but it is plainly not describing anything:
-   drained of colour and dimmed, with no marker on it. */
+/* nothing reported */
 .visibility__scale--empty .visibility__bar {
   filter: saturate(0.12);
   opacity: 0.45;
@@ -38,8 +25,7 @@
   top: 50%;
   width: 44px;
   height: 44px;
-  /* Its own width back off its left, so the middle of the dot sits on
-     the figure rather than its leading edge. */
+  /* marker - shifted back so its middle sits on the figure */
   transform: translate(-50%, -50%);
   border-radius: 50%;
   background: #f5b722;
@@ -56,7 +42,7 @@
   color: #333;
 }
 
-/* ── What the figure is called ─────────────────────────────────────── */
+/* what the figure is called */
 
 .visibility__band {
   margin: 0 0 10px 0;
@@ -88,8 +74,7 @@
   font-size: 0.9rem;
   color: var(--sm-text-3rd-grey, #666);
 }
-/* The figure and the word it counts, picked out so the number is
-   readable without reading the sentence. */
+/* count - the figure picked out from the sentence */
 .visibility__count-strong {
   color: var(--sm-body-hyperlink);
   font-weight: 600;
@@ -101,7 +86,7 @@
   color: var(--sm-action-dark-blue-text);
 }
 
-/* ── The two buttons ───────────────────────────────────────────────── */
+/* the two buttons */
 
 .visibility__actions {
   display: flex;
@@ -132,9 +117,7 @@
 .visibility__btn:visited { color: var(--sm-body-hyperlink); }
 .visibility__btn:hover { background: var(--sm-action-light-blue); }
 
-/* An svg with no width attribute is a flex item with no intrinsic
-   width, which resolves to nothing at all unless the basis says
-   otherwise. Without this the buttons carry an invisible icon. */
+/* close icon - an svg with no width collapses to nothing */
 .visibility__btn-icon {
   width: 18px; height: 18px;
   flex: 0 0 18px;
@@ -161,7 +144,7 @@
 }
 .visibility__btn--danger:hover { filter: brightness(0.93); }
 
-/* ── Your own reports ──────────────────────────────────────────────── */
+/* your own reports */
 
 .visibility__mine-title {
   margin: 26px 0 12px 0;
@@ -188,14 +171,13 @@
 .vis-row__date {
   font-size: 1.05rem;
   color: #333;
-  /* Fixed so the metres beside them line up down the column rather
-     than jumping about with the width of the date. */
+  /* date - fixed width so the metres line up */
   min-width: 110px;
 }
 .vis-row__metres { font-size: 1.05rem; color: #333; min-width: 48px; }
 .vis-row__band { font-size: 1.05rem; color: #333; }
 
-/* Pushed to the far end of the row, as in the prototype. */
+/* pushed to the far end of the row, as in the prototype */
 .vis-row__delete {
   box-sizing: border-box;
   margin-left: auto;
@@ -223,7 +205,7 @@
   overflow-wrap: anywhere;
 }
 
-/* ── The dialogs ───────────────────────────────────────────────────── */
+/* the dialogs */
 
 .vis-modal,
 .vis-confirm {
@@ -313,9 +295,7 @@
   margin: 0;
 }
 
-/* The dialog's own labels for the date and comment fields. These were
-   written into create.css under these names before the dialog existed;
-   they belong with the dialog. */
+/* the dialog's own labels for the date and comment fields */
 .vis-modal__date-label {
   display: block;
   font-size: 0.95rem;
@@ -367,7 +347,7 @@
   margin-top: 22px;
 }
 
-/* ── Everybody's reports ───────────────────────────────────────────── */
+/* everybody's reports */
 
 .vis-reports {
   list-style: none;
@@ -379,7 +359,7 @@
 }
 .vis-report { display: flex; gap: 14px; align-items: flex-start; }
 
-/* A letter, not a photograph. */
+/* a letter, not a photograph */
 .vis-report__avatar {
   box-sizing: border-box;
   flex: 0 0 44px;
@@ -415,7 +395,7 @@
   overflow-wrap: anywhere;
 }
 
-/* ── Are you sure ──────────────────────────────────────────────────── */
+/* are you sure */
 
 .vis-confirm { z-index: 1250; }
 .vis-confirm__box {
@@ -458,8 +438,7 @@
   .visibility__summary { font-size: 0.98rem; }
   .visibility__btn { width: 100%; }
   .visibility__mine-title { font-size: 1.15rem; }
-  /* Stacked, the delete button has no far end to be pushed to, so it
-     goes back to sitting after what it deletes. */
+  /* narrow - the delete button sits after the row rather than at its end */
   .vis-row__delete { margin-left: 0; width: 40px; height: 40px; }
   .vis-row__date { min-width: 0; }
   .vis-modal { padding: 0; }

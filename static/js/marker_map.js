@@ -1,20 +1,9 @@
-/* ═══════════════════════════════════════════════════════════════════
-   SnorkelMap — marker_map.js
-
-   The annotation map on the final numbered step. The marker drawer is
-   rendered by Django from choices.MARKER_LIBRARY, so this file only
-   binds behaviour to it; the icon library lives in choices.py.
-
-   Lazily initialised the first time the step becomes active so that
-   mapboxgl.Map never runs against a hidden, zero-dimension container.
-   ═══════════════════════════════════════════════════════════════════ */
+// marker map - placing and editing markers on a listing
 
 const locationMarkerMapData = { type: 'FeatureCollection', features: [] };
 const COMMENT_SUFFIX = '-comment';
 
-// Annotation map range: zoom right in on a ladder or slipway, pull back
-// far enough to see the whole bay, without letting markers wander to
-// another site entirely.
+// zoom range - close enough for a slipway, wide enough for the bay
 const ANNOTATION_ZOOM_START = 17.2;
 const ANNOTATION_ZOOM_MIN   = 14;
 const ANNOTATION_ZOOM_MAX   = 22;
@@ -30,7 +19,7 @@ let annotationMapReady = false;
 let annotationHelpShown = false;
 let annotationStyle = 'satellite';
 
-// create.js reads this when assembling the submission
+// features - create.js reads this when assembling the submission
 window.locationMarkerMapData = locationMarkerMapData;
 
 function markerIconSrc(markerId, hasNote) {
@@ -41,10 +30,9 @@ function notifyDraftChanged() {
   if (typeof window.smScheduleDraftSave === 'function') window.smScheduleDraftSave();
 }
 
-// ─── LAZY MAP INITIALISATION ───────────────────────────────────────
+// lazy init - build the map only when the step is reached
 function initAnnotationMap() {
-  // Explain the step before the tiles arrive, so the user reads it while
-  // the map loads rather than having it thrown over a map they were using.
+  // intro - explain the step while the tiles load
   showAnnotationHelpOnce();
 
   if (annotationMapReady) {
@@ -70,13 +58,11 @@ function initAnnotationMap() {
 
   initAnnotationStyleToggle();
 
-  // Rebuild markers carried over from a resumed draft. Done immediately
-  // rather than on 'load' so the features are back in the collection even
-  // if the user publishes before the tiles finish.
+  // restore - rebuild markers carried over from a saved draft
   restorePendingMarkers();
 }
 
-// ─── EXPLANATION MODAL ─────────────────────────────────────────────
+// explanation modal - open and close the help panel
 function showAnnotationHelpOnce() {
   if (annotationHelpShown) return;
   annotationHelpShown = true;
@@ -87,9 +73,7 @@ function showAnnotationHelp() {
   if (typeof window.smShowExample === 'function') window.smShowExample('locationMapHelp');
 }
 
-// ─── TERRAIN / SATELLITE TOGGLE ────────────────────────────────────
-// HTML markers are DOM elements rather than style layers, so they survive
-// setStyle untouched. Nothing needs re-adding.
+// style toggle - terrain and satellite, markers survive the swap
 function initAnnotationStyleToggle() {
   const wrap = document.getElementById('annotate-style-toggle');
   if (!wrap) return;
@@ -106,13 +90,13 @@ function initAnnotationStyleToggle() {
   });
 }
 
-// ─── DRAFT RESTORE ─────────────────────────────────────────────────
+// draft restore - put saved markers back on the map
 function restorePendingMarkers() {
   const pending = window.smPendingMarkerFeatures;
   if (!Array.isArray(pending) || !pending.length) return;
   window.smPendingMarkerFeatures = null;
 
-  // Keep the same array reference: create.js holds it via window
+  // same array - create.js holds this reference through window
   locationMarkerMapData.features.length = 0;
 
   pending.forEach(f => {
@@ -125,7 +109,7 @@ function restorePendingMarkers() {
   });
 }
 
-// ─── DRAWER + MARKER BINDING ───────────────────────────────────────
+// drawer - bind the marker list and its controls
 document.addEventListener('DOMContentLoaded', () => {
   const addMarkerButton = document.querySelector('.sm-annotate-map-toolbar__btn--add-marker');
   const markerDrawer    = document.querySelector('.marker-drawer');
@@ -153,8 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
   bindNoteOverlay();
 });
 
-// ─── ADD MARKER ────────────────────────────────────────────────────
-// opts: { lngLat, note } — supplied when rebuilding a saved draft
+// add marker - place one, or rebuild one from a saved draft
 function addMarker(markerId, markerName, opts = {}) {
   if (!locationMarkerMap || !markerId) return;
 
@@ -176,8 +159,7 @@ function addMarker(markerId, markerName, opts = {}) {
   const icon = document.createElement('img');
   icon.className = 'map-marker__icon';
   icon.alt = markerName || '';
-  // Not every marker has a "-comment" variant drawn yet, so fall back to
-  // the plain icon rather than showing a broken image.
+  // icon - fall back to the plain one when no comment variant exists
   icon.addEventListener('error', () => {
     const plain = markerIconSrc(markerId, false);
     if (!icon.src.endsWith(plain)) icon.src = plain;
@@ -225,7 +207,7 @@ function addMarker(markerId, markerName, opts = {}) {
   notifyDraftChanged();
 }
 
-// ─── NOTE OVERLAY ──────────────────────────────────────────────────
+// note overlay - edit the text attached to a marker
 let activeFeature = null;
 
 function bindNoteOverlay() {

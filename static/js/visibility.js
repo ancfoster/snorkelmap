@@ -1,33 +1,11 @@
-/* ═══════════════════════════════════════════════════════════════════
-   SnorkelMap — visibility.js
-
-   The three dialogs in the visibility section, and the running figure
-   under the slider.
-
-   Everything it touches is inside #visibility, which htmx replaces
-   whole on every exchange. So nothing is bound to an element: the
-   listeners are on the document and find what was clicked when it is
-   clicked, the way listing.js handles the review dialog, because a
-   listener bound at load would be pointing at markup that is no longer
-   in the page after the first submission.
-
-   The delete dialog is one dialog for every row rather than one per
-   row. Which report it is about is carried on the button that opened
-   it and written into the form's action then, because a list that
-   grows every time somebody goes snorkelling should not put a dialog
-   into the page for each of its rows.
-   ═══════════════════════════════════════════════════════════════════ */
+// visibility - dialogs and slider readout for the visibility section
 
 (function () {
 
   var held = 0;
   var locked = false;
 
-  /* The scale, kept in step with display.py. The figure under the
-     slider has to say the same word the bar will say about it once it
-     has been filed, or moving the slider to five metres and being told
-     something else afterwards reads as the site disagreeing with
-     itself. */
+  // scale - metre marks and their labels, matching display.py
   var POINTS = [0, 2, 5, 8, 12];
   var LABELS = ['Very Poor', 'Poor', 'Average', 'Very Good', 'Excellent'];
 
@@ -68,10 +46,7 @@
     var box = document.getElementById(id);
     if (!box || box.hidden) return;
     box.hidden = true;
-    /* Only give the page back once nothing is open. The delete dialog
-       can be opened from in front of nothing, but the reports dialog
-       and the report form both lock, and closing one should not
-       unlock the page while the other is still up. */
+    // unlock - only give the page back when no dialog is left open
     if (!anyOpen()) unlock();
   }
 
@@ -92,7 +67,7 @@
     unlock();
   }
 
-  /* The figure under the slider, in the words the bar uses. */
+  // hint - live readout under the slider
   function hint() {
     var slider = document.getElementById('vis-slider');
     var line = document.getElementById('vis-hint');
@@ -123,9 +98,7 @@
       event.preventDefault();
       var form = document.getElementById('vis-delete-form');
       if (form) {
-        /* The address is built from the template the server drew with
-           a nought in it, so the id is substituted rather than the URL
-           being assembled here out of string pieces. */
+        // delete target - swap the report id into the form action
         var action = form.dataset.actionTemplate
           .replace(/0\/$/, remove.dataset.deleteReport + '/');
         form.setAttribute('action', action);
@@ -157,8 +130,7 @@
 
   document.addEventListener('keydown', function (event) {
     if (event.key !== 'Escape') return;
-    /* The topmost one first: the delete dialog can sit over the
-       others, and escape should take away what is in front. */
+    // escape - close the topmost dialog first
     var confirm = document.getElementById('vis-delete-modal');
     if (confirm && !confirm.hidden) { close('vis-delete-modal'); return; }
     close('vis-submit-modal');
@@ -169,10 +141,7 @@
     if (event.target.id === 'vis-slider') hint();
   });
 
-  /* The block that replaces this one arrives with its dialogs closed,
-     so the scroll lock has to be given back by hand. A rejected form
-     is the exception: the server sends it back open, and this leaves
-     it that way. */
+  // after swap - close dialogs unless the form came back rejected
   document.body.addEventListener('htmx:afterSwap', function (event) {
     if (!event.target || event.target.id !== 'visibility') return;
     var form = document.getElementById('vis-submit-modal');

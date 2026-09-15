@@ -52,7 +52,7 @@
     });
   }
 
-  // ── Photographs ────────────────────────────────────────────────────
+  // photographs - gallery grid and the single photo view
 
   function photoAt(section, index) {
     let found = photos.filter(function (photo) {
@@ -92,7 +92,7 @@
 
   let detailBack = document.getElementById('photo-detail-back');
   if (detailBack) {
-    // Back to the grid, not out of the photographs altogether.
+    // back - return to the grid rather than closing everything
     detailBack.addEventListener('click', function () { close(detailModal); });
   }
 
@@ -110,7 +110,7 @@
     heroMain.addEventListener('click', function () { open(photosModal); });
   }
 
-  // ── The map ────────────────────────────────────────────────────────
+  // map - builds the mapbox map inside the location modal
 
   let STYLES = {
     satellite: 'mapbox://styles/mapbox/satellite-streets-v12',
@@ -148,8 +148,7 @@
     if (!popup) return;
     document.getElementById('lmap-comment-title').textContent = name || '';
     document.getElementById('lmap-comment-text').textContent = note || '';
-    // Without a note there is nothing to read, so the card shrinks to
-    // its title rather than opening with an empty paragraph in it.
+    // marker card - skip the note line when there is no note
     popup.querySelector('.lmap-comment-popup__card').classList.toggle(
       'lmap-comment-popup__card--name-only', !note);
     popup.classList.remove('hidden');
@@ -174,9 +173,7 @@
     button.addEventListener('click', function () {
       open(mapModal);
       buildMap();
-      // The container had no size while the modal was hidden, so the
-      // canvas comes out the wrong shape unless it is told to look
-      // again once it is on screen.
+      // resize - the map was hidden so make it measure again
       if (map) window.setTimeout(function () { map.resize(); }, 50);
     });
   });
@@ -201,14 +198,13 @@
           other.classList.toggle('lmap-modal__style-btn--active', other === button);
         });
         map.setStyle(STYLES[button.dataset.style] || STYLES.satellite);
-        // Markers are DOM elements rather than layers, so they survive a
-        // style change; layers would not.
+        // style change - markers are dom elements so they survive it
       });
     });
   }
 
 
-  // modal is the desktop sharing fallback
+  // share - modal is the desktop fallback
 
   let shareButton = document.getElementById('share-button');
 
@@ -220,9 +216,7 @@
     return (shareButton && shareButton.dataset.shareTitle) || document.title;
   }
 
-  /* navigator.share exists on desktop Safari too, where a modal is the
-     better experience, so the width is part of the decision rather than
-     the API alone. */
+  // share choice - width decides, not just whether the api exists
   function hasNativeShare() {
     return typeof navigator.share === 'function'
       && window.matchMedia('(max-width: 900px)').matches;
@@ -232,8 +226,7 @@
     if (hasNativeShare()) {
       navigator.share({ title: shareTitle(), url: shareUrl() })
         .catch(function (error) {
-          // A person dismissing the drawer rejects the promise, which
-          // is not a failure and must not open the modal behind it.
+          // share dismissed - a cancelled share is not a failure
           if (error && error.name === 'AbortError') return;
           showShareModal();
         });
@@ -291,8 +284,7 @@
         }, 2000);
       }
 
-      /* The clipboard API needs a secure context and permission, and
-         selecting the text is a usable answer when it is refused. */
+      // clipboard - select the text when copying is refused
       if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(shareUrl()).then(function () {
           said('Copied');
@@ -316,7 +308,7 @@
     });
   }
 
-  //  closes the topmost thing that is open 
+  // escape - closes the topmost thing that is open
 
   document.addEventListener('keydown', function (event) {
     if (event.key !== 'Escape') return;
@@ -336,26 +328,13 @@
 }());
 
 
-/* ── Reviews ─────────────────────────────────────────────────────────
-
-   Three small jobs, none of which the block needs to work: the rating
-   can be chosen, the text written and the whole thing submitted with
-   this file absent. What is here is the confirmation before a
-   deletion, the update button staying inert until something has
-   actually changed, and the character count.
-
-   Everything is delegated from the document and every element is
-   looked up when it is wanted, because the whole block is replaced by
-   htmx on each exchange and anything held on to here would be pointing
-   at markup that is no longer in the page.
-   ──────────────────────────────────────────────────────────────────── */
+// reviews - character counter, delete dialog, update button
 
 (function () {
 
   var BODY_MAX = 900;
   var held = 0;
-  /* Whether the page is scroll locked because of this dialog, as
-     opposed to because one of the photo modals is open. */
+  // scroll lock - whether this dialog is the one holding the page
   var locked = false;
 
   function modal() {
@@ -402,10 +381,7 @@
     if (box && !box.hidden) closeConfirm();
   });
 
-  /* The block that replaces this one arrives with its dialog already
-     closed, so the only thing left over from an open one is the locked
-     page. Released only if this is what locked it, so that a swap
-     while a photo modal is open does not unlock it underneath. */
+  // after swap - release a lock the replaced dialog left behind
   document.body.addEventListener('htmx:afterSettle', function () {
     if (locked) {
       var box = modal();
@@ -418,10 +394,7 @@
     count();
   });
 
-  /* Whether anything is different from what the form was drawn with.
-     Read off the form itself rather than remembered here, so that a
-     freshly swapped form compares against its own values and not
-     against the ones the last one had. */
+  // changed - compare the form with what it was drawn with
   function changed(form) {
     var chosen = form.querySelector('input[name="rating"]:checked');
     var rating = chosen ? chosen.value : '0';

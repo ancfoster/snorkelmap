@@ -1,6 +1,4 @@
-/* The directory: an A-Z of countries, their regions and their listings.
-   Laid out as one card per country, the regions inside it flowing
-   across three columns on desktop, two on tablet and one on a phone. */
+/* directory - countries, regions and listings as cards */
 
 .directory {
   max-width: 1120px;
@@ -24,7 +22,7 @@
   line-height: 1.55;
 }
 
-/* The invitation to add a location. */
+/* the invitation to add a location */
 .directory__invite {
   box-sizing: border-box;
   background-color: #F9FBFC;
@@ -117,7 +115,7 @@
   gap: 6px;
 }
 .directory__locations li {
-  /* A long name wraps rather than pushing the column wider. */
+  /* a long name wraps rather than pushing the column wider */
   overflow-wrap: anywhere;
 }
 .directory__locations a {

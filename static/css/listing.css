@@ -1,17 +1,7 @@
-/* The listing page.
-
-   Ported from the static prototype: layout, hero grid, cards, the
-   fullscreen location map and the two photo modals. What is not here is
-   what has nothing behind it yet, so nothing styles an element that
-   never renders: tides, weather, the conditions grid, visibility
-   reports and the discussion thread.
-
-   Everything a facility group reports as absent, the map markers and
-   the two action buttons are new, and sit at the foot of the file.
-   ──────────────────────────────────────────────────────────────────── */
+/* listing - layout, hero grid, cards and the fullscreen views */
 
 
-/* ── Page, cards, meta row, action buttons, hero grid ───────────── */
+/* page, cards, meta row, action buttons, hero grid */
 .listing {
   box-sizing: border-box; width: 100%; max-width: 1160px;
   margin: 0 auto; padding: 16px 16px 40px 16px;
@@ -31,9 +21,7 @@
 }
 .editing-history__button img { height: 12px; width: 12px; object-fit: contain; object-position: center; }
 
-/* Edit and View History, top right of the listing. Pills that only
-   show their background under the pointer, so the pair reads as two
-   quiet links until somebody goes for one. */
+/* edit and view history, top right of the listing */
 .listing__actions { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
 .listing__action-link {
   display: inline-flex;
@@ -61,9 +49,7 @@
   flex-shrink: 0;
   object-fit: contain;
 }
-/* The top row turns into a column-reverse on a phone, which would put
-   these above the breadcrumb. Ordering them first puts them last once
-   the axis is reversed, so the breadcrumb stays on top. */
+/* top row - reversed on a phone, so order matters here */
 @media screen and (max-width: 768px) {
   .listing__actions { order: -1; align-self: flex-start; margin-left: -14px; }
 }
@@ -118,7 +104,7 @@
 }
 .listing__w3w-icon { width: 22px; height: 22px; object-fit: contain; flex-shrink: 0; }
 
-/* ── META ROW — rating, difficulty, action buttons ─────────────────── */
+/* meta row - rating, difficulty, action buttons */
 .listing__meta-row {
   display: flex;
   justify-content: space-between;
@@ -189,7 +175,7 @@
   transition: background-color 0.15s ease-in, color 0.15s ease-in,
               border-color 0.15s ease-in;
 
-  /* Off: the accent colour on nothing. */
+  /* off: the accent colour on nothing */
   background: none;
   border: 1.5px solid var(--sm-primary-accent);
   color: var(--sm-primary-accent);
@@ -199,7 +185,7 @@
   background: var(--sm-field-bg-focus-hover);
 }
 
-/* On: the accent colour as the fill, white on top of it. */
+/* on: the accent colour as the fill, white on top of it */
 .listing__action-btn--on,
 .listing__action-btn--on:visited {
   background: var(--sm-primary-accent);
@@ -211,13 +197,7 @@
   border-color: var(--sm-action-blue-hover);
 }
 
-/* The icon is an inlined <svg>, so the only thing wanted here is its
-   size. Its colour comes from currentColor inside the file, which
-   resolves to whatever colour the button is, which is what lets one
-   icon be accent blue on an empty button and white on a filled one.
-
-   The exported width and height are stripped when it is inlined, so
-   these are what decide it. */
+/* icon - inlined svg, so only its size is set here */
 .listing__action-icon {
   width: 20px;
   height: 20px;
@@ -225,9 +205,7 @@
   display: block;
 }
 
-/* The block of <symbol> definitions. It draws nothing itself and must
-   take up no room, but it cannot be display:none or a <use> pointing
-   into it renders nothing in some browsers. */
+/* the block of <symbol> definitions */
 .listing__icons {
   position: absolute;
   width: 0;
@@ -235,16 +213,14 @@
   overflow: hidden;
 }
 
-/* Responsive */
+/* responsive */
 @media (max-width: 767px) {
   .listing__card__columns  { grid-template-columns: 1fr; }
   .listing__getting-there  { grid-template-columns: 1fr; }
   .listing__action-btn {
     padding: 12px;
   }
-  /* The label goes, the icon stays. The icon is a span too, so an
-     unqualified "span" here hides the whole contents and leaves three
-     empty pills. */
+  /* the label goes, the icon stays */
   .listing__action-btn span:not(.listing__action-icon) {
     display: none;
   }
@@ -254,13 +230,7 @@
   }
 }
 
-/* ── HERO IMAGE GRID ─────────────────────────────────────────────────
-   Desktop: big surface photo left (54%), underwater + map right (46%)
-            stacked vertically in the right column.
-   Mobile:  surface full-width on top, underwater + map side-by-side below.
-   overflow: hidden on the container clips all corners — border-radius
-   updates automatically as the layout reflows on small screens.
-   ──────────────────────────────────────────────────────────────────── */
+/* hero grid - surface photo left, underwater and map right */
 .listing__hero {
   display: flex;
   gap: 4px;
@@ -271,14 +241,14 @@
   flex-shrink: 0;
 }
 
-/* Left column — large surface image */
+/* left column - large surface image */
 .listing__hero-main {
   flex: 0 0 54%;
   position: relative;
   overflow: hidden;
 }
 
-/* Right column — underwater + map stacked */
+/* right column - underwater + map stacked */
 .listing__hero-secondary {
   flex: 1;
   display: flex;
@@ -287,7 +257,7 @@
   overflow: hidden;
 }
 
-/* Every image panel */
+/* every image panel */
 .listing__hero-panel {
   position: relative;
   overflow: hidden; /* clips the scale(1.05) zoom */
@@ -302,12 +272,12 @@
   transition: transform 0.4s ease;
 }
 
-/* Scale on hover — overflow: hidden on .listing__hero-panel crops it */
+/* scale on hover - overflow: hidden on .listing__hero-panel crops it */
 .listing__hero-panel:hover .listing__hero-img {
   transform: scale(1.05);
 }
 
-/* Pill buttons overlaid on the image panels */
+/* pill buttons overlaid on the image panels */
 .listing__hero-btn {
   position: absolute;
   bottom: 16px;
@@ -340,11 +310,7 @@
   flex-shrink: 0;
 }
 
-/* ── RESPONSIVE ─────────────────────────────────────────────────────
-   Below 768px: surface stacks on top, underwater + map sit side-by-side
-   underneath. The container's overflow: hidden + border-radius handles
-   all corner clipping in both layouts — no individual radii needed.
-   ─────────────────────────────────────────────────────────────────── */
+/* narrow hero - surface on top, the other two side by side */
 @media (max-width: 767px) {
   .listing__hero {
     flex-direction: column;
@@ -362,11 +328,9 @@
   }
 }
 
-/* ── FULLSCREEN LOCATION MAP MODAL ──────────────────────────────────
-   z-index 110. Comment popup sits above at 120.
-   ─────────────────────────────────────────────────────────────────── */
+/* fullscreen location map modal z-index 110 */
 
-/* ── Fullscreen location map ────────────────────────────────────── */
+/* fullscreen location map */
 .lmap-modal {
   position: fixed;
   inset: 0;
@@ -382,7 +346,7 @@
   height: 100%;
 }
 
-/* Style toggle pill — top centre */
+/* style toggle pill - top centre */
 .lmap-modal__toggle {
   position: absolute;
   top: 20px;
@@ -419,7 +383,7 @@
   background: var(--sm-field-bg-focus-hover);
 }
 
-/* Close button — top right */
+/* close button - top right */
 .lmap-modal__close {
   position: absolute;
   top: 20px;
@@ -447,7 +411,7 @@
   object-fit: contain;
 }
 
-/* Read-only comment popup — z-index 120 (above modal at 110) */
+/* read-only comment popup - z-index 120 (above modal at 110) */
 .lmap-comment-popup {
   position: absolute;
   inset: 0;
@@ -501,13 +465,13 @@
 }
 .lmap-comment-popup__close:hover { background: var(--sm-action-blue-hover); }
 
-/* Name-only popup variant — title centred at 1.5rem, no note text */
+/* name-only popup variant - title centred at 1.5rem, no note text */
 .lmap-comment-popup__card--name-only .lmap-comment-popup__title {
   text-align: center;
   font-size: 1.5rem;
 }
 
-/* ── Photo modals ───────────────────────────────────────────────── */
+/* photo modals */
 .photo-modal-btn {
   position: absolute; z-index: 2;
   width: 44px; height: 44px; border-radius: 50%;
@@ -520,7 +484,7 @@
 .photo-modal-btn--back  { top: 20px; left: 20px; }
 .photo-modal-btn--close { top: 20px; right: 20px; }
 
-/* ── PHOTOS GRID MODAL ───────────────────────────────────────────────── */
+/* photos grid modal */
 .photos-modal { position: fixed; inset: 0; z-index: 110; background: #fff; overflow: hidden; }
 .photos-modal[hidden] { display: none; }
 
@@ -551,7 +515,7 @@
   .photos-modal__thumb { width: 100%; height: auto; aspect-ratio: 1; flex-shrink: 1; }
 }
 
-/* ── PHOTO DETAIL MODAL ──────────────────────────────────────────────── */
+/* photo detail modal */
 .photo-detail-modal { position: fixed; inset: 0; z-index: 115; background: #fff; overflow: hidden; }
 .photo-detail-modal[hidden] { display: none; }
 
@@ -635,15 +599,10 @@
     position: sticky; bottom: 0; background: #fff; padding-bottom: 16px;
   }
 }
-/* ── CONDITIONS SECTION ─────────────────────────────────────────────── */
+/* conditions section */
 
 
-/* ── What is not here ────────────────────────────────────────────────
-   A facility group where somebody chose "None" is worth as much as one
-   where they chose something: "no toilets" is exactly what a person
-   wants to know before driving somewhere. So it is stated, in the same
-   card, rather than left as an absence the reader has to notice.
-   ─────────────────────────────────────────────────────────────────── */
+/* absent - a group answered none is worth saying out loud */
 .listing__absent {
   font-size: 0.875rem;
   line-height: 1.6;
@@ -660,39 +619,24 @@
   font-weight: 600;
 }
 
-/* ── Saved and snorkelled ────────────────────────────────────────────
-   Both are forms rather than links, so that a page prefetch or a
-   crawler cannot toggle them, and both live in the meta row's right
-   hand group.
-   ─────────────────────────────────────────────────────────────────── */
+/* saved and snorkelled - forms, so a prefetch cannot trigger them */
 .listing__action-form {
   display: inline-flex;
   margin: 0;
   padding: 0;
   border: none;
 }
-/* There was a defensive rule here removing bottom borders, guarding
-   against the form styling in main.css. That styling is scoped to
-   .login-flex__form-cont and never reached this form, so the rule
-   protected nothing and instead stripped the bottom border off the
-   button inside it: a pill open at the bottom, and one pixel shorter
-   than the share button beside it. */
+/* borders - the defensive rule that used to sit here is gone */
 
-/* The on state lives with the rest of the button, further up. A second
-   copy here was overriding it by being later in the file, which is how
-   the filled button came out light blue rather than accent. */
+/* the on state lives with the rest of the button, further up */
 
-/* While a toggle is in flight. htmx puts this class on the element it
-   is about to replace. */
+/* while a toggle is in flight */
 .listing__action-form.htmx-request .listing__action-btn {
   opacity: 0.6;
   pointer-events: none;
 }
 
-/* ── Map markers ─────────────────────────────────────────────────────
-   Listed under the map panel as well as drawn on it, because a marker
-   with a note attached is worth reading without opening the map.
-   ─────────────────────────────────────────────────────────────────── */
+/* markers - listed under the map as well as drawn on it */
 .listing__markers {
   list-style: none;
   margin: 0;
@@ -719,10 +663,7 @@
   font-weight: 500;
 }
 
-/* ── Difficulty ──────────────────────────────────────────────────────
-   The same four colours as the slider in the create form, so the dot
-   here means what the person set there.
-   ─────────────────────────────────────────────────────────────────── */
+/* difficulty - the same four colours the create slider uses */
 .listing__difficulty-dot--1 { background-color: #43d946; }
 .listing__difficulty-dot--2 { background-color: #f39c12; }
 .listing__difficulty-dot--3 { background-color: #e67e22; }
@@ -741,9 +682,7 @@
   margin-right: 4px;
 }
 
-/* A marker inside the fullscreen map. Mapbox markers are DOM elements,
-   which is why they survive a style change and why they need sizing
-   here rather than in a layer's paint properties. */
+/* a marker inside the fullscreen map */
 .lmap-marker {
   width: 36px;
   height: 36px;
@@ -758,7 +697,7 @@
   filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.45));
 }
 
-/* Seen by staff only, on a listing whose geocode failed. */
+/* seen by staff only, on a listing whose geocode failed */
 .listing__staff-notice {
   margin: 0;
   padding: 12px 16px;
@@ -770,9 +709,7 @@
   color: var(--sm-invalid);
 }
 
-/* The stand-in, when a listing has no above water photograph yet. It
-   is a flat graphic rather than a photo, so it is fitted inside the
-   panel instead of cropped to fill it. */
+/* the stand-in, when a listing has no above water photograph yet */
 .listing__hero-img--placeholder {
   object-fit: contain;
   background: var(--sm-field-bg);
@@ -780,11 +717,7 @@
   box-sizing: border-box;
 }
 
-/* ── Sharing ─────────────────────────────────────────────────────────
-   Desktop only. A phone opens its own share drawer, which reaches
-   every app somebody has and is what they expect; nothing here would
-   improve on it.
-   ─────────────────────────────────────────────────────────────────── */
+/* sharing desktop only */
 .share-modal {
   position: fixed;
   inset: 0;
@@ -797,7 +730,7 @@
 }
 .share-modal[hidden] { display: none; }
 
-/* The blur is full screen; the card is only as big as it needs to be. */
+/* the blur is full screen; the card is only as big as it needs to be */
 .share-modal__backdrop {
   position: absolute;
   inset: 0;
@@ -857,8 +790,7 @@
   cursor: pointer;
 }
 .share-modal__copy:hover { background: var(--sm-action-blue-hover); }
-/* Said rather than shown, because a copy that silently succeeds looks
-   exactly like one that silently failed. */
+/* copied - say it, a silent copy looks like a failed one */
 .share-modal__copy--done { background: var(--sm-action-dark-blue-text); }
 
 .share-modal__options {
@@ -904,11 +836,7 @@
 }
 .share-modal__close:hover { background: var(--sm-field-bg-focus-hover); }
 
-/* ── Printing ────────────────────────────────────────────────────────
-   Print is one of the share options, and a page printed with its
-   navigation, its modals and its buttons on it is not much use to
-   somebody taking it to a beach.
-   ─────────────────────────────────────────────────────────────────── */
+/* print - drop the chrome a printed page does not need */
 @media print {
   .navbar,
   .offset,
@@ -931,18 +859,7 @@
 }
 
 
-/* ── Reviews ─────────────────────────────────────────────────────────
-
-   The block at the foot of the listing, in its three states, plus the
-   rating that sits beside the difficulty at the top of the page.
-
-   The star input is the only part of this worth reading twice. It is
-   five real radio buttons laid out backwards and turned round again
-   with row-reverse, which is what lets a checked star light the ones
-   below it with a sibling selector. Nothing here needs script: the
-   rating can be given, changed and submitted with JavaScript switched
-   off entirely.
-   ──────────────────────────────────────────────────────────────────── */
+/* reviews - the block at the foot of the listing */
 
 .sr-only {
   position: absolute;
@@ -954,8 +871,7 @@
   border: 0;
 }
 
-/* The figure at the top of the page. Its star is a <use> of the shared
-   symbol, so its colour comes from here rather than from the file. */
+/* the figure at the top of the page */
 .listing__rating-star { color: var(--sm-primary-accent); display: block; }
 .listing__rating-count,
 .listing__rating-none {
@@ -967,7 +883,7 @@
 .listing__rating-count:hover,
 .listing__rating-none:hover { text-decoration: underline; }
 
-/* ── The block ─────────────────────────────────────────────────── */
+/* the block */
 
 .reviews__layout {
   display: flex;
@@ -979,8 +895,7 @@
 }
 
 .reviews__summary {
-  /* A fixed column rather than a share of the row, so the reviews
-     beside it start in the same place whatever is in it. */
+  /* summary - a fixed column so the reviews line up */
   flex: 0 0 210px;
   display: flex;
   flex-direction: column;
@@ -1012,10 +927,7 @@
 }
 .reviews__count--none { font-style: italic; }
 
-/* Stacked, that basis is a height rather than a width, and a summary
-   three lines long sits in the top of a 180px box with a hole under
-   it. After the rule it overrides, not before: they carry the same
-   weight, so the order is what decides. */
+/* stacked - the basis becomes a height, so override it */
 @media screen and (max-width: 640px) {
   .reviews__summary { flex: 0 0 auto; width: 100%; }
   .reviews__main { width: 100%; }
@@ -1023,12 +935,9 @@
   .review__author { font-size: 1.05rem; }
 }
 
-/* ── One review ────────────────────────────────────────────────── */
+/* one review */
 
-/* The right hand column: the reviews, the rule and the panel, all
-   starting at the same place. The summary is a column beside this, not
-   a heading above it, which is why the rule does not run the full
-   width of the card. */
+/* main column - reviews, rule and panel, aligned */
 .reviews__main {
   flex: 1 1 auto;
   min-width: 0;
@@ -1045,9 +954,7 @@
   font-size: 0.95rem;
   color: var(--sm-text-3rd-grey, #666);
 }
-/* The avatar sits beside a column holding the name, the stars and the
-   words, so the words line up under the name rather than under the
-   circle. */
+/* review row - avatar beside a column of name, stars and words */
 .review { display: flex; align-items: flex-start; gap: 16px; }
 .review__text {
   display: flex;
@@ -1061,8 +968,7 @@
   gap: 8px;
   flex-wrap: wrap;
 }
-/* A letter in a circle rather than a photograph. There are no
-   photographs of people on this site. */
+/* a letter in a circle rather than a photograph */
 .review__avatar {
   width: 48px; height: 48px;
   border-radius: 50%;
@@ -1098,8 +1004,7 @@
   font-size: 0.95rem;
   line-height: 1.55;
   color: #333;
-  /* Somebody else's prose, so it breaks rather than stretching the
-     column when it arrives as one very long word. */
+  /* review body - breaks rather than stretching the column */
   overflow-wrap: anywhere;
 }
 
@@ -1111,7 +1016,7 @@
   margin: 28px 0 24px 0;
 }
 
-/* ── The panel, signed out ─────────────────────────────────────── */
+/* the panel, signed out */
 
 .reviews__panel--signed-out { text-align: center; }
 .reviews__panel-title {
@@ -1127,7 +1032,7 @@
 }
 .reviews__panel-text a { color: var(--sm-body-hyperlink); }
 
-/* ── The panel, signed in ──────────────────────────────────────── */
+/* the panel, signed in */
 
 .reviews__form {
   display: flex;
@@ -1136,7 +1041,7 @@
 }
 .reviews__form .reviews__panel-title { margin: 0; }
 
-/* Said once, after something has just been saved. */
+/* said once, after something has just been saved */
 .reviews__thanks {
   margin: 0;
   align-self: flex-start;
@@ -1172,12 +1077,11 @@
   padding: 0;
 }
 
-/* ── The star input ────────────────────────────────────────────── */
+/* the star input */
 
 .star-input {
   display: inline-flex;
-  /* Written highest first so that a checked star can reach the lower
-     ones as following siblings, then turned back round here. */
+  /* star input - written highest first so css can light the lower ones */
   flex-direction: row-reverse;
   justify-content: flex-end;
   gap: 6px;
@@ -1197,26 +1101,11 @@
 .star-input__star { width: 30px; height: 30px; display: block; }
 .star-input__star--filled { display: none; }
 
-/* Checked: that star and every lower one. The lower ones are the ones
-   that follow it, which is the whole reason the markup is backwards. */
+/* checked: that star and every lower one */
 .star-input__radio:checked ~ .star-input__label .star-input__star--outline { display: none; }
 .star-input__radio:checked ~ .star-input__label .star-input__star--filled { display: block; }
 
-/* While the pointer is anywhere on the row, what is checked stops
-   mattering and what is under the pointer takes over.
-
-   The three rules below are deliberately all at the same weight as the
-   two above, so that which one wins is decided by the order they are
-   written in rather than by counting class names. :where() is what
-   holds the weight down: it adds no specificity of its own, so the
-   :has() that scopes the first pair is free. Written any other way the
-   reset outweighs the rule that is supposed to override it, and
-   hovering a low star while a high one is chosen lights nothing at
-   all, which is what happened the first time.
-
-   If :has() is not understood, the first pair is dropped and the rest
-   still works: the chosen rating shows, and hovering simply does not
-   put out a higher star. */
+/* star hover - the pointer wins over what is checked */
 :where(.star-input:has(.star-input__label:hover)) .star-input__radio:checked ~ .star-input__label .star-input__star--outline { display: block; }
 :where(.star-input:has(.star-input__label:hover)) .star-input__radio:checked ~ .star-input__label .star-input__star--filled { display: none; }
 
@@ -1225,14 +1114,14 @@
 .star-input .star-input__label:hover .star-input__star--filled,
 .star-input .star-input__label:hover ~ .star-input__label .star-input__star--filled { display: block; }
 
-/* The radio itself is off the page, so the ring has to be put back. */
+/* the radio itself is off the page, so the ring has to be put back */
 .star-input__radio:focus-visible + .star-input__label {
   outline: 2px solid var(--sm-primary-accent);
   outline-offset: 3px;
   border-radius: 3px;
 }
 
-/* ── The box ───────────────────────────────────────────────────── */
+/* the box */
 
 .reviews__textarea {
   box-sizing: border-box;
@@ -1259,7 +1148,7 @@
 }
 .reviews__counter--over { color: var(--sm-invalid); }
 
-/* ── The buttons ───────────────────────────────────────────────── */
+/* the buttons */
 
 .reviews__buttons {
   display: flex;
@@ -1290,7 +1179,7 @@
   background: var(--sm-hover-blue);
   border-color: var(--sm-hover-blue);
 }
-/* Nothing has changed yet, so there is nothing to save. */
+/* nothing has changed yet, so there is nothing to save */
 .reviews__btn--update[disabled] {
   background: var(--sm-field-bg-disabled);
   border-color: var(--sm-field-border-disabled);
@@ -1313,7 +1202,7 @@
 }
 .reviews__btn--cancel:hover { background: var(--sm-field-bg-focus-hover); }
 
-/* ── Have you been here? ───────────────────────────────────────── */
+/* have you been here? */
 
 .reviews__prompt {
   margin-top: 16px;
@@ -1344,7 +1233,7 @@
 }
 .reviews__prompt-btn:hover { background: var(--sm-field-bg-focus-hover); }
 
-/* ── Confirming a deletion ─────────────────────────────────────── */
+/* confirming a deletion */
 
 .reviews__confirm {
   position: fixed;

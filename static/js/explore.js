@@ -1,18 +1,4 @@
-/* ══════════════════════════════════════════════════════════════════════
-   THE MAP
-
-   Every published location arrives in one file, fetched once and held
-   in the page. Mapbox clusters it, so panning and zooming redraws pins
-   without asking anything of the server.
-
-   What does need a request is the pane, because a card carries a
-   photograph and a place name that the data file deliberately leaves
-   out. The browser decides which twenty (twelve on a phone) to show,
-   using explore_sample.js, and asks Django for those by id. The reply
-   is rendered HTML: the thumbnail URL, the fallback image and the
-   escaping of a location's name all stay in Python, where the rest of
-   them already live.
-   ══════════════════════════════════════════════════════════════════ */
+// explore - the map page, its pins, sheet and side pane
 (function () {
   'use strict';
 
@@ -25,23 +11,19 @@
   var LIMIT = parseInt(root.dataset.limit, 10) || 20;
   var LIMIT_MOBILE = parseInt(root.dataset.limitMobile, 10) || 12;
 
-  var PHONE = 900;            // matches the CSS breakpoint
+  var PHONE = 900;            // matches the css breakpoint
   var SETTLE_MS = 250;        // how long the map must be still
   var CLUSTER_ZOOM_MAX = 13;  // above this every pin stands alone
 
   var listEl = document.getElementById('explore-list');
   var sidebarEl = document.getElementById('explore-sidebar');
 
-  var points = [];            // { uuid, lng, lat } for the sampler
+  var points = [];            // uuid, lng and lat for the sampler
   var lastRequest = '';       // so an unchanged viewport asks twice for nothing
   var inFlight = null;
   var settleTimer = null;
 
-  // ── The sheet, on a phone ──────────────────────────────────────────
-  //
-  // The same list, presented as a sheet that peeks at the foot of the
-  // screen and is dragged or tapped up. Three positions rather than
-  // free dragging, so letting go always lands somewhere deliberate.
+  // sheet - the bottom drawer on a phone
 
   var STATES = ['peek', 'half', 'full'];
   var state = 0;
@@ -80,15 +62,13 @@
       applyState();
     });
 
-    // Coming back to a wide window should not leave the sheet half open.
+    // resize - a wide window should not leave the sheet half open
     window.addEventListener('resize', function () {
       if (!isPhone() && state !== 0) { state = 0; applyState(); }
     });
   }
 
-  /* The sheet is wired up first and separately. If Mapbox fails to
-     load, from a blocked CDN or a bad token, the page still has a list
-     of locations rendered into it and that list should still open. */
+  // order - the sheet is wired first so it works if mapbox fails
   wireSheet();
 
   if (typeof mapboxgl === 'undefined') {
@@ -106,8 +86,7 @@
   });
   map.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
 
-  /* The pin colour comes from the stylesheet rather than being written
-     twice, so changing the brand blue in main.css moves the map too. */
+  // pin colour - read from the stylesheet rather than written twice
   function accent() {
     return getComputedStyle(document.documentElement)
       .getPropertyValue('--sm-primary-accent').trim() || '#0096CD';
@@ -117,7 +96,7 @@
     return window.matchMedia('(max-width: ' + PHONE + 'px)').matches;
   }
 
-  // ── The data file ──────────────────────────────────────────────────
+  // data file - the locations the map draws
 
   map.on('load', function () {
     if (!DATA_URL) {
@@ -125,12 +104,7 @@
       return;
     }
 
-    /* Fetched here rather than handed to Mapbox as a URL, because the
-       pane needs the coordinates too. Giving the source a URL leaves
-       the parsed features somewhere only Mapbox can reach, and reading
-       them back out of its internals is both private and, as it turns
-       out, wrong: the source keeps the URL string, not the data. One
-       fetch, parsed once, used by both. */
+    // fetched here - the pane needs the coordinates as well as the map
     fetch(DATA_URL)
       .then(function (response) {
         if (!response.ok) throw new Error('HTTP ' + response.status);
@@ -138,8 +112,7 @@
       })
       .then(addLocations)
       .catch(function (error) {
-        // The list rendered into the page stays, so the page is still
-        // useful; only the pins and the refreshing are lost.
+        // failure - the rendered list stays, only the pins are lost
         console.error('Could not load the map data file', error);
       });
   });
@@ -160,9 +133,7 @@
       cluster: true,
       clusterMaxZoom: CLUSTER_ZOOM_MAX,
       clusterRadius: 50,
-      /* Lets feature state be set by a location's own uuid. Without it
-         features have no id at all, so the hover highlight has nothing
-         to address. */
+      // promote id - lets feature state be set by a location's uuid
       promoteId: 'uuid',
     });
 
@@ -176,8 +147,7 @@
         'circle-opacity': 0.9,
         'circle-stroke-width': 3,
         'circle-stroke-color': '#ffffff',
-        // Grows with how many it holds, in steps rather than smoothly
-        // so the sizes stay distinguishable.
+        // cluster size - grows in steps so the sizes stay distinguishable
         'circle-radius': ['step', ['get', 'point_count'], 16, 10, 22, 50, 30],
       },
     });
@@ -219,11 +189,10 @@
     refreshPane();
   }
 
-  // ── The pane ───────────────────────────────────────────────────────
+  // pane - the list beside the map
 
   function scheduleRefresh() {
-    // A drag fires moveend once, but a wheel zoom fires it repeatedly.
-    // Waiting for the map to be still turns a flurry into one request.
+    // settle - a wheel zoom fires moveend repeatedly, so wait
     window.clearTimeout(settleTimer);
     settleTimer = window.setTimeout(refreshPane, SETTLE_MS);
   }
@@ -264,8 +233,7 @@
       listEl.scrollTop = 0;
     }).catch(function (error) {
       if (error.name === 'AbortError') return;
-      // The map still works without the pane, so this is reported and
-      // left alone rather than replacing the list with an error.
+      // pane failure - reported and left alone, the map still works
       console.warn('Could not refresh the list', error);
       lastRequest = '';
     }).finally(function () {
@@ -273,10 +241,7 @@
     });
   }
 
-  /* Hovering a row lifts its pin. Only meaningful when the pin is
-     actually drawn: below the clustering threshold it is inside a
-     cluster and there is nothing to lift, so the link is simply not
-     made rather than half working. */
+  // hover - lifts the matching pin when one is actually drawn
   function wirePaneRows() {
     listEl.querySelectorAll('.explore-list-item').forEach(function (row) {
       var id = row.dataset.uuid;
@@ -286,14 +251,12 @@
   }
 
   function setActive(uuid, on) {
-    // Below the clustering threshold the pin is inside a cluster and
-    // there is nothing drawn to lift, so the link is simply not made
-    // rather than half working.
+    // clustered - nothing to lift, so do nothing
     if (!map.getSource('locations') || map.getZoom() <= CLUSTER_ZOOM_MAX) return;
     map.setFeatureState({ source: 'locations', id: uuid }, { active: on });
   }
 
-  // ── Clicking the map ───────────────────────────────────────────────
+  // clicking the map - open the card for a pin
 
   function zoomIntoCluster(event) {
     var feature = event.features[0];
@@ -312,8 +275,7 @@
     var uuid = feature.properties.uuid;
     var coordinates = feature.geometry.coordinates.slice();
 
-    // Panning several worlds east should open the card on the copy of
-    // the pin that was actually clicked.
+    // world copies - open the card on the pin that was clicked
     while (Math.abs(event.lngLat.lng - coordinates[0]) > 180) {
       coordinates[0] += event.lngLat.lng > coordinates[0] ? 360 : -360;
     }

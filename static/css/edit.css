@@ -1,9 +1,4 @@
-/* Editing a listing, and its history page.
-
-   Stage one: the page the form will sit in, and the four explanations
-   that stand in its place when the form cannot be shown. The form's own
-   styling arrives with the form.
-   ──────────────────────────────────────────────────────────────────── */
+/* edit - the editing page and its history view */
 
 .edit {
   box-sizing: border-box;
@@ -16,7 +11,7 @@
   gap: 24px;
 }
 
-/* ── The editing page itself ───────────────────────────────────── */
+/* the editing page itself */
 
 .edit__header { display: flex; flex-direction: column; gap: 8px; }
 .edit__back {
@@ -75,7 +70,7 @@
   font-size: 0.95rem;
 }
 
-/* ── The explanations ──────────────────────────────────────────── */
+/* the explanations */
 
 .edit__panel {
   box-sizing: border-box;
@@ -182,20 +177,11 @@
 }
 
 
-/* ── The form ────────────────────────────────────────────────────────
-
-   Chips, fields, buttons and the difficulty slider all come from
-   create.css, which this page loads: the two forms are the same form
-   with different furniture round them, and one stylesheet for the
-   controls is what keeps them looking like it.
-
-   What is here is the furniture. The collapsible sections, the tags on
-   the alternate names, the bar at the foot, and the fullscreen map.
-   ──────────────────────────────────────────────────────────────────── */
+/* form - chips, fields and slider come from create.css */
 
 .edit-form { display: flex; flex-direction: column; gap: 16px; }
 
-/* ── A section ─────────────────────────────────────────────────── */
+/* a section */
 
 .edit-section {
   box-sizing: border-box;
@@ -241,12 +227,7 @@
   flex-shrink: 0;
 }
 .edit-section__chevron img { width: 16px; height: 16px; }
-/* Closed shows the one pointing down, open the one pointing up. Two
-   drawings rather than one rotated, because that is what they are.
-
-   Written with the parent in front of each so all four rules weigh the
-   same as the one above them. Without that, "img" outweighs the class
-   on the image and both chevrons show at once. */
+/* closed shows the one pointing down, open the one pointing up */
 .edit-section__chevron .edit-section__chevron-down { display: block; }
 .edit-section__chevron .edit-section__chevron-up { display: none; }
 .edit-section--open .edit-section__chevron-down { display: none; }
@@ -262,8 +243,7 @@
 .edit-section__body--open { padding-top: 24px; }
 .edit-section__action { flex-shrink: 0; }
 
-/* A section with nothing to collapse. One line to read and a button to
-   press does not need hiding behind a toggle. */
+/* a section with nothing to collapse */
 .edit-section--plain {
   padding: 24px;
   display: flex;
@@ -282,7 +262,7 @@
 }
 .edit-section__plain-text { display: flex; flex-direction: column; gap: 4px; }
 
-/* ── What is about to be published ─────────────────────────────── */
+/* what is about to be published */
 
 .change-list {
   margin: 0;
@@ -300,8 +280,7 @@
   line-height: 1.5;
   color: var(--sm-action-dark-blue-text);
 }
-/* A tick rather than a bullet: these are things that will happen, not
-   a list of options. */
+/* ticks - these are things that will happen, not options */
 .change-list__item::before {
   content: "";
   position: absolute;
@@ -323,7 +302,7 @@
 
 .edit-form__turnstile { min-height: 4px; }
 
-/* ── Alternate names ───────────────────────────────────────────── */
+/* alternate names */
 
 .alt-names { display: flex; flex-wrap: wrap; gap: 8px; }
 .alt-names:empty { display: none; }
@@ -350,7 +329,7 @@
 .alt-names__add { display: flex; gap: 8px; align-items: flex-start; }
 .alt-names__add .form-field__input { flex: 1 1 auto; min-width: 0; }
 
-/* ── The change summary and the bar ────────────────────────────── */
+/* the change summary and the bar */
 
 .edit-form__counter {
   margin: 0;
@@ -374,8 +353,7 @@
 }
 .edit-form__error[hidden] { display: none; }
 
-/* Two buttons create.css does not define, since nothing on that page
-   needs them. */
+/* buttons - two that create.css does not define */
 .btn--ghost {
   background: none;
   color: var(--sm-action-dark-blue-text);
@@ -398,7 +376,7 @@
   cursor: not-allowed;
 }
 
-/* ── The map, fullscreen ───────────────────────────────────────── */
+/* the map, fullscreen */
 
 .marker-modal {
   position: fixed;
@@ -422,9 +400,7 @@
   height: 100%;
 }
 
-/* The bar under it. Off white so it reads as the page rather than as
-   part of the map. Closing is the X over the map, so the only thing
-   here is undoing, and it sits in the middle. */
+/* the bar under it */
 .marker-modal__bar {
   flex: 0 0 auto;
   box-sizing: border-box;
@@ -438,7 +414,7 @@
   flex-wrap: wrap;
 }
 
-/* The same close button the photo and location map modals use. */
+/* the same close button the photo and location map modals use */
 .marker-modal__close {
   position: absolute;
   top: 16px;
@@ -459,9 +435,7 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
 }
 .marker-modal__close:hover { background: #ffffff; }
-/* Same reason as the dialog on the history page: an svg with no width
-   attribute is a flex item with no intrinsic width, and without a
-   basis it comes out as nothing. */
+/* close icon - an svg with no width collapses to nothing */
 .marker-modal__close svg {
   width: 16px; height: 16px;
   flex: 0 0 16px;

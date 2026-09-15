@@ -1,15 +1,4 @@
-/* The visibility slider, shared by the create form and the listing's
-   report dialog.
-
-   It was in create.css, which is where it was first needed, with a
-   note saying the listing's dialog shared it. It could not: create.css
-   also styles the create page's chrome, including a .mobile-nav rule
-   that would follow it onto any page that loaded it. So the slider
-   lives here, and both pages load this.
-
-   Anything only one of the two needs is not here. The dialog's own
-   labels and helper lines are in visibility.css, beside the dialog.
-   ──────────────────────────────────────────────────────────────────── */
+/* visibility slider - shared by the create form and the report dialog */
 
 .vis-scale {
   display: flex; justify-content: space-between;
@@ -21,7 +10,7 @@
   margin-bottom: 4px;
 }
 
-/* Interactive range slider — same gradient, custom thumb */
+/* interactive range slider - same gradient, custom thumb */
 .vis-slider-wrap { position: relative; }
 .vis-slider-input {
   width: 100%; -webkit-appearance: none; appearance: none;
@@ -40,7 +29,7 @@
 }
 
 
-/* The date field, which both the create step and the dialog use. */
+/* the date field, which both the create step and the dialog use */
 .vis-date-input {
   padding: 10px 14px; border: 1px solid var(--sm-field-border-default);
   border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 0.9rem;

@@ -1,16 +1,4 @@
-/* ═══════════════════════════════════════════════════════════════════
-   SnorkelMap — history.js
-
-   Opening and closing the dialog that shows the listing as one revision
-   left it.
-
-   Fetching what goes in it is htmx's job: each View State button
-   carries its own hx-get and drops the answer into the dialog's body,
-   and the heading into the dialog's header out of band. All this does
-   is open the dialog when one is pressed, empty both halves so the
-   previous revision is not left on screen while the next one is
-   fetched, and close it again.
-   ═══════════════════════════════════════════════════════════════════ */
+// history - opens and closes the revision state dialog
 
 (function () {
 
@@ -40,8 +28,7 @@
 
   document.addEventListener('click', event => {
     if (event.target.closest('[data-state-increment]')) {
-      // Opened here rather than waiting for the fetch, so the dialog is
-      // there with something in it from the moment it is asked for.
+      // loading - show the dialog straight away with a loading line
       const body = document.getElementById('state-modal-body');
       if (body) {
         body.replaceChildren();
@@ -50,9 +37,7 @@
         loading.textContent = 'Loading…';
         body.append(loading);
       }
-      // Emptied rather than left as it was: the previous revision's
-      // date and author sitting above the next revision's contents
-      // would be labelling it wrongly for as long as the fetch takes.
+      // heading - empty it while the next revision is fetched
       const heading = document.getElementById('state-modal-heading');
       if (heading) heading.replaceChildren();
       open();
@@ -68,8 +53,7 @@
     if (event.key === 'Escape') close();
   });
 
-  // A fetch that failed leaves the loading line on screen forever
-  // otherwise, which reads as a page that has hung.
+  // fetch failed - replace the loading line with a message
   document.body.addEventListener('htmx:responseError', () => {
     const heading = document.getElementById('state-modal-heading');
     if (heading) heading.replaceChildren();

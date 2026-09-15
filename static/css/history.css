@@ -1,10 +1,4 @@
-/* A listing's editing history.
-
-   The timeline down the left, the cards beside it, and the dialog that
-   shows the listing as one revision left it. The cards inside that
-   dialog are the listing page's own, which is why listing.css is loaded
-   alongside this.
-   ──────────────────────────────────────────────────────────────────── */
+/* history - the timeline, its cards and the state dialog */
 
 .history {
   box-sizing: border-box;
@@ -51,7 +45,7 @@
   color: var(--sm-text-3rd-grey, #666);
 }
 
-/* ── The timeline ──────────────────────────────────────────────── */
+/* the timeline */
 
 .timeline {
   list-style: none;
@@ -69,9 +63,7 @@
   gap: 20px;
   align-items: start;
 }
-/* The line runs from this entry's dot down to the next one's. Drawn on
-   the row rather than behind the whole list so the last entry does not
-   trail a line into nothing. */
+/* the line runs from this entry's dot down to the next one's */
 .timeline__row::before {
   content: "";
   position: absolute;
@@ -116,8 +108,7 @@
   background: #E7F3FA;
   color: #2a5f75;
 }
-/* Creation is the one entry that is not a change, so it is the one
-   entry that is not blue. */
+/* creation badge - the only entry that is not a change */
 .timeline__badge--created { background: #bff0dc; color: #14624a; }
 .timeline__badge--current {
   background: none;
@@ -183,7 +174,7 @@
   border-color: var(--sm-hover-blue);
 }
 
-/* ── One change ────────────────────────────────────────────────── */
+/* one change */
 
 .change { margin: 0; display: flex; flex-direction: column; gap: 14px; }
 .change__label {
@@ -215,8 +206,7 @@
   border-radius: 56px;
   font-size: 0.83rem;
 }
-/* Added and removed carry their own colour as well as their own word,
-   so the difference survives being read quickly. */
+/* chips - added and removed carry a colour as well as a word */
 .change__chip--added { background: #dff5ea; color: #14624a; }
 .change__chip--removed {
   background: var(--sm-invalid-bg);
@@ -226,7 +216,7 @@
 
 .change__prose { display: flex; flex-direction: column; gap: 4px; }
 .change__inline { margin: 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-/* Artwork, so only its size is decided here. */
+/* artwork, so only its size is decided here */
 .change__arrow {
   width: 18px;
   height: 18px;
@@ -246,7 +236,7 @@
 .change__after { color: #333; }
 .change__empty { font-style: italic; }
 
-/* ── The listing as it stood ───────────────────────────────────── */
+/* the listing as it stood */
 
 .state-modal {
   position: fixed;
@@ -288,12 +278,7 @@
   background: var(--sm-card-bg);
   border-bottom: 1px solid var(--sm-field-border-default);
 }
-/* The same badge, date and sentence the timeline entry carries, so the
-   dialog says which revision is open in the words it was opened by.
-   The timeline's own rules do the work; this only holds the block
-   together and keeps it from crowding the close button. It is empty
-   until the fetch lands, so it must take no room of its own when it
-   has nothing in it. */
+/* dialog heading - the same block the timeline entry carries */
 .state-modal__heading {
   min-width: 0;
   display: flex;
@@ -304,8 +289,7 @@
 .state-modal__close {
   box-sizing: border-box;
   padding: 0;
-  /* Pushed right by itself rather than by space-between, because
-     before the fetch lands it is the only thing in the header. */
+  /* close button - pushes itself right, it may be alone in the bar */
   margin-left: auto;
   flex-shrink: 0;
   width: 40px;
@@ -320,9 +304,7 @@
   cursor: pointer;
 }
 .state-modal__close:hover { background: var(--sm-field-bg-focus-hover); }
-/* An svg with no width attribute is a flex item with no intrinsic
-   width, which resolves to nothing at all unless the basis says
-   otherwise. Without this the button is an empty circle. */
+/* close icon - an svg with no width collapses to nothing */
 .state-modal__close svg {
   width: 14px; height: 14px;
   flex: 0 0 14px;
@@ -345,9 +327,7 @@
 
 .revision-state { display: flex; flex-direction: column; gap: 16px; }
 
-/* On the listing this line is tucked up under the h1 with a negative
-   margin. Here it is inside a card, where it needs to sit under the
-   name and leave room for what follows. */
+/* alt names - the listing tucks this under the heading, here it does not */
 .revision-state .listing__alt-names { margin: -8px 0 8px 0; }
 
 .revision-state__markers {
@@ -366,7 +346,7 @@
   line-height: 1.5;
 }
 
-/* ── When there is no listing to show a history of ─────────────── */
+/* when there is no listing to show a history of */
 
 .history__panel {
   box-sizing: border-box;
