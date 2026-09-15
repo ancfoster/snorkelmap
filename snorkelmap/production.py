@@ -1,5 +1,20 @@
 from .settings import *
 
+# Dokploy's Traefik proxy terminates HTTPS and forwards to this
+# container over plain HTTP, adding X-Forwarded-Proto. Without this,
+# Django thinks every request is HTTP: request.is_secure() is wrong,
+# and — the one that actually bites — the CSRF check compares the
+# browser's "Origin: https://..." against a scheme Django computed as
+# http, which never matches, so every POST is rejected as a forged
+# request regardless of whether the CSRF token itself was fine.
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
+
+# local.py hardcodes Cloudflare's public test keys. Production needs
+# real ones from the Turnstile dashboard, set as env vars in Dokploy.
+TURNSTILE_SITEKEY = os.environ.get('TURNSTILE_SITEKEY', '')
+TURNSTILE_SECRET = os.environ.get('TURNSTILE_SECRET', '')
+
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
 STORAGES = {
