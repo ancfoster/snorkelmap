@@ -29,6 +29,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Copy project
 COPY . .
+RUN chmod +x entrypoint.sh
 
 # Collect static files
 ENV DJANGO_SETTINGS_MODULE=snorkelmap.production
@@ -37,5 +38,6 @@ RUN python manage.py collectstatic --noinput
 # Expose port (Dokploy will use $PORT env variable)
 EXPOSE 8000
 
-# Run gunicorn
-CMD gunicorn snorkelmap.wsgi:application --bind 0.0.0.0:${PORT:-8000} --workers 3 --timeout 120
+# entrypoint.sh applies migrations, then execs gunicorn. Runs on every
+# container start, i.e. every deploy Dokploy triggers from a GitHub push.
+ENTRYPOINT ["./entrypoint.sh"]

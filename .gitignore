@@ -6,6 +6,7 @@ db.sqlite3
 .DS_Store
 *.pid
 media/
+cloudflare/r2-cors/
 __pycache__/
 *.pem
 .vscode/settings.json
