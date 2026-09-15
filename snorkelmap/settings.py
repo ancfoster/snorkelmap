@@ -177,6 +177,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # django-allauth config
 ACCOUNT_ADAPTER = 'snorkelusers.adapters.CustomAccountAdapter'
 SITE_ID = 1
+LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 ACCOUNT_SIGNUP_FIELDS = ['first_name', 'email*', 'username*', 'password1*', 'password2*']
