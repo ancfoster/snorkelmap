@@ -192,9 +192,6 @@ ACCOUNT_FORMS = {
     'login': 'snorkelusers.forms.CustomLoginForm',
 }
 
-GDAL_LIBRARY_PATH = "/opt/homebrew/lib/libgdal.dylib"
-GEOS_LIBRARY_PATH = "/opt/homebrew/lib/libgeos_c.dylib"
-
 # ── R2 media bucket ──────────────────────────────────────────────────
 # Photographs submitted with a location. Separate from the static files
 # bucket: different lifecycle, different access pattern, and a
