@@ -9,6 +9,13 @@ STORAGES = {
     "staticfiles": {
         "BACKEND": "storages.backends.s3.S3ManifestStaticStorage",
         "OPTIONS": {
+            # A CSS/JS file referencing a static asset that doesn't exist
+            # (typo, forgotten commit) would otherwise fail the whole
+            # collectstatic step and block the deploy. With this off,
+            # the reference is left as its plain, unhashed URL instead —
+            # which will 404 for real users, so it's a build safety net,
+            # not a fix for the missing file.
+            "manifest_strict": False,
             "bucket_name": os.environ['R2_BUCKET_NAME'],
             "endpoint_url": os.environ['R2_ENDPOINT_URL'],
             "access_key": os.environ['R2_ACCESS_KEY'],
