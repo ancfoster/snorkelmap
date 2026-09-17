@@ -273,3 +273,31 @@ MAP_PANE_LIMIT_MOBILE = 12
 # not depend on having a three word address, and no address is worth
 # making somebody wait on a publish screen for.
 W3W_API_KEY = os.environ.get('W3W_API_KEY', '')
+
+
+# ── logging ──────────────────────────────────────────────────────────
+# Django's built-in default only prints request tracebacks to console
+# when DEBUG=True. In production (DEBUG=False) with no LOGGING config,
+# an unhandled exception is caught, a generic 500 page is served, and
+# the traceback goes nowhere - not to console, not anywhere else. This
+# forces it to stdout regardless of DEBUG, so `docker logs` picks it up.
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'WARNING',
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+    },
+}
