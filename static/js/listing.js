@@ -14,6 +14,9 @@
 
   let photos = readJson('listing-photos') || [];
   let markers = readJson('listing-markers') || [];
+  // Where the marker icons are served from. Supplied by Django
+  // because it differs between development and production.
+  let markerIconBase = readJson('marker-icon-base') || '/static/images/sm-map-icons/';
 
   let photosModal = document.getElementById('photos-modal');
   let detailModal = document.getElementById('photo-detail-modal');
@@ -127,7 +130,7 @@
       element.className = 'lmap-marker';
       if (marker.icon) {
         let image = document.createElement('img');
-        image.src = '/static/' + marker.icon;
+        image.src = markerIconBase + marker.id + '.png';
         image.alt = '';
         element.appendChild(image);
       }

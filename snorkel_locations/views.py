@@ -4,6 +4,7 @@ from django.conf import settings
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.templatetags.static import static
 
 from . import choices, geography, media_storage, static_map
 from .choices import create_page_context
@@ -160,6 +161,13 @@ def listing_context(request, location):
         "markers": [geography.marker_for(feature) for feature in
                     ((revision.marker_data or {}).get("features") or []
                      if revision else [])],
+
+        # marker_for() returns a bare relative path, so something has to
+        # turn it into a URL. It has to happen here rather than in the JS
+        # because only Django knows where static files are served from:
+        # a local path in development, the CDN domain in production.
+        # Trailing slash matters: the JS appends "<marker-id>.png".
+        "marker_icon_base": static("images/sm-map-icons/"),
 
         # Whether this person has saved the location and whether they
         # have been there. Two booleans: the apps that store them own

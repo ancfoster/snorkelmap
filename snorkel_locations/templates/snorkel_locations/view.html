@@ -516,6 +516,7 @@ block properly, which string interpolation into JS does not.
 {% endcomment %}
 {{ markers|json_script:"listing-markers" }}
 {{ photo_data|json_script:"listing-photos" }}
+{{ marker_icon_base|json_script:"marker-icon-base" }}
 {% endblock %}
 
 {% block extra_js %}
